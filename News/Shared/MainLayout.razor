@@ -5,10 +5,11 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Dense="true" Elevation="0">
-        <MudTooltip Text="Open/Close Menu">
+    <MudAppBar Dense="true" Elevation="2">
+        <MudTooltip Text="Menu">
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         </MudTooltip>
+        <MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
         <MudAppBarSpacer />
         <MudTooltip Text="MudBlazor Website">
             <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/wasm" Target="_blank" />
@@ -17,10 +18,7 @@
             <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
         </MudTooltip>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader Dense="true">
-            <MudText Class="mt-1 ml-n1" Typo="Typo.body1"><b>BlazorBits (<i>Reloaded</i>)</b></MudText>
-        </MudDrawerHeader>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked"  Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
