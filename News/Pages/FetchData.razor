@@ -18,7 +18,7 @@
                 <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.Summary)">Summary</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Date">@context.Date</MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToLocalTime()</MudTd>
                 <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
                 <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
                 <MudTd DataLabel="Summary">@context.Summary</MudTd>
@@ -40,7 +40,7 @@
 
     public class WeatherForecast
     {
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
 
         public int TemperatureC { get; set; }
 
