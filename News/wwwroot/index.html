@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BlazorBits (Reloaded)</title>
+    <title>BlazorBits Reloaded</title>
     <base href="/" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
@@ -13,11 +13,11 @@
     //-->
 </head>
 
-<body>
+<body style="background-color: #ffffff">
     <div id="app">
-        <div id="loading" style="position:absolute; top:30vh; width:100%; text-align:center;">
-            <p style="font-size: 2em; color: darkorange; font-family: Arial, Helvetica, sans-serif">Loading Blazor WASM App</p>
-            <img src="/images/dotNETDropMic.webp" width="150" alt=".NET Rocks!" /><br /><br />
+        <div id="loading" style="position: absolute; top: 30vh; width: 100%; text-align: center;">
+            <p style="font-size: 2em; color: darkorange; font-family: Arial, Helvetica, sans-serif">Loading</p>
+            <img src="/images/1484.png" alt="Loading App" />
             <p style="font-family: Arial, Helvetica, sans-serif">One moment please</p>
         </div>
     </div>
@@ -27,7 +27,34 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+
+    <!--
+        Brotli compression on static pages
+        https://docs.microsoft.com/en-us/aspnet/core/blazor/host-and-deploy/webassembly?view=aspnetcore-6.0#compression
+    -->
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script type="module">
+        import { BrotliDecode } from './decode.min.js';
+        Blazor.start({
+            loadBootResource: function (type, name, defaultUri, integrity) {
+                if (type !== 'dotnetjs' && location.hostname !== 'localhost') {
+                    return (async function () {
+                        const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        const originalResponseBuffer = await response.arrayBuffer();
+                        const originalResponseArray = new Int8Array(originalResponseBuffer);
+                        const decompressedResponseArray = BrotliDecode(originalResponseArray);
+                        const contentType = type ===
+                            'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
+                        return new Response(decompressedResponseArray,
+                            { headers: { 'content-type': contentType } });
+                    })();
+                }
+            }
+        });
+    </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 </html>
