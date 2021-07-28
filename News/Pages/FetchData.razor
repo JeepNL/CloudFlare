@@ -1,9 +1,9 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
+@inject GrpcChannel grpcChannel
 
 <MudContainer Style="max-width: 100%">
     <MudText Typo="Typo.h4">Weather forecast</MudText>
-    <MudText Class="mb-6" Typo="Typo.subtitle1">This component demonstrates fetching data from the server.</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle1">This component demonstrates fetching gRPC data from a remote server.</MudText>
     @if (forecasts == null)
     {
         <MudProgressCircular Color="Color.Default" Indeterminate="true" />
@@ -12,40 +12,30 @@
     {
         <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureF)">Temp. (F)</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.Summary)">Summary</MudTableSortLabel></MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Temp. (C)</MudTh>
+                <MudTh>Temp. (F)</MudTh>
+                <MudTh>Summary</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Date">@context.Date.ToLocalTime()</MudTd>
+                <MudTd DataLabel="Date">@DateTime.Parse(context.Date.ToString().Replace("\"", "")).ToLocalTime()</MudTd>
                 <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
                 <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
                 <MudTd DataLabel="Summary">@context.Summary</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+                <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
             </PagerContent>
         </MudTable>
     }
 </MudContainer>
 
 @code {
-    private WeatherForecast[] forecasts;
+    private IList<WeatherForecast> forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
-
-    public class WeatherForecast
-    {
-        public DateTimeOffset Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        var client = new WeatherForecasts.WeatherForecastsClient(grpcChannel);
+        forecasts = (await client.GetWeatherForecastsAsync(new Empty())).Forecasts;
     }
 }

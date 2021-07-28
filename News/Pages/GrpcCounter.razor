@@ -1,0 +1,46 @@
+﻿@page "/counter"
+@inject GrpcChannel grpcChannel
+@using System.Threading
+@using Grpc.Core
+
+<MudContainer Style="max-width: 100%">
+    <MudText Typo="Typo.h4">Counter</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle1">Incrementing count streamed from a remote gRPC service.</MudText>
+
+    <MudText Class="mb-6" Typo="Typo.h6">Current count: @currentCount</MudText>
+
+    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="IncrementCount" Disabled="@(cts != null)">Start</MudButton>
+    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
+</MudContainer>
+
+@code {
+    private int currentCount = 0;
+    private CancellationTokenSource cts;
+
+    private async Task IncrementCount()
+    {
+        cts = new CancellationTokenSource();
+
+        var client = new Counter.CounterClient(grpcChannel); // Count.Counter.CounterClient(Channel);
+        using var call = client.StartCounter(new CounterRequest() { Start = currentCount }, cancellationToken: cts.Token);
+
+        try
+        {
+            await foreach (var message in call.ResponseStream.ReadAllAsync())
+            {
+                currentCount = message.Count;
+                StateHasChanged();
+            }
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+        {
+            // Ignore exception from cancellation
+        }
+    }
+
+    private void StopCount()
+    {
+        cts?.Cancel();
+        cts = null;
+    }
+}
