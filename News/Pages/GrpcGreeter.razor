@@ -1,0 +1,54 @@
+﻿@page "/greeter"
+@using System.ComponentModel.DataAnnotations
+@inject GrpcChannel grpcChannel
+
+<MudContainer Style="max-width: 100%">
+    <MudText Typo="Typo.h4">Greeter</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle1">Invoke the Greeter gRPC service from a remote server</MudText>
+
+    <div style="max-width: 400px;">
+        <EditForm Model="@greeterModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudTextField Label="Your name" HelperText="Between 2 and 30 characters" @bind-Value="greeterModel.Name" For="@(() => greeterModel.Name)" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+
+        @if (success)
+        {
+            <MudAlert Severity="Severity.Warning" NoIcon="true" Variant="Variant.Filled" Elevation="4" Class="pa-4 my-4"><b>@hello!</b></MudAlert>
+        }
+    </div>
+</MudContainer>
+
+@code {
+    GreeterForm greeterModel = new GreeterForm();
+    bool success;
+    string hello = string.Empty;
+
+    public class GreeterForm
+    {
+        [Required]
+        [StringLength(30, ErrorMessage = "Name must be between 2 and 30 characters.", MinimumLength = 2)]
+        public string Name { get; set; }
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        HelloRequest req = new()
+        {
+            Name = greeterModel.Name
+        };
+
+        greeterModel.Name = string.Empty;
+        var client = new Greeter.GreeterClient (grpcChannel);
+        HelloReply serverReply = await client.SayHelloAsync(req);
+        hello = serverReply.Message;
+    }
+}
