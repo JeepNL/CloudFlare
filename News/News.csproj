@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.6.21355.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.6.21355.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.0-preview.6.21355.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.6.21355.2" />
     <PackageReference Include="Google.Protobuf" Version="3.17.3" />
     <PackageReference Include="Grpc.Tools" Version="2.38.1">
       <PrivateAssets>all</PrivateAssets>
@@ -13,12 +15,16 @@
     </PackageReference>
     <PackageReference Include="Grpc.Net.Client" Version="2.38.0" />
     <PackageReference Include="Grpc.Net.Client.Web" Version="2.38.0" />
-    <PackageReference Include="MudBlazor" Version="5.1.0-dev.1" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.1.2" />
+    <PackageReference Include="FluentValidation" Version="10.3.0" />
+    <PackageReference Include="MudBlazor" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\blogger.proto" GrpcServices="Client" Access="Internal" />
     <Protobuf Include="Protos\weather.proto" GrpcServices="Client" Access="Internal" />
-    <Protobuf Include="Protos\count.proto" GrpcServices="Client" Access="Internal" />
+    <Protobuf Include="Protos\counter.proto" GrpcServices="Client" Access="Internal" />
     <Protobuf Include="Protos\greeter.proto" GrpcServices="Client" Access="Internal" />
   </ItemGroup>
+
 </Project>

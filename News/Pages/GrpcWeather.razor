@@ -1,0 +1,46 @@
+﻿@page "/weather"
+@inject GrpcChannel grpcChannel
+
+<MudContainer Style="max-width: 100%">
+    <MudText Typo="Typo.h4">Weather forecast</MudText>
+    <MudText Class="mb-6" Typo="Typo.subtitle1">This component demonstrates fetching (<i>random!</i>) gRPC data from a remote server.</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="10" md="8" lg="6" xl="4">
+            @if (forecasts == null)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else
+            {
+                <MudTable Items="forecasts" Dense="true" Hover="true" Elevation="0">
+                    <HeaderContent>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Temp. (C)</MudTh>
+                        <MudTh>Temp. (F)</MudTh>
+                        <MudTh>Summary</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Date">@DateTime.Parse(context.Date.ToString().Replace("\"", "")).ToLocalTime()</MudTd>
+                        <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
+                        <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
+                        <MudTd DataLabel="Summary">@context.Summary</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[]{5, 10, 15}" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private IEnumerable<WeatherForecast> forecasts = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = new WeatherForecasts.WeatherForecastsClient(grpcChannel);
+        forecasts = (await client.GetWeatherForecastsAsync(new Empty())).Forecasts;
+    }
+}

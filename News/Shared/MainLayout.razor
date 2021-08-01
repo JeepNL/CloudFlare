@@ -1,28 +1,33 @@
 ﻿@inherits LayoutComponentBase
 
+<MudScrollToTop>
+    <MudFab Color="Color.Secondary" Icon="@Icons.Filled.ArrowCircleUp" />
+</MudScrollToTop>
+
 <MudThemeProvider />
-<MudDialogProvider />
 <MudSnackbarProvider />
+<MudDialogProvider />
 
 <MudLayout>
     <MudAppBar Dense="true" Elevation="2">
         <MudTooltip Text="Menu">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
         </MudTooltip>
         <MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
         <MudSpacer />
         @*<MudTooltip Text="MudBlazor Website">
-            <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/wasm" Target="_blank" />
-        </MudTooltip>
-        <MudTooltip Text="MudBlazor GitHub">
-            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
-        </MudTooltip>*@
+                <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/wasm" Target="_blank" />
+            </MudTooltip>
+            <MudTooltip Text="MudBlazor GitHub">
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
+            </MudTooltip>*@
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked"  Variant="@DrawerVariant.Responsive" Color="Color.Default">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
         @Body
+        <Logos />
     </MudMainContent>
 </MudLayout>
 

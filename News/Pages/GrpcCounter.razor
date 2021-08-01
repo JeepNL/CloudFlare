@@ -6,11 +6,13 @@
 <MudContainer Style="max-width: 100%">
     <MudText Typo="Typo.h4">Counter</MudText>
     <MudText Class="mb-6" Typo="Typo.subtitle1">Incrementing count streamed from a remote gRPC service.</MudText>
-
-    <MudText Class="mb-6" Typo="Typo.h6">Current count: @currentCount</MudText>
-
-    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="IncrementCount" Disabled="@(cts != null)">Start</MudButton>
-    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
+    <MudGrid>
+        <MudItem xs="12" sm="8" md="6" lg="4" xl="2">
+            <MudText Class="mb-6" Typo="Typo.h6">Current count: @currentCount</MudText>
+            <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="IncrementCount" Disabled="@(cts != null)">Start</MudButton>
+            <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
 
 @code {

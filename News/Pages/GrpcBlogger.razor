@@ -1,0 +1,124 @@
+﻿@page "/blogger"
+@inject GrpcChannel grpcChannel
+@inject IDialogService dialogService
+
+<MudContainer Style="max-width: 100%">
+    <MudText Typo="Typo.h4">Blogger</MudText>
+    <MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit blog posts using a remote gRPC service</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="10" lg="8" xl="6">
+            @if (posts == null)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else
+            {
+                <MudTooltip Text="Add Blog Post">
+                    <MudIconButton OnClick="(() => OpenDialog(null))" Icon="@Icons.Material.Filled.Article" Size="Size.Large" Color="Color.Primary" />
+                </MudTooltip>
+                <MudTable T="Post" Items="@posts" Dense="true" Hover="true" Striped="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
+                    <HeaderContent>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Title</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Style="cursor: pointer;" DataLabel="Date">@Utils.UtcTicks2Local(context.DatePublished)</MudTd>
+                        <MudTd Style="cursor: pointer;" DataLabel="Title">@context.Header</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    private IEnumerable<Post> posts;
+    private Post selectedPost = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var client = new Blogger.BloggerClient(grpcChannel);
+        posts = (await client.GetPostsAsync(new Empty())).PostRepeated.ToList();
+    }
+
+    //private void RowClick(TableRowClickEventArgs<Post> post)
+    private async Task RowClick()
+    {
+        // NOTE: "rowClickPost" (post.Item) is the same as "selectedPost"
+        //var rowClickPost = post.Item;
+        //Console.WriteLine($"selectedPost.Header: {rowClickPost.Header}");
+        await OpenDialog(selectedPost);
+    }
+
+    private string RowStyle(Post post, int index)
+    {
+        if (post.Id == selectedPost?.Id)
+            return "background: #bbbbbb;";
+        else
+            return "";
+    }
+
+    private async Task OpenDialog(Post post)
+    {
+        //bool add = false;
+
+        var parameters = new DialogParameters();
+        if (post is null) // add post
+        {
+            //add = true;
+            parameters.Add("Id", 0);
+            //parameters.Add("Header", string.Empty);
+            //parameters.Add("SubHeader", string.Empty);
+            //parameters.Add("Content", string.Empty);
+            //parameters.Add("ImageUrl", string.Empty);
+            //parameters.Add("MoreInfoUrl", string.Empty);
+        }
+        else // update post
+        {
+            parameters.Add("Id", post.Id);
+            parameters.Add("Header", post.Header);
+            parameters.Add("SubHeader", post.SubHeader);
+            parameters.Add("Content", post.Content);
+            parameters.Add("ImageUrl", post.ImageUrl);
+            parameters.Add("MoreInfoUrl", post.MoreInfoUrl);
+        }
+
+        var options = new DialogOptions()
+        {
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            CloseButton = true,
+            DisableBackdropClick = true,
+            NoHeader = false,
+            Position = DialogPosition.TopCenter
+        };
+
+        var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
+        var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await LoadData();
+            //StateHasChanged();
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            //Guid.TryParse(result.Data.ToString(), out Guid deletedServer);
+            //Servers.RemoveAll(item => item.Id == deletedServer);
+        }
+    }
+
+    //private void OpenDialog(DialogOptions options)
+    //{
+    //    dialogService.Show<BlogAddEdit>("Blog Dialog", options);
+    //}
+}
