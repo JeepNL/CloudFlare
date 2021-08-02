@@ -2,29 +2,27 @@
 @using System.ComponentModel.DataAnnotations
 @inject GrpcChannel grpcChannel
 
-<MudContainer Style="max-width: 100%">
-    <MudText Typo="Typo.h4">Greeter</MudText>
-    <MudText Class="mb-6" Typo="Typo.subtitle1">Invoke the Greeter gRPC service from a remote server</MudText>
-    <MudGrid>
-        <MudItem xs="12" sm="8" md="6" lg="4" xl="2">
-            <EditForm Model="@greeterModel" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
-                <MudCard Elevation="2">
-                    <MudCardContent>
-                        <MudTextField Label="Your name" HelperText="Between 2 and 30 characters" @bind-Value="greeterModel.Name" For="@(() => greeterModel.Name)" />
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </EditForm>
-            @if (success)
-            {
-                <MudAlert Severity="Severity.Warning" NoIcon="true" Variant="Variant.Filled" Elevation="4" Class="pa-4 my-4"><b>@hello!</b></MudAlert>
-            }
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+<MudText Typo="Typo.h4">Greeter</MudText>
+<MudText Class="mb-6" Typo="Typo.subtitle1">Invoke the Greeter gRPC service from a remote server</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="8" md="6" lg="4" xl="2">
+        <EditForm Model="@greeterModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard Elevation="2">
+                <MudCardContent>
+                    <MudTextField Label="Your name" HelperText="Between 2 and 30 characters" @bind-Value="greeterModel.Name" For="@(() => greeterModel.Name)" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+        @if (success)
+        {
+            <MudAlert Severity="Severity.Warning" NoIcon="true" Variant="Variant.Filled" Elevation="4" Class="pa-4 my-4"><b>@hello!</b></MudAlert>
+        }
+    </MudItem>
+</MudGrid>
 
 @code {
     GreeterForm greeterModel = new GreeterForm();

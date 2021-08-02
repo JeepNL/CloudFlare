@@ -1,8 +1,8 @@
 ﻿@page "/blogger"
 @inject GrpcChannel grpcChannel
 @inject IDialogService dialogService
+@inject ISnackbar Snackbar
 
-<MudContainer Style="max-width: 100%">
     <MudText Typo="Typo.h4">Blogger</MudText>
     <MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit blog posts using a remote gRPC service</MudText>
 
@@ -33,8 +33,6 @@
             }
         </MudItem>
     </MudGrid>
-</MudContainer>
-
 
 @code {
     private IEnumerable<Post> posts;
@@ -63,27 +61,15 @@
     private string RowStyle(Post post, int index)
     {
         if (post.Id == selectedPost?.Id)
-            return "background: #bbbbbb;";
+            return $"background: {Colors.BlueGrey.Lighten2};";
         else
             return "";
     }
 
     private async Task OpenDialog(Post post)
     {
-        //bool add = false;
-
         var parameters = new DialogParameters();
-        if (post is null) // add post
-        {
-            //add = true;
-            parameters.Add("Id", 0);
-            //parameters.Add("Header", string.Empty);
-            //parameters.Add("SubHeader", string.Empty);
-            //parameters.Add("Content", string.Empty);
-            //parameters.Add("ImageUrl", string.Empty);
-            //parameters.Add("MoreInfoUrl", string.Empty);
-        }
-        else // update post
+        if (post is not null) // update post
         {
             parameters.Add("Id", post.Id);
             parameters.Add("Header", post.Header);
@@ -109,16 +95,8 @@
 
         if (!result.Cancelled)
         {
+            Snackbar.Add(result.Data.ToString() , Severity.Info);
             await LoadData();
-            //StateHasChanged();
-            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
-            //Guid.TryParse(result.Data.ToString(), out Guid deletedServer);
-            //Servers.RemoveAll(item => item.Id == deletedServer);
         }
     }
-
-    //private void OpenDialog(DialogOptions options)
-    //{
-    //    dialogService.Show<BlogAddEdit>("Blog Dialog", options);
-    //}
 }

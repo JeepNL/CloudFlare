@@ -1,20 +1,19 @@
 ﻿@page "/"
 
-<MudContainer Style="max-width: 100%">
     <MudText Typo="Typo.h4">Blazor Is The Future!</MudText>
     <MudText Class="mb-6" Typo="Typo.subtitle1">And the future is now!</MudText>
     <MudGrid>
         <MudItem xs="12" sm="12" md="12" lg="11" xl="10">
             <MudAlert Elevation="2" Severity="Severity.Normal" NoIcon="true">
                 <MudText Typo="Typo.body1">
-                    This is an ASP.NET Core 6 Preview 6 Blazor WASM SPA using MudBlazor Components and the static part, the client side, is hosted on CloudFlare Pages. The website is using remote .NET 6 gRPC Services running on a co-located Ubuntu 20.04 VPS for its dynamic data.
+                    This is an ASP.NET Core 6 Preview 6 Blazor WASM SPA using MudBlazor Components and the static part, the client side, is hosted on Cloudflare Pages. The website is using remote .NET 6 gRPC Services running on a co-located Ubuntu 20.04 VPS for its dynamic data.
                 </MudText>
             </MudAlert>
 
             <MudAlert Elevation="4" Severity="Severity.Warning" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
-                <MudText Color="Color.Dark" Typo="Typo.body1">
-                    <MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1" Color="Color.Primary">Niels Swimberghe</MudLink></MudTooltip> wrote a great
-                    <MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1" Color="Color.Primary"><b>blog post</b></MudLink></MudTooltip> on <b>how to</b> deploy your Blazor WebAssembly app to Cloudflare Pages.
+                <MudText Typo="Typo.body1">
+                    <MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1">Niels Swimberghe</MudLink></MudTooltip> wrote a great
+                    <MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1"><b>blog post</b></MudLink></MudTooltip> on <b>how to</b> deploy your Blazor WebAssembly app to Cloudflare Pages.
                 </MudText>
             </MudAlert>
 
@@ -24,4 +23,3 @@
             </MudPaper>
         </MudItem>
     </MudGrid>
-</MudContainer>

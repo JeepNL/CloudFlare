@@ -1,15 +1,14 @@
-﻿@using FluentValidation
-@inject GrpcChannel grpcChannel
+﻿@inject GrpcChannel grpcChannel
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudTextField T="string" @bind-Value="postModel.Header" Label="Header" HelperText="Required" Required="true" Validation="@header.Validation" Immediate="true" />
-            <MudTextField T="string" @bind-Value="postModel.SubHeader" Label="Subheader" Validation="@subheader.Validation" Immediate="true" />
-            <MudTextField T="string" @bind-Value="postModel.Content" Label="Content" HelperText="Required" Required="true" Lines="10" Validation="@content.Validation" Immediate="true" />
+            <MudTextField T="string" @bind-Value="postModel.Header" Label="Header" HelperText="Required" Required="true" Validation="@Utils.FluentValidate(80, true, "Header", 10).Validation" Immediate="true" />
+            <MudTextField T="string" @bind-Value="postModel.SubHeader" Label="Subheader" Validation="@Utils.FluentValidate(128, false, "Subheader").Validation" Immediate="true" />
+            <MudTextField T="string" @bind-Value="postModel.Content" Label="Content" HelperText="Required" Required="true" Lines="10" Validation="@Utils.FluentValidate(8192, true, "Content", 10).Validation" Immediate="true" />
             <div class="d-flex">
-                <MudTextField T="string" @bind-Value="postModel.ImageUrl" Label="Image Url" Placeholder="https://" Variant="Variant.Filled" Margin="Margin.Dense" Validation="@url.Validation" Immediate="true" />
-                &nbsp;&nbsp;<MudTextField T="string" @bind-Value="postModel.MoreInfoUrl" Label="More Info Url" Placeholder="https://" Margin="Margin.Dense" Variant="Variant.Filled" Validation="@url.Validation" Immediate="true" />
+                <MudTextField T="string" @bind-Value="postModel.ImageUrl" Label="Image Url" Placeholder="https://" Variant="Variant.Filled" Margin="Margin.Dense" Validation="@Utils.FluentValidate(256, false, "Image URL").Validation" Immediate="true" />
+                &nbsp;&nbsp;<MudTextField T="string" @bind-Value="postModel.MoreInfoUrl" Label="More Info Url" Placeholder="https://" Margin="Margin.Dense" Variant="Variant.Filled" Validation="@Utils.FluentValidate(256, false, "More Info URL").Validation" Immediate="true" />
             </div>
         </MudForm>
 
@@ -19,36 +18,36 @@
         {
             <MudTooltip Text="Delete">
                 <MudElement>
-                    <MudIconButton OnClick="@ToggleDeleteOpen" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Style="@($"color:{Colors.Red.Default};")"></MudIconButton>
-                    <MudPopover Open="@_DeleteIsOpen" Class="d-flex pa-3 ma-3" Style="width:94px;">
-                        <MudIconButton Class="ma-0 pa-0" OnClick="@ToggleDeleteOpen" Size="Size.Large" Title="Cancel" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")"></MudIconButton>
+                    <MudIconButton OnClick="@ToggleDeleteAck" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Style="@($"color:{Colors.Red.Default};")"></MudIconButton>
+                    <MudPopover Open="@deleteAck" Class="d-flex pa-3 ma-3" Style="width:94px;">
+                        <MudIconButton Class="ma-0 pa-0" OnClick="@ToggleDeleteAck" Size="Size.Large" Title="Cancel" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")"></MudIconButton>
                         <MudIconButton Class="ma-0 pa-0" OnClick="DeleteBlogPost" Size="Size.Large" Title="Delete" Icon="@Icons.Material.Filled.Delete" Style="@($"color:{Colors.Red.Default};")"></MudIconButton>
                     </MudPopover>
                 </MudElement>
             </MudTooltip>
         }
         <MudTooltip Text="Cancel">
-            <MudIconButton OnClick="Cancel" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")" Disabled="_DeleteIsOpen"></MudIconButton>
+            <MudIconButton OnClick="Cancel" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")" Disabled="deleteAck"></MudIconButton>
         </MudTooltip>
         <MudTooltip Text="Save">
-            <MudIconButton OnClick="SubmitForm" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Style="@($"color:{Colors.Green.Default};")" Disabled="_DeleteIsOpen"></MudIconButton>
+            <MudIconButton OnClick="SubmitForm" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Style="@($"color:{Colors.Green.Default};")" Disabled="deleteAck"></MudIconButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
 
-<MudOverlay Visible="_DeleteIsOpen" DarkBackground="true" Absolute="true"></MudOverlay>
+<MudOverlay Visible="deleteAck" DarkBackground="true" Absolute="true"></MudOverlay>
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public int Id { get; set; }
-    [Parameter] public string Header { get; set; } = string.Empty;
-    [Parameter] public string SubHeader { get; set; } = string.Empty;
-    [Parameter] public string Content { get; set; } = string.Empty;
-    [Parameter] public string ImageUrl { get; set; } = string.Empty;
-    [Parameter] public string MoreInfoUrl { get; set; } = string.Empty;
+    [Parameter] public string Header { get; set; }
+    [Parameter] public string SubHeader { get; set; }
+    [Parameter] public string Content { get; set; }
+    [Parameter] public string ImageUrl { get; set; }
+    [Parameter] public string MoreInfoUrl { get; set; }
 
-    bool success;
-    bool _DeleteIsOpen;
+    bool success = false;
+    bool deleteAck = false;
     string[] errors = { };
     MudForm form;
     Post postModel;
@@ -92,7 +91,7 @@
         {
             var client = new Blogger.BloggerClient(grpcChannel);
             ResultResponse serverReply = await client.SubsertPostAsync(postModel);
-            MudDialog.Close(DialogResult.Ok(true));
+            MudDialog.Close(DialogResult.Ok(serverReply.Message));
         }
     }
 
@@ -102,21 +101,16 @@
         postModel.StatusEnum = Post.Types.Status.Deleted;
         var client = new Blogger.BloggerClient(grpcChannel);
         ResultResponse serverReply = await client.SubsertPostAsync(postModel);
-        MudDialog.Close(DialogResult.Ok(true));
+        MudDialog.Close(DialogResult.Ok(serverReply.Message));
     }
 
     private void Cancel() => MudDialog.Cancel();
 
-    private void ToggleDeleteOpen()
+    private void ToggleDeleteAck()
     {
-        if (_DeleteIsOpen)
-            _DeleteIsOpen = false;
+        if (deleteAck)
+            deleteAck = false;
         else
-            _DeleteIsOpen = true;
+            deleteAck = true;
     }
-
-    private FluentValueValidator<string> header = new FluentValueValidator<string>(x => x.NotEmpty().WithMessage("Required").Length(1, 80).WithMessage("Max. 80 chars."));
-    private FluentValueValidator<string> subheader = new FluentValueValidator<string>(x => x.Length(0, 120).WithMessage("Max. 120 chars."));
-    private FluentValueValidator<string> content = new FluentValueValidator<string>(x => x.NotEmpty().WithMessage("Required").Length(1, 1024 * 8).WithMessage("Max. 8k chars."));
-    private FluentValueValidator<string> url = new FluentValueValidator<string>(x => x.Length(0, 200).WithMessage("Max. 200 chars."));
 }

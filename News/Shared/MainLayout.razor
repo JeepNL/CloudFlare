@@ -4,7 +4,7 @@
     <MudFab Color="Color.Secondary" Icon="@Icons.Filled.ArrowCircleUp" />
 </MudScrollToTop>
 
-<MudThemeProvider />
+<MudThemeProvider Theme="currentTheme" />
 <MudSnackbarProvider />
 <MudDialogProvider />
 
@@ -15,27 +15,111 @@
         </MudTooltip>
         <MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
         <MudSpacer />
-        @*<MudTooltip Text="MudBlazor Website">
-                <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/wasm" Target="_blank" />
-            </MudTooltip>
-            <MudTooltip Text="MudBlazor GitHub">
-                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
-            </MudTooltip>*@
+        <MudTooltip Text="Theme Switcher" Delayed="0.2">
+            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
+        </MudTooltip>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        @Body
-        <Logos />
+        <MudContainer Style="max-width: 100%">
+            @Body
+            <Logos Dark="@dark" />
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
     bool _drawerOpen = true;
+    bool dark = false;
+
+    protected override void OnInitialized()
+    {
+        currentTheme = defaultTheme;
+        dark = false;
+    }
+
+    private void ChangeTheme()
+    {
+        currentTheme = (currentTheme == defaultTheme) ? darkTheme : defaultTheme;
+        dark = (currentTheme == defaultTheme) ? false : true;
+    }
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    MudTheme currentTheme = new MudTheme();
+    MudTheme defaultTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            //Black = "#000000ff",
+            Black = "#272c34",
+            White = "#ffffffff",
+            Primary = "#594ae2ff",
+            Secondary = "#ff4081ff",
+            Tertiary = "#1ec8a5ff",
+            Info = "#2196f3ff",
+            Success = "#00c853ff",
+            Warning = "#ff9800ff",
+            Error = "#f44336ff",
+            Dark = "#424242ff",
+            TextPrimary = "#424242ff",
+            TextSecondary = "#00000089",
+            TextDisabled = "#00000060",
+            ActionDefault = "#00000089",
+            ActionDisabled = "#00000042",
+            ActionDisabledBackground = "#0000001e",
+            Background = "#ffffffff",
+            BackgroundGrey = "#f5f5f5ff",
+            Surface = "#ffffffff",
+            DrawerBackground = "#ffffffff",
+            DrawerText = "#424242ff",
+            DrawerIcon = "#616161ff",
+            AppbarBackground = "#594ae2ff",
+            AppbarText = "#ffffffff",
+            LinesDefault = "#0000001e",
+            LinesInputs = "#bdbdbdff",
+            Divider = "#e0e0e0ff",
+            DividerLight = "#000000cc",
+            HoverOpacity = 0.06,
+            GrayDefault = "#9E9E9E",
+            GrayLight = "#BDBDBD",
+            GrayLighter = "#E0E0E0",
+            GrayDark = "#757575",
+            GrayDarker = "#616161"
+        }
+    };
+
+    MudTheme darkTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#27272f",
+            Background = "#32333d",
+            BackgroundGrey = "#27272f",
+            Surface = "#373740",
+            DrawerBackground = "#27272f",
+            DrawerText = "rgba(255,255,255, 0.50)",
+            DrawerIcon = "rgba(255,255,255, 0.50)",
+            //AppbarBackground = "#27272f",
+            //AppbarText = "rgba(255,255,255, 0.70)",
+            AppbarBackground = "#594ae2ff",
+            AppbarText = "#ffffffff",
+            TextPrimary = "rgba(255,255,255, 0.70)",
+            TextSecondary = "rgba(255,255,255, 0.50)",
+            ActionDefault = "#adadb1",
+            ActionDisabled = "rgba(255,255,255, 0.26)",
+            ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+            Divider = "rgba(255,255,255, 0.12)",
+            DividerLight = "rgba(255,255,255, 0.06)",
+            TableLines = "rgba(255,255,255, 0.12)",
+            LinesDefault = "rgba(255,255,255, 0.12)",
+            LinesInputs = "rgba(255,255,255, 0.3)",
+            TextDisabled = "rgba(255,255,255, 0.2)"
+        }
+    };
 }

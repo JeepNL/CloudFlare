@@ -3,7 +3,6 @@
 @using System.Threading
 @using Grpc.Core
 
-<MudContainer Style="max-width: 100%">
     <MudText Typo="Typo.h4">Counter</MudText>
     <MudText Class="mb-6" Typo="Typo.subtitle1">Incrementing count streamed from a remote gRPC service.</MudText>
     <MudGrid>
@@ -13,7 +12,6 @@
             <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
         </MudItem>
     </MudGrid>
-</MudContainer>
 
 @code {
     private int currentCount = 0;
