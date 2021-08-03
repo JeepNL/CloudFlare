@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject ISyncLocalStorageService localStorage
 
 <MudScrollToTop>
     <MudFab Color="Color.Secondary" Icon="@Icons.Filled.ArrowCircleUp" />
@@ -19,7 +20,7 @@
             <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
         </MudTooltip>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
+    <MudDrawer @bind-Open="drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
@@ -31,24 +32,40 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool drawerOpen = true;
     bool dark = false;
 
     protected override void OnInitialized()
     {
-        currentTheme = defaultTheme;
-        dark = false;
+        string theme = localStorage.GetItemAsString("bb_theme");
+        if (!string.IsNullOrEmpty(theme))
+        {
+            if (theme == "light")
+                currentTheme = defaultTheme;
+            else
+                currentTheme = darkTheme;
+        }
+        else
+            currentTheme = defaultTheme;
+
+        dark = (currentTheme == defaultTheme) ? false : true;
     }
 
     private void ChangeTheme()
     {
         currentTheme = (currentTheme == defaultTheme) ? darkTheme : defaultTheme;
+
+        if (currentTheme == defaultTheme)
+            localStorage.SetItemAsString("bb_theme", "light");
+        else
+            localStorage.SetItemAsString("bb_theme", "dark");
+
         dark = (currentTheme == defaultTheme) ? false : true;
     }
 
     void DrawerToggle()
     {
-        _drawerOpen = !_drawerOpen;
+        drawerOpen = !drawerOpen;
     }
 
     MudTheme currentTheme = new MudTheme();

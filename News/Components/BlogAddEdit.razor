@@ -1,17 +1,18 @@
 ﻿@inject GrpcChannel grpcChannel
 
-<MudDialog>
+<MudDialog DisableSidePadding="true">
     <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudTextField T="string" @bind-Value="postModel.Header" Label="Header" HelperText="Required" Required="true" Validation="@Utils.FluentValidate(80, true, "Header", 10).Validation" Immediate="true" />
-            <MudTextField T="string" @bind-Value="postModel.SubHeader" Label="Subheader" Validation="@Utils.FluentValidate(128, false, "Subheader").Validation" Immediate="true" />
-            <MudTextField T="string" @bind-Value="postModel.Content" Label="Content" HelperText="Required" Required="true" Lines="10" Validation="@Utils.FluentValidate(8192, true, "Content", 10).Validation" Immediate="true" />
-            <div class="d-flex">
-                <MudTextField T="string" @bind-Value="postModel.ImageUrl" Label="Image Url" Placeholder="https://" Variant="Variant.Filled" Margin="Margin.Dense" Validation="@Utils.FluentValidate(256, false, "Image URL").Validation" Immediate="true" />
-                &nbsp;&nbsp;<MudTextField T="string" @bind-Value="postModel.MoreInfoUrl" Label="More Info Url" Placeholder="https://" Margin="Margin.Dense" Variant="Variant.Filled" Validation="@Utils.FluentValidate(256, false, "More Info URL").Validation" Immediate="true" />
-            </div>
-        </MudForm>
-
+        <MudContainer Style="max-height: 400px; overflow-y: scroll">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <MudTextField T="string" @bind-Value="postModel.Header" Label="Header" HelperText="Required" Required="true" Validation="@Utils.FluentValidate(80, true, "Header", 10).Validation" Immediate="true" />
+                <MudTextField T="string" @bind-Value="postModel.SubHeader" Label="Subheader" Validation="@Utils.FluentValidate(128, false, "Subheader").Validation" Immediate="true" />
+                <MudTextField T="string" @bind-Value="postModel.Content" Label="Content" HelperText="Required" Required="true" Lines="5" Validation="@Utils.FluentValidate(8192, true, "Content", 10).Validation" Immediate="true" />
+                <div class="d-flex">
+                    <MudTextField T="string" @bind-Value="postModel.ImageUrl" Label="Image Url" Placeholder="https://" Variant="Variant.Filled" Margin="Margin.Dense" Validation="@Utils.FluentValidate(256, false, "Image URL").Validation" Immediate="true" />
+                    &nbsp;&nbsp;<MudTextField T="string" @bind-Value="postModel.MoreInfoUrl" Label="More Info Url" Placeholder="https://" Margin="Margin.Dense" Variant="Variant.Filled" Validation="@Utils.FluentValidate(256, false, "More Info URL").Validation" Immediate="true" />
+                </div>
+            </MudForm>
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         @if (postModel.Id != 0)
