@@ -10,7 +10,7 @@
 <MudDialogProvider />
 
 <MudLayout>
-    <MudAppBar Dense="true" Elevation="2">
+    <MudAppBar Dense="true" Elevation="12">
         <MudTooltip Text="Menu">
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
         </MudTooltip>
@@ -20,7 +20,7 @@
             <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
         </MudTooltip>
     </MudAppBar>
-    <MudDrawer @bind-Open="drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
+    <MudDrawer @bind-Open="drawerOpen" Elevation="12" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
@@ -71,43 +71,97 @@
     MudTheme currentTheme = new MudTheme();
     MudTheme defaultTheme = new MudTheme()
     {
+        // primary / orange #FC7307 rgba(252,115,7,1)
+        // secondary / yellow #FBA90A rgba(251, 169, 10, 1)
+        // tertiary / red #CA2702 rgba(202, 39, 2, 1)
+        // brown #342609 rgba(52, 35, 9, 1)
+        // very light orange #FEFBFB rgba(254, 251, 251, 1)
+        // dark orange #C95B05
+        // very dark orange #AF5004
+
         Palette = new Palette()
         {
-            //Black = "#000000ff",
-            Black = "#272c34",
-            White = "#ffffffff",
-            Primary = "#594ae2ff",
-            Secondary = "#ff4081ff",
-            Tertiary = "#1ec8a5ff",
-            Info = "#2196f3ff",
-            Success = "#00c853ff",
-            Warning = "#ff9800ff",
-            Error = "#f44336ff",
-            Dark = "#424242ff",
-            TextPrimary = "#424242ff",
-            TextSecondary = "#00000089",
-            TextDisabled = "#00000060",
-            ActionDefault = "#00000089",
-            ActionDisabled = "#00000042",
-            ActionDisabledBackground = "#0000001e",
-            Background = "#ffffffff",
-            BackgroundGrey = "#f5f5f5ff",
-            Surface = "#ffffffff",
-            DrawerBackground = "#ffffffff",
-            DrawerText = "#424242ff",
-            DrawerIcon = "#616161ff",
-            AppbarBackground = "#594ae2ff",
-            AppbarText = "#ffffffff",
-            LinesDefault = "#0000001e",
-            LinesInputs = "#bdbdbdff",
-            Divider = "#e0e0e0ff",
-            DividerLight = "#000000cc",
-            HoverOpacity = 0.06,
-            GrayDefault = "#9E9E9E",
-            GrayLight = "#BDBDBD",
-            GrayLighter = "#E0E0E0",
-            GrayDark = "#757575",
-            GrayDarker = "#616161"
+            //PrimaryContrastText = "",
+            //PrimaryDarken = "",
+            //PrimaryLighten = "",
+            //SecondaryContrastText = "",
+            //SecondaryDarken = "",
+            //SecondaryLighten = "",
+            //TertiaryContrastText = "",
+            //TertiaryDarken = "",
+            //TertiaryLighten = "",
+
+            //InfoContrastText = "",
+            //InfoDarken = "",
+            //InfoLighten = "",
+            //SuccessContrastText = "",
+            //SuccessDarken = "",
+            //SuccessLighten = "",
+            //WarningContrastText = "",
+            //WarningDarken = "",
+            //WarningLighten = "",
+            //ErrorContrastText = "",
+            //ErrorDarken = "",
+            //ErrorLighten = "",
+
+            Black = "#000000", // black
+            White = "#ffffff", // white
+
+            Primary = "#C95B05",  // dark orange - primary button
+            PrimaryDarken = "#FC7307",  // orange - primary button hover
+            Secondary = "#FBA90A",  // yellow
+            Tertiary = "#CA2702",  // red
+
+            Dark = "#808080", // gray default
+            DarkContrastText = "#ffffff", // WHITE! - tooltips text
+            Info = "#FC7307", // orange
+            InfoDarken = "342609", // brown
+            Success = "#FBA90A", // yellow
+            SuccessDarken = "#342609", // brown - text on Variant.Text
+            Warning = "#342609", // brown
+            WarningDarken = "#CA2702", // red - text on Variant.Text
+            Error = "#CA2702", // red - also form input error
+
+            AppbarText = "#F8F8FF", // ghost white #F8F8FF
+            AppbarBackground = "#FC7307", // orange
+            DrawerText = "#342609", // brown
+            DrawerIcon = "#CA2702", // red
+            DrawerBackground = "#FFFAFA", // snow #FFFAFA
+
+            LinesDefault = "#606060", // gray dark
+            LinesInputs = "#D3D3D3", // gray light
+            Divider = "#808080", // gray default
+            DividerLight = "#F5F5F5", // gray lighter
+
+            Background = "#F8F8FF", // ghost white #F8F8FF
+            BackgroundGrey = "#F5F5F5", // gray lighter
+            OverlayDark = "rgba(52, 35, 9, 0.40)", // brown transparant
+            OverlayLight = "rgba(52, 35, 9, 0.20)", // brown transparant
+
+            Surface = "rgba(254, 251, 251, 0.95)", // very light orange transparant - background tables + background modal!
+            TableHover = "rgba(252, 115, 7, 0.125)", // orange transparant
+            TableLines = "rgba(52, 35, 9, 0.1)", // brown transparant
+            TableStriped = "rgba(252, 115, 7, 0.05)", // orange transparant
+
+            TextPrimary = "#342609", // brown - default text
+            TextSecondary = "#606060", // gray dark - input text
+            TextDisabled = "#D3D3D3", // gray light
+            ActionDefault = "#FC7307", // orange -  input text box hover / MudIconButton default
+            ActionDisabled = "#F5F5F5", // gray lighter
+            ActionDisabledBackground = "#D3D3D3", // gray light
+
+            HoverOpacity = 0.08,  // selected drawer text - default 0.06
+
+            GrayLighter = "#F5F5F5", // shades of gray.
+            GrayLight = "#D3D3D3",
+            GrayDefault = "#808080",
+            GrayDark = "#606060",
+            //GrayDarker = "#404040" // gray darker tooltip background
+            GrayDarker = "#AF5004" // very dark orange tooltip background
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "220px"
         }
     };
 
@@ -115,28 +169,103 @@
     {
         Palette = new Palette()
         {
-            Black = "#27272f",
-            Background = "#32333d",
-            BackgroundGrey = "#27272f",
-            Surface = "#373740",
-            DrawerBackground = "#27272f",
-            DrawerText = "rgba(255,255,255, 0.50)",
-            DrawerIcon = "rgba(255,255,255, 0.50)",
-            //AppbarBackground = "#27272f",
-            //AppbarText = "rgba(255,255,255, 0.70)",
-            AppbarBackground = "#594ae2ff",
-            AppbarText = "#ffffffff",
-            TextPrimary = "rgba(255,255,255, 0.70)",
-            TextSecondary = "rgba(255,255,255, 0.50)",
-            ActionDefault = "#adadb1",
-            ActionDisabled = "rgba(255,255,255, 0.26)",
-            ActionDisabledBackground = "rgba(255,255,255, 0.12)",
-            Divider = "rgba(255,255,255, 0.12)",
-            DividerLight = "rgba(255,255,255, 0.06)",
-            TableLines = "rgba(255,255,255, 0.12)",
-            LinesDefault = "rgba(255,255,255, 0.12)",
-            LinesInputs = "rgba(255,255,255, 0.3)",
-            TextDisabled = "rgba(255,255,255, 0.2)"
+            // background #090C10 rgba(9, 12, 16, 1)
+            // drawer background #0D1117 rgba(13, 17, 23, 1)
+            // white: #C9D1D9 rgba(201, 209, 217, 1)
+            // black: #070A10 rgba(7, 10, 16, 1)
+            // grey: #30363D rgba(48, 54, 61, 1)
+
+            Black = "#070A10", // black
+            White = "#C9D1D9", // white
+
+            Primary = "#C95B05",  // dark orange - primary button
+            PrimaryDarken = "#FC7307",  // orange - primary button hover
+            Secondary = "#FBA90A",  // yellow
+            Tertiary = "#CA2702",  // red
+
+            Dark = "#070A10", // black
+            DarkContrastText = "#C9D1D9", // white! - tooltips text
+            Info = "#FC7307", // orange
+            InfoDarken = "#C9D1D9", // white - text on Variant.Text
+            Success = "#FBA90A", // yellow
+            Warning = "#342609", // brown
+            WarningDarken = "#C9D1D9", // white - text on Variant.Text
+            Error = "#CA2702", // red - also form input error
+
+            AppbarText = "#F8F8FF", // ghost white #F8F8FF
+            AppbarBackground = "#FC7307", // orange
+            DrawerText = "#C9D1D9", // white
+            DrawerIcon = "#CA2702", // red
+            DrawerBackground = "#0D1117", // drawer background
+
+            LinesDefault = "#808080", // gray default
+            LinesInputs = "#F5F5F5", // gray lighter
+            Divider = "#808080", // gray default
+            DividerLight = "#F5F5F5", // gray lighter
+
+            Background = "#090C10", // background
+            BackgroundGrey = "#808080", // gray dark
+            OverlayDark = "rgba(13, 17, 23, 0.8)", // drawer background transparant
+            OverlayLight = "rgba(13, 17, 23, 0.4)", // drawer background transparant
+
+            Surface = "#0D1117", // drawer background  - background tables + background modal!
+            TableHover = "rgba(252, 115, 7, 0.25)", // orange transparant
+            TableLines = "rgba(255, 255, 255, 0.05)", // pure white transparant
+            TableStriped = "rgba(252, 115, 7, 0.05)", // orange transparant
+
+            TextPrimary = "#C9D1D9", // white
+            TextSecondary = "#D3D3D3", // gray light - input text
+            TextDisabled = "#606060", // gray dark
+            ActionDefault = "#FC7307", // orange -  input text box hover / MudIconButton default
+            ActionDisabled = "#808080", // gray default
+            ActionDisabledBackground = "#606060", // gray dark
+
+            HoverOpacity = 0.08,  // selected drawer text - default 0.06
+
+            GrayLighter = "#F5F5F5", // white smoke
+            GrayLight = "#DCDCDC", // gainsboro
+            GrayDefault = "#C0C0C0", // silver
+            GrayDark = "#808080", // gray
+
+            //GrayDarker = "#404040" // gray darker tooltip background
+            GrayDarker = "#AF5004" // very dark orange tooltip background
+
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "220px"
         }
+        //,
+        //Shadows = new Shadow() // #TODO
+        //{
+        //    Elevation = new string[] {
+        //        "none",
+        //        "0px 2px 1px -1px rgba(13, 17, 23, 0.2),0px 1px 1px 0px rgba(13, 17, 23, 0.14),0px 1px 3px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 3px 1px -2px rgba(13, 17, 23, 0.2),0px 2px 2px 0px rgba(13, 17, 23, 0.14),0px 1px 5px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 3px 3px -2px rgba(13, 17, 23, 0.2),0px 3px 4px 0px rgba(13, 17, 23, 0.14),0px 1px 8px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 2px 4px -1px rgba(13, 17, 23, 0.2),0px 4px 5px 0px rgba(13, 17, 23, 0.14),0px 1px 10px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 3px 5px -1px rgba(13, 17, 23, 0.2),0px 5px 8px 0px rgba(13, 17, 23, 0.14),0px 1px 14px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 3px 5px -1px rgba(13, 17, 23, 0.2),0px 6px 10px 0px rgba(13, 17, 23, 0.14),0px 1px 18px 0px rgba(13, 17, 23, 0.12)",
+        //        "0px 4px 5px -2px rgba(13, 17, 23, 0.2),0px 7px 10px 1px rgba(13, 17, 23, 0.14),0px 2px 16px 1px rgba(13, 17, 23, 0.12)",
+        //        "0px 5px 5px -3px rgba(13, 17, 23, 0.2),0px 8px 10px 1px rgba(13, 17, 23, 0.14),0px 3px 14px 2px rgba(13, 17, 23, 0.12)",
+        //        "0px 5px 6px -3px rgba(13, 17, 23, 0.2),0px 9px 12px 1px rgba(13, 17, 23, 0.14),0px 3px 16px 2px rgba(13, 17, 23, 0.12)",
+        //        "0px 6px 6px -3px rgba(13, 17, 23, 0.2),0px 10px 14px 1px rgba(13, 17, 23, 0.14),0px 4px 18px 3px rgba(13, 17, 23, 0.12)",
+        //        "0px 6px 7px -4px rgba(13, 17, 23, 0.2),0px 11px 15px 1px rgba(13, 17, 23, 0.14),0px 4px 20px 3px rgba(13, 17, 23, 0.12)",
+        //        "0px 7px 8px -4px rgba(13, 17, 23, 0.2),0px 12px 17px 2px rgba(13, 17, 23, 0.14),0px 5px 22px 4px rgba(13, 17, 23, 0.12)",
+        //        "0px 7px 8px -4px rgba(13, 17, 23, 0.2),0px 13px 19px 2px rgba(13, 17, 23, 0.14),0px 5px 24px 4px rgba(13, 17, 23, 0.12)",
+        //        "0px 7px 9px -4px rgba(13, 17, 23, 0.2),0px 14px 21px 2px rgba(13, 17, 23, 0.14),0px 5px 26px 4px rgba(13, 17, 23, 0.12)",
+        //        "0px 8px 9px -5px rgba(13, 17, 23, 0.2),0px 15px 22px 2px rgba(13, 17, 23, 0.14),0px 6px 28px 5px rgba(13, 17, 23, 0.12)",
+        //        "0px 8px 10px -5px rgba(13, 17, 23, 0.2),0px 16px 24px 2px rgba(13, 17, 23, 0.14),0px 6px 30px 5px rgba(13, 17, 23, 0.12)",
+        //        "0px 8px 11px -5px rgba(13, 17, 23, 0.2),0px 17px 26px 2px rgba(13, 17, 23, 0.14),0px 6px 32px 5px rgba(13, 17, 23, 0.12)",
+        //        "0px 9px 11px -5px rgba(13, 17, 23, 0.2),0px 18px 28px 2px rgba(13, 17, 23, 0.14),0px 7px 34px 6px rgba(13, 17, 23, 0.12)",
+        //        "0px 9px 12px -6px rgba(13, 17, 23, 0.2),0px 19px 29px 2px rgba(13, 17, 23, 0.14),0px 7px 36px 6px rgba(13, 17, 23, 0.12)",
+        //        "0px 10px 13px -6px rgba(13, 17, 23, 0.2),0px 20px 31px 3px rgba(13, 17, 23, 0.14),0px 8px 38px 7px rgba(13, 17, 23, 0.12)",
+        //        "0px 10px 13px -6px rgba(13, 17, 23, 0.2),0px 21px 33px 3px rgba(13, 17, 23, 0.14),0px 8px 40px 7px rgba(13, 17, 23, 0.12)",
+        //        "0px 10px 14px -6px rgba(13, 17, 23, 0.2),0px 22px 35px 3px rgba(13, 17, 23, 0.14),0px 8px 42px 7px rgba(13, 17, 23, 0.12)",
+        //        "0px 11px 14px -7px rgba(13, 17, 23, 0.2),0px 23px 36px 3px rgba(13, 17, 23, 0.14),0px 9px 44px 8px rgba(13, 17, 23, 0.12)",
+        //        "0px 11px 15px -7px rgba(13, 17, 23, 0.2),0px 24px 38px 3px rgba(13, 17, 23, 0.14),0px 9px 46px 8px rgba(13, 17, 23, 0.12)",
+        //        "0px 5px 5px -3px rgba(13, 17, 23, .06), 0 8px 10px 1px rgba(13, 17, 23, .042), 0 3px 14px 2px rgba(13, 17, 23, .036)"
+        //    }
+        //}
     };
 }

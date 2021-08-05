@@ -15,7 +15,7 @@
             else
             {
                 <MudTooltip Text="Add Blog Post">
-                    <MudIconButton OnClick="(() => OpenDialog(null))" Icon="@Icons.Material.Filled.Article" Size="Size.Large" Color="Color.Primary" />
+                    <MudIconButton OnClick="(() => OpenDialog(null))" Icon="@Icons.Material.Filled.Article" Size="Size.Large" />
                 </MudTooltip>
                 <MudTable T="Post" Items="@posts" Dense="true" Hover="true" Striped="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
                     <HeaderContent>
@@ -61,7 +61,7 @@
     private string RowStyle(Post post, int index)
     {
         if (post.Id == selectedPost?.Id)
-            return $"background: {Colors.BlueGrey.Lighten2};";
+            return $"background: rgba(252, 115, 7, 0.125);";
         else
             return "";
     }
@@ -83,7 +83,7 @@
         {
             MaxWidth = MaxWidth.Medium,
             FullWidth = true,
-            CloseButton = true,
+            CloseButton = false,
             DisableBackdropClick = true,
             NoHeader = false,
             Position = DialogPosition.TopCenter

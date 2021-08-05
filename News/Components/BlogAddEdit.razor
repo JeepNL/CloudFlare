@@ -19,19 +19,19 @@
         {
             <MudTooltip Text="Delete">
                 <MudElement>
-                    <MudIconButton OnClick="@ToggleDeleteAck" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Style="@($"color:{Colors.Red.Default};")"></MudIconButton>
+                    <MudIconButton OnClick="@ToggleDeleteAck" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Color="Color.Tertiary"></MudIconButton>
                     <MudPopover Open="@deleteAck" Class="d-flex pa-3 ma-3" Style="width:94px;">
-                        <MudIconButton Class="ma-0 pa-0" OnClick="@ToggleDeleteAck" Size="Size.Large" Title="Cancel" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")"></MudIconButton>
-                        <MudIconButton Class="ma-0 pa-0" OnClick="DeleteBlogPost" Size="Size.Large" Title="Delete" Icon="@Icons.Material.Filled.Delete" Style="@($"color:{Colors.Red.Default};")"></MudIconButton>
+                        <MudIconButton Class="ma-0 pa-0" OnClick="@ToggleDeleteAck" Size="Size.Large" Title="Cancel" Icon="@Icons.Material.Filled.Cancel" Color="Color.Inherit"></MudIconButton>
+                        <MudIconButton Class="ma-0 pa-0" OnClick="DeleteBlogPost" Size="Size.Large" Title="Delete" Icon="@Icons.Material.Filled.Delete" Color="Color.Tertiary"></MudIconButton>
                     </MudPopover>
                 </MudElement>
             </MudTooltip>
         }
         <MudTooltip Text="Cancel">
-            <MudIconButton OnClick="Cancel" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Style="@($"color:{Colors.Orange.Default};")" Disabled="deleteAck"></MudIconButton>
+            <MudIconButton OnClick="Cancel" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Color="Color.Inherit" Disabled="deleteAck"></MudIconButton>
         </MudTooltip>
         <MudTooltip Text="Save">
-            <MudIconButton OnClick="SubmitForm" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Style="@($"color:{Colors.Green.Default};")" Disabled="deleteAck"></MudIconButton>
+            <MudIconButton OnClick="SubmitForm" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Default" Disabled="deleteAck"></MudIconButton>
         </MudTooltip>
     </DialogActions>
 </MudDialog>
