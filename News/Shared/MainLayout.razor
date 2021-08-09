@@ -16,9 +16,23 @@
         </MudTooltip>
         <MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
         <MudSpacer />
+
         <MudTooltip Text="Theme Switcher" Delayed="0.2">
             <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
         </MudTooltip>
+
+        <MudTooltip Text="BlazorBits uses MudBlazor Components">
+            <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
+        </MudTooltip>
+
+        <MudTooltip Text="BlazorBits Source on GitHub">
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/JeepNL/CloudFlare/" Target="_blank" />
+        </MudTooltip>
+        <MudTooltip Text="Contact me on Twitter">
+            <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Inherit" Link="https://twitter.com/J_aa_p" Target="_blank" />
+        </MudTooltip>
+
+
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" Elevation="12" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
         <NavMenu />
@@ -71,97 +85,210 @@
     MudTheme currentTheme = new MudTheme();
     MudTheme defaultTheme = new MudTheme()
     {
-        // primary / orange #FC7307 rgba(252,115,7,1)
-        // secondary / yellow #FBA90A rgba(251, 169, 10, 1)
-        // tertiary / red #CA2702 rgba(202, 39, 2, 1)
-        // brown #342609 rgba(52, 35, 9, 1)
-        // very light orange #FEFBFB rgba(254, 251, 251, 1)
-        // dark orange #C95B05
-        // very dark orange #AF5004
-
         Palette = new Palette()
         {
-            //PrimaryContrastText = "",
-            //PrimaryDarken = "",
-            //PrimaryLighten = "",
-            //SecondaryContrastText = "",
-            //SecondaryDarken = "",
-            //SecondaryLighten = "",
-            //TertiaryContrastText = "",
-            //TertiaryDarken = "",
-            //TertiaryLighten = "",
+            Black = "#000000",
+            White = "#ffffff",
 
-            //InfoContrastText = "",
-            //InfoDarken = "",
-            //InfoLighten = "",
-            //SuccessContrastText = "",
-            //SuccessDarken = "",
-            //SuccessLighten = "",
-            //WarningContrastText = "",
-            //WarningDarken = "",
-            //WarningLighten = "",
-            //ErrorContrastText = "",
-            //ErrorDarken = "",
-            //ErrorLighten = "",
+            //PrimaryContrastText = "#",
+            //PrimaryDarken = "#",
+            //PrimaryLighten = "#",
+            Primary = "#f94d00ff",  // Orange - Btn/Lnk
 
-            Black = "#000000", // black
-            White = "#ffffff", // white
 
-            Primary = "#C95B05",  // dark orange - primary button
-            PrimaryDarken = "#FC7307",  // orange - primary button hover
-            Secondary = "#FBA90A",  // yellow
-            Tertiary = "#CA2702",  // red
+            //SecondaryDarken = "#",
+            //SecondaryLighten = "#",
+            Secondary = "#ffc40cff",  // Yellow
+            SecondaryContrastText = "333333ff",
 
-            Dark = "#808080", // gray default
-            DarkContrastText = "#ffffff", // WHITE! - tooltips text
-            Info = "#FC7307", // orange
-            InfoDarken = "342609", // brown
-            Success = "#FBA90A", // yellow
-            SuccessDarken = "#342609", // brown - text on Variant.Text
-            Warning = "#342609", // brown
-            WarningDarken = "#CA2702", // red - text on Variant.Text
-            Error = "#CA2702", // red - also form input error
+            //TertiaryContrastText = "#",
+            //TertiaryDarken = "#",
+            //TertiaryLighten = "#",
+            Tertiary = "#ba160cff",  // Red
 
-            AppbarText = "#F8F8FF", // ghost white #F8F8FF
-            AppbarBackground = "#FC7307", // orange
-            DrawerText = "#342609", // brown
-            DrawerIcon = "#CA2702", // red
-            DrawerBackground = "#FFFAFA", // snow #FFFAFA
+            //DarkContrastText = "#",
+            //DarkDarken = "#",
+            //DarkLighten = "#",
+            Dark = "#333333ff", // Dark - Dark Charcoal
 
-            LinesDefault = "#606060", // gray dark
-            LinesInputs = "#D3D3D3", // gray light
-            Divider = "#808080", // gray default
-            DividerLight = "#F5F5F5", // gray lighter
+            //InfoLighten = "", // #TODO What/Where?
+            Info = "#c0c0c0ff", // Gray Light
+            InfoContrastText = "333333ff", // Dark
+            InfoDarken = "555555ff", // Gray Dark
 
-            Background = "#F8F8FF", // ghost white #F8F8FF
-            BackgroundGrey = "#F5F5F5", // gray lighter
-            OverlayDark = "rgba(52, 35, 9, 0.40)", // brown transparant
-            OverlayLight = "rgba(52, 35, 9, 0.20)", // brown transparant
+            //SuccessContrastText = "#",
+            //SuccessDarken = "#",
+            //SuccessLighten = "#",
+            Success = "#f94d00ff", // Primary
 
-            Surface = "rgba(254, 251, 251, 0.95)", // very light orange transparant - background tables + background modal!
-            TableHover = "rgba(252, 115, 7, 0.125)", // orange transparant
-            TableLines = "rgba(52, 35, 9, 0.1)", // brown transparant
-            TableStriped = "rgba(252, 115, 7, 0.05)", // orange transparant
 
-            TextPrimary = "#342609", // brown - default text
-            TextSecondary = "#606060", // gray dark - input text
-            TextDisabled = "#D3D3D3", // gray light
-            ActionDefault = "#FC7307", // orange -  input text box hover / MudIconButton default
-            ActionDisabled = "#F5F5F5", // gray lighter
-            ActionDisabledBackground = "#D3D3D3", // gray light
+            //WarningLighten = "#",
+            Warning = "#ffc40cff", // Secondary
+            WarningContrastText = "333333ff", // Dark
+            WarningDarken = "555555ff", // Gray Dark
+
+            //ErrorContrastText = "#",
+            //ErrorDarken = "#",
+            //ErrorLighten = "#",
+            Error = "#ba160cff", // Tertiary - also form input error
+
+            AppbarText = "#fffafaff", // Drawer
+            AppbarBackground = "#f94d00ff", // Primary
+
+            LinesDefault = "#555555ff", // Gray Dark
+            LinesInputs = "#808080ff", // Gray
+            Divider = "#c0c0c0ff", // Gray Light
+            DividerLight = "#dcdcdcff", // Gray Lighter
+
+            Background = "#f8f8ffff", // Ghost White
+            BackgroundGrey = "#dcdcdcff", // Gray Lighter
+            Surface = "#f5f5f5ff", // White Smoke - Background Tables + Background Modal + Background Paper - No ransparancyT
+            DrawerBackground = "#fffafaff", // Snow White
+            DrawerText = "#333333ff", // Dark
+            DrawerIcon = "#36454fff", //
+            OverlayDark = "rgba(51,51,51, 0.50)", // Dark - Transparant
+            OverlayLight = "rgba(51,51,51, 0.25)", // Dark - Transparant
+
+            TableHover = "rgba(249,77,0, 0.15)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
+            TableLines = "rgba(51,51,51, 0.1)", // Dark - Transparant
+            TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
+
+            TextPrimary = "#333333ff", // Charcoal - Default Text / Input Text
+            TextSecondary = "#555555ff", // Gray Dark - Input Helper Text
+            TextDisabled = "#c0c0c0ff", // Gray Light - Input Text Disabled
+            ActionDefault = "#f94d00ff", // Primary Input Text Box Hover / MudIconButton default
+            ActionDisabled = "#c0c0c0ff", // Gray
+            ActionDisabledBackground = "#dcdcdcff", // Gray Lighter
 
             HoverOpacity = 0.08,  // selected drawer text - default 0.06
 
-            GrayLighter = "#F5F5F5", // shades of gray.
-            GrayLight = "#D3D3D3",
-            GrayDefault = "#808080",
-            GrayDark = "#606060",
-            //GrayDarker = "#404040" // gray darker tooltip background
-            GrayDarker = "#AF5004" // very dark orange tooltip background
+            // Shades of gray"
+            GrayLighter = "#dcdcdcff",
+            GrayLight = "#c0c0c0ff",
+            GrayDefault = "#808080ff",
+            GrayDark = "#555555ff",
+            GrayDarker = "#36454fff", // Charcoal - Not darker! for tooltip background
         },
         LayoutProperties = new LayoutProperties()
         {
             DrawerWidthLeft = "220px"
+        },
+        Typography = new Typography()
+        {
+            // https://github.com/Garderoben/MudBlazor/blob/dev/src/MudBlazor/Themes/Models/Typography.cs
+            // https://developers.google.com/fonts/docs/css2#axis_ranges
+            Default = new Default()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = ".01071em"
+            },
+            H1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "6rem",
+                FontWeight = 300,
+                LineHeight = 1.167,
+                LetterSpacing = "-.01562em"
+            },
+            H2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3.75rem",
+                FontWeight = 300,
+                LineHeight = 1.2,
+                LetterSpacing = "-.00833em"
+            },
+            H3 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3rem",
+                FontWeight = 400,
+                LineHeight = 1.167,
+                LetterSpacing = "0"
+            },
+            H4 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "2.125rem",
+                FontWeight = 400,
+                LineHeight = 1.235,
+                LetterSpacing = ".00735em"
+            },
+            H5 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.5rem",
+                FontWeight = 400,
+                LineHeight = 1.334,
+                LetterSpacing = "0"
+            },
+            H6 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.25rem",
+                FontWeight = 500,
+                LineHeight = 1.6,
+                LetterSpacing = ".0075em"
+            },
+            Subtitle1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 400,
+                LineHeight = 1.75,
+                LetterSpacing = ".00938em"
+            },
+            Subtitle2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 500,
+                LineHeight = 1.57,
+                LetterSpacing = ".00714em"
+            },
+            Body1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 400,
+                LineHeight = 1.5,
+                LetterSpacing = ".00938em"
+            },
+            Body2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = ".01071em"
+            },
+            Button = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 500,
+                LineHeight = 1.75,
+                LetterSpacing = ".02857em"
+            },
+            Caption = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".75rem",
+                FontWeight = 400,
+                LineHeight = 1.66,
+                LetterSpacing = ".03333em"
+            },
+            Overline = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".75rem",
+                FontWeight = 400,
+                LineHeight = 2.66,
+                LetterSpacing = ".08333em"
+            }
         }
     };
 
@@ -169,71 +296,207 @@
     {
         Palette = new Palette()
         {
-            // background #090C10 rgba(9, 12, 16, 1)
-            // drawer background #0D1117 rgba(13, 17, 23, 1)
-            // white: #C9D1D9 rgba(201, 209, 217, 1)
-            // black: #070A10 rgba(7, 10, 16, 1)
-            // grey: #30363D rgba(48, 54, 61, 1)
+            Black = "#000000",
+            White = "#ffffff",
 
-            Black = "#070A10", // black
-            White = "#C9D1D9", // white
+            //PrimaryContrastText = "#",
+            //PrimaryDarken = "#",
+            //PrimaryLighten = "#",
+            Primary = "#f94d00ff",  // Orange - Btn/Lnk
 
-            Primary = "#C95B05",  // dark orange - primary button
-            PrimaryDarken = "#FC7307",  // orange - primary button hover
-            Secondary = "#FBA90A",  // yellow
-            Tertiary = "#CA2702",  // red
+            //SecondaryDarken = "#",
+            //SecondaryLighten = "#",
+            Secondary = "#ffc40cff",  // Yellow
+            SecondaryContrastText = "333333ff",
 
-            Dark = "#070A10", // black
-            DarkContrastText = "#C9D1D9", // white! - tooltips text
-            Info = "#FC7307", // orange
-            InfoDarken = "#C9D1D9", // white - text on Variant.Text
-            Success = "#FBA90A", // yellow
-            Warning = "#342609", // brown
-            WarningDarken = "#C9D1D9", // white - text on Variant.Text
-            Error = "#CA2702", // red - also form input error
+            //TertiaryContrastText = "#",
+            //TertiaryDarken = "#",
+            //TertiaryLighten = "#",
+            Tertiary = "#ba160cff",  // Red
 
-            AppbarText = "#F8F8FF", // ghost white #F8F8FF
-            AppbarBackground = "#FC7307", // orange
-            DrawerText = "#C9D1D9", // white
-            DrawerIcon = "#CA2702", // red
-            DrawerBackground = "#0D1117", // drawer background
+            //DarkContrastText = "#",
+            //DarkDarken = "#",
+            //DarkLighten = "#",
+            Dark = "#1a1110ff", // # Licorice - Default Square
 
-            LinesDefault = "#808080", // gray default
-            LinesInputs = "#F5F5F5", // gray lighter
-            Divider = "#808080", // gray default
-            DividerLight = "#F5F5F5", // gray lighter
+            //InfoLighten = "#", //
+            //Info = "#555555ff", //# Davy's Gray
+            Info = "#c0c0c0ff", //# Silver
+            InfoContrastText = "#1a1110ff", // Licorice
+            InfoDarken = "#f8f8ffff", // Gray Dark
 
-            Background = "#090C10", // background
-            BackgroundGrey = "#808080", // gray dark
-            OverlayDark = "rgba(13, 17, 23, 0.8)", // drawer background transparant
-            OverlayLight = "rgba(13, 17, 23, 0.4)", // drawer background transparant
+            //SuccessContrastText = "#",
+            //SuccessDarken = "#",
+            //SuccessLighten = "#",
+            Success = "#f94d00ff", // Primary
 
-            Surface = "#0D1117", // drawer background  - background tables + background modal!
-            TableHover = "rgba(252, 115, 7, 0.25)", // orange transparant
-            TableLines = "rgba(255, 255, 255, 0.05)", // pure white transparant
-            TableStriped = "rgba(252, 115, 7, 0.05)", // orange transparant
+            //WarningDarken = "#", // Gray Dark
+            //WarningLighten = "#",
+            Warning = "#ffc40cff", // Secondary
+            WarningContrastText = "#1a1110ff", // Licorice
 
-            TextPrimary = "#C9D1D9", // white
-            TextSecondary = "#D3D3D3", // gray light - input text
-            TextDisabled = "#606060", // gray dark
-            ActionDefault = "#FC7307", // orange -  input text box hover / MudIconButton default
-            ActionDisabled = "#808080", // gray default
-            ActionDisabledBackground = "#606060", // gray dark
+            //ErrorContrastText = "",
+            //ErrorDarken = "",
+            //ErrorLighten = "",
+            Error = "#ba160cff", // Tertiary - also form input error
+
+            AppbarText = "#fffafaff", // Snow White Drawer
+            AppbarBackground = "#f94d00ff", // Primary
+
+            LinesDefault = "#555555ff", // Gray Dark
+            LinesInputs = "#808080ff", // Gray
+            Divider = "#c0c0c0ff", // Gray Light
+            DividerLight = "#dcdcdcff", // Gray Lighter
+
+            Background = "#333333ff", // Dark Charcoal
+            BackgroundGrey = "#dcdcdcff", // Gray Lighter
+            Surface = "#242124ff", // Raisin Black - Background Tables + Background Modal + Background Paper - No Transparancy
+            DrawerBackground = "#353839ff", // Onyx
+            DrawerText = "#f8f8ffff", // Ghost White
+            DrawerIcon = "#808080ff", // Trolley Grey
+            OverlayDark = "rgba(51,51,51, 0.50)", // Dark - Transparant
+            OverlayLight = "rgba(51,51,51, 0.25)", // Dark - Transparant
+
+            TableHover = "rgba(249,77,0, 0.30)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
+            TableLines = "rgba(51,51,51, 0.9)", // Background - Transparant
+            TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
+
+            TextPrimary = "#f8f8ffff", // Ghost White - Default Text / Input Text
+            TextSecondary = "#c0c0c0ff", // Silver - Input Helper Text
+            TextDisabled = "#808080ff", // Gray - Input Text Disabled
+            ActionDefault = "#f94d00ff", // Primary - Input Text Box Hover / MudIconButton default
+            ActionDisabled = "#555555ff", // Davy's Gray
+            ActionDisabledBackground = "#353839ff", // Onyx
 
             HoverOpacity = 0.08,  // selected drawer text - default 0.06
 
-            GrayLighter = "#F5F5F5", // white smoke
-            GrayLight = "#DCDCDC", // gainsboro
-            GrayDefault = "#C0C0C0", // silver
-            GrayDark = "#808080", // gray
-
-            //GrayDarker = "#404040" // gray darker tooltip background
-            GrayDarker = "#AF5004" // very dark orange tooltip background
-
+            // Shades of gray"
+            GrayLighter = "#dcdcdcff",
+            GrayLight = "#c0c0c0ff",
+            GrayDefault = "#808080ff",
+            GrayDark = "#555555ff",
+            GrayDarker = "#414a4cff", // Outer Space - Not darker => for tooltip background
         },
         LayoutProperties = new LayoutProperties()
         {
             DrawerWidthLeft = "220px"
+        },
+        Typography = new Typography()
+        {
+            // https://github.com/Garderoben/MudBlazor/blob/dev/src/MudBlazor/Themes/Models/Typography.cs
+            // https://developers.google.com/fonts/docs/css2#axis_ranges
+            Default = new Default()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = ".01071em"
+            },
+            H1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "6rem",
+                FontWeight = 300,
+                LineHeight = 1.167,
+                LetterSpacing = "-.01562em"
+            },
+            H2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3.75rem",
+                FontWeight = 300,
+                LineHeight = 1.2,
+                LetterSpacing = "-.00833em"
+            },
+            H3 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "3rem",
+                FontWeight = 400,
+                LineHeight = 1.167,
+                LetterSpacing = "0"
+            },
+            H4 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "2.125rem",
+                FontWeight = 400,
+                LineHeight = 1.235,
+                LetterSpacing = ".00735em"
+            },
+            H5 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.5rem",
+                FontWeight = 400,
+                LineHeight = 1.334,
+                LetterSpacing = "0"
+            },
+            H6 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1.25rem",
+                FontWeight = 500,
+                LineHeight = 1.6,
+                LetterSpacing = ".0075em"
+            },
+            Subtitle1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 400,
+                LineHeight = 1.75,
+                LetterSpacing = ".00938em"
+            },
+            Subtitle2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 500,
+                LineHeight = 1.57,
+                LetterSpacing = ".00714em"
+            },
+            Body1 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 400,
+                LineHeight = 1.5,
+                LetterSpacing = ".00938em"
+            },
+            Body2 = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = ".01071em"
+            },
+            Button = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 500,
+                LineHeight = 1.75,
+                LetterSpacing = ".02857em"
+            },
+            Caption = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".75rem",
+                FontWeight = 400,
+                LineHeight = 1.66,
+                LetterSpacing = ".03333em"
+            },
+            Overline = new()
+            {
+                FontFamily = new[] { "Quicksand", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".75rem",
+                FontWeight = 400,
+                LineHeight = 2.66,
+                LetterSpacing = ".08333em"
+            }
         }
         //,
         //Shadows = new Shadow() // #TODO

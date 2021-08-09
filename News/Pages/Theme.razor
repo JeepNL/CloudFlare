@@ -2,12 +2,57 @@
 <MudText Typo="Typo.h4">Themer</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">Under construction</MudText>
 
+<MudGrid>
+    <MudItem xs=12>
+        <MudPaper Class="px-4 py-8 d-flex justify-center mud-width-full">
+            <div style="padding: 1em; color: white; background: #242124ff">Dark/Default/Text<br />Raisin Black<br />#242124ff<br />36,33,36</div>
+            <div style="padding: 1em; color: white; background: #333333ff">Dark/Default/Text<br />Dark Charcoal<br />#333333ff<br />51,51,51</div>
+            <div style="padding: 1em; color: white; background: #ba160cff">Tertiary<br />Int. Orange Engineering<br />#ba160cff<br />186,22,12</div>
+            <div style="padding: 1em; color: black; background: #f94d00ff">Primary/Lnk/Btn<br />Tangelo<br />#f94d00ff<br />249,77,0</div>
+            <div style="padding: 1em; color: black; background: #ffc40cff">Secondary<br />Mikado Yellow<br />#ffc40cff<br />255,196,12</div>
+            <div style="padding: 1em; color: black; background: #c0c0c0ff">Info<br />Silver<br />#c0c0c0ff<br />192,192,192</div>
+            <div style="padding: 0.5em; color: white;" />
+            <div style="padding: 1em; color: black; background: #f5f5f5ff"><br />White Smoke<br />#f5f5f5ff<br />245,245,245</div>
+            <div style="padding: 1em; color: black; background: #f8f8ffff">Background<br />Ghost White<br />#f8f8ffff<br />248,248,255</div>
+            <div style="padding: 1em; color: black; background: #fffafaff">Drawer<br />Snow White<br />#fffafaff<br />255,250,250</div>
+        </MudPaper>
+        <MudPaper Class="px-4 py-8 d-flex justify-center mud-width-full">
+            <div style="padding: 1em; color: black; background: #dcdcdcff">Gray Lighter<br />Gainsboro<br />#dcdcdcff<br />220,220,220</div>
+            <div style="padding: 1em; color: black; background: #c0c0c0ff">Gray Light<br />Silver<br />#c0c0c0ff<br />192,192,192</div>
+            <div style="padding: 1em; color: white; background: #808080ff">Gray<br />Trolley Grey<br />#808080ff<br />128,128,128</div>
+            <div style="padding: 1em; color: white; background: #555555ff">Gray Dark<br />Davy's Gray<br />#555555ff<br />85,85,85</div>
+            <div style="padding: 1em; color: white; background: #353839ff">Gray Darker<br />Onyx<br />#353839ff<br />53,56,57</div>
+            <div style="padding: 0.5em; color: white;" />
+            <div style="padding: 1em; color: white; background: #555555ff">Dark Mode 1<br />Davy's Gray<br />#555555ff<br />85,85,85</div>
+            <div style="padding: 1em; color: white; background: #414a4cff">Dark Mode 2<br />Outer Space<br />#414a4cff<br />65,74,76</div>
+            <div style="padding: 1em; color: white; background: #36454fff">Dark Mode 3<br />Charcoal<br />#36454fff<br />54,69,79</div>
+            <div style="padding: 1em; color: white; background: #353839ff">Dark Mode 4<br />Onyx<br />#353839ff<br />53,56,57</div>
+            <div style="padding: 1em; color: white; background: #333333ff">Dark Mode 5<br />Dark Charcoal<br />#333333ff<br />51,51,51</div>
+            <div style="padding: 1em; color: white; background: #242124ff">Dark Mode 6<br />Raisin Black<br />#242124ff<br />36,33,36</div>
+            <div style="padding: 1em; color: white; background: #1a1110ff">Dark Mode 7<br />Licorice<br />#1a1110ff<br />26,17,16</div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs=12>
+        <MudPaper Class="px-4 py-8 d-flex justify-center mud-width-full">
+            <div style="padding: 1em; color:white; background:#264653ff">Dark/Text<br />Drawer/Cancel<br />charcoal<br />#264653ff<br />38,70,83</div>
+            <div style="padding: 1em; color:black; background:#2a9d8fff">Tertiary<br />Succes/Save<br />persian-green<br />#2a9d8fff<br />42,157,143</div>
+            <div style="padding: 1em; color:black; background:#e9c46aff">Background<br />Info<br />orange-yellow-crayola<br />#e9c46aff<br />233,196,106</div>
+            <div style="padding: 1em; color:black; background:#f4a261ff">Secondary<br />Warning<br />sandy-brown<br />#f4a261ff<br />244,162,97</div>
+            <div style="padding: 1em; color:black; background:#e76f51ff">Primary/Links<br />Error/Delete<br />burnt-sienna<br />#e76f51ff<br />231,111,81</div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
 <MudGrid Spacing="6">
     <MudItem xs="12" sm="6" md="4">
         <MudPaper Class="px-4 py-8 d-flex justify-center mud-width-full">
             <MudButton Variant="Variant.Filled" Class="mx-4">Default</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-4">Primary</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mx-2">Secondary</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="mx-2">Tertiary</MudButton>
             <MudButton Variant="Variant.Filled" Disabled="true" Class="mx-2">Disabled</MudButton>
         </MudPaper>
     </MudItem>
@@ -16,6 +61,7 @@
             <MudButton Variant="Variant.Text" Class="mx-2">Default</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Primary" Class="mx-2">Primary</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" Class="mx-2">Secondary</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Tertiary" Class="mx-2">Tertiary</MudButton>
             <MudButton Variant="Variant.Text" Disabled="true" Class="mx-2">Disabled</MudButton>
         </MudPaper>
     </MudItem>
@@ -24,13 +70,19 @@
             <MudButton Variant="Variant.Outlined" Class="mx-2">Default</MudButton>
             <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="mx-2">Primary</MudButton>
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Class="mx-2">Secondary</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Tertiary" Class="mx-2">Tertiary</MudButton>
             <MudButton Variant="Variant.Outlined" Disabled="true" Class="mx-2">Disabled</MudButton>
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6">
         <MudGrid>
             <MudItem xs="12">
-                <MudPaper Class="pa-4" Style="height: 200px;"></MudPaper>
+                <MudPaper Class="pa-4" Style="height: 200px;">
+                    <MudText>Text Default: The fox jumps over the lazy dog</MudText>
+                    <MudLink>Text Link: The fox jumps over the lazy dog link</MudLink>
+                    <MudField>Input Field: The fox jumps over the lazy dog</MudField>
+                    <MudField Disabled="true">Disabled Field: The fox jumps over the lazy dog</MudField>
+                </MudPaper>
             </MudItem>
             <MudItem xs="12">
                 <MudPaper Class="pa-4" Style="height: 200px;"></MudPaper>
@@ -96,3 +148,7 @@
         <MudPaper Class="pa-4" Style="height: 200px;"></MudPaper>
     </MudItem>
 </MudGrid>
+
+@code {
+
+}

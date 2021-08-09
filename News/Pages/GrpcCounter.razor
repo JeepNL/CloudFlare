@@ -3,15 +3,17 @@
 @using System.Threading
 @using Grpc.Core
 
-    <MudText Typo="Typo.h4">Counter</MudText>
-    <MudText Class="mb-6" Typo="Typo.subtitle1">Incrementing count streamed from a remote gRPC service.</MudText>
-    <MudGrid>
-        <MudItem xs="12" sm="8" md="6" lg="4" xl="2">
-            <MudText Class="mb-6" Typo="Typo.h6">Current count: @currentCount</MudText>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IncrementCount" Disabled="@(cts != null)">Start</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
-        </MudItem>
-    </MudGrid>
+<MudText Typo="Typo.h4">Counter</MudText>
+<MudText Class="mb-6" Typo="Typo.subtitle1">Incrementing count streamed from a remote gRPC service.</MudText>
+<MudGrid>
+    <MudItem>
+        <MudPaper Class="px-4 pt-4 pb-0 mb-6 d-flex justify-center">
+            <MudText Class="mb-6" Typo="Typo.h1" Color="Color.Secondary"><b>@currentCount</b></MudText>
+        </MudPaper>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IncrementCount" Disabled="@(cts != null)">Start</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="StopCount" Disabled="@(cts == null)">Stop</MudButton>
+    </MudItem>
+</MudGrid>
 
 @code {
     private int currentCount = 0;

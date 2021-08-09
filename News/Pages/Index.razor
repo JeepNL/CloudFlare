@@ -3,13 +3,13 @@
 <MudText Class="mb-6" Typo="Typo.subtitle1">And the future is now!</MudText>
 <MudGrid>
     <MudItem xs="12" sm="12" md="12" lg="11" xl="10">
-        <MudPaper Elevation="2" NoIcon="true" Class="pa-4">
+        <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.body1">
                 This is an <MudTooltip Text="Everything .NET"><MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-6/" Target="_blank">ASP.NET Core 6 Preview 6</MudLink></MudTooltip> Blazor WASM SPA using <b>MudBlazor</b> Components and the static part, the client side, is hosted on <b>Cloudflare Pages</b>. The website is using remote .NET 6 <b>gRPC</b> Services running on a co-located Ubuntu 20.04 VPS for its dynamic data.
             </MudText>
         </MudPaper>
 
-        <MudAlert Elevation="2" Severity="Severity.Info" Variant="Variant.Text" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
+        <MudAlert Elevation="2" Severity="Severity.Warning" Variant="Variant.Text" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
             <MudText Typo="Typo.body1">
                 <MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1">Niels Swimberghe</MudLink></MudTooltip> wrote a great
                 <MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1">blog post</MudLink></MudTooltip> on how to deploy your Blazor WebAssembly app to Cloudflare Pages.
@@ -18,7 +18,10 @@
 
         <MudPaper Elevation="2" Class="mt-6 px-4 pb-4 pt-2">
             <MudText Typo="Typo.body1" Class="my-1">To use the latest .NET 6 Preview SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
-            <MudPaper Elevation="0" Class="mx-2 mud-theme-dark pa-2">curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;</MudPaper>
+            <MudAlert Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
+                curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;
+            </MudAlert>
         </MudPaper>
+
     </MudItem>
 </MudGrid>
