@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using System;
 
 namespace News.Helpers
 {
@@ -25,12 +24,12 @@ namespace News.Helpers
 
 			if (!required)
 			{
-				FluentValueValidator<string> validate = new FluentValueValidator<string>(x =>
+				FluentValueValidator<string> validate = new(x =>
 					x.Length(minLength, maxLength).WithMessage(errorMessage));
 				return validate;
 			}
 
-			FluentValueValidator<string> validateRequired = new FluentValueValidator<string>(x =>
+			FluentValueValidator<string> validateRequired = new(x =>
 				x.NotEmpty().WithMessage(requiredMessage).Length(minLength, maxLength).WithMessage(errorMessage));
 			return validateRequired;
 		}
