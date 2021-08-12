@@ -2,7 +2,7 @@
 @inject ISyncLocalStorageService localStorage
 
 <MudScrollToTop>
-	<MudFab Color="Color.Secondary" Icon="@Icons.Filled.ArrowCircleUp" />
+	<MudFab Color="Color.Primary" Icon="@Icons.Filled.ArrowCircleUp" />
 </MudScrollToTop>
 
 <MudThemeProvider Theme="currentTheme" />
@@ -12,8 +12,13 @@
 <MudLayout>
 	<MudAppBar Dense="true" Elevation="12">
 		<MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-		<MudText Color="Color.Inherit" Typo="Typo.h6" Class="d-flex d-sm-none">BlazorBits</MudText>
-		<MudText Color="Color.Inherit" Typo="Typo.h6" Class="d-none d-sm-flex">BlazorBits Reloaded</MudText>
+		@* One row below for display resolution #MobileFirst *@
+		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+			<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits</MudText>
+		</MudHidden>
+		<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+			<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
+		</MudHidden>
 		<MudSpacer />
 		<MudTooltip Text="Theme Switcher" Delayed="0.2">
 			<MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
@@ -140,7 +145,7 @@
 			OverlayLight = "rgba(27,27,27, 0.25)", // Dark (Eerie Black) - Transparant
 
 			TableHover = "rgba(249,77,0, 0.15)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
-			TableLines = "rgba(27,27,27, 0.1)", // Dark (Eerie Black) - Transparant
+			TableLines = "rgba(0,0,0, 0.15)", // Black - Transparant
 			TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
 
 			TextPrimary = "#1b1b1bff", // Dark (Eerie Black) - Default Text / Input Text
@@ -297,7 +302,7 @@
 			//SecondaryDarken = "#",
 			//SecondaryLighten = "#",
 			Secondary = "#ffc40cff",  // Yellow
-			SecondaryContrastText = "343434ff", // Jet
+			SecondaryContrastText = "#343434ff", // Jet
 
 			//TertiaryContrastText = "#",
 			//TertiaryDarken = "#",
@@ -348,7 +353,7 @@
 			OverlayLight = "rgba(8,8,8, 0.25)", // Dark (Vampire Black) - Transparant
 
 			TableHover = "rgba(249,77,0, 0.30)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
-			TableLines = "#242424ff", // Background - Gray 242424 (36, 36, 36)
+			TableLines = "rgba(255,255,255, 0.15)", // White Transparant
 			TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
 
 			TextPrimary = "#f8f8ffff", // Ghost White - Default Text / Input Text

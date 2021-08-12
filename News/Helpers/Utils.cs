@@ -33,5 +33,12 @@ namespace News.Helpers
 				x.NotEmpty().WithMessage(requiredMessage).Length(minLength, maxLength).WithMessage(errorMessage));
 			return validateRequired;
 		}
+
+		public static string Abbreviate(string input, int maxLength)
+		{
+			if (input.Length >= maxLength)
+				input = input.Substring(0, maxLength - 3) + "...";
+			return input;
+		}
 	}
 }
