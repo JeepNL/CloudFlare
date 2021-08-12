@@ -3,100 +3,106 @@
 @inject IDialogService dialogService
 @inject ISnackbar Snackbar
 
-    <MudText Typo="Typo.h4">Blogger</MudText>
-    <MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit blog posts using a remote gRPC service</MudText>
+<MudText Typo="Typo.h4">Blogger</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit/Delete blog posts using a remote gRPC service</MudText>
 
-    <MudGrid>
-        <MudItem xs="12" sm="12" md="10" lg="8" xl="6">
-            @if (posts == null)
-            {
-                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
-            }
-            else
-            {
-                <MudTooltip Text="Add Blog Post">
-                    <MudIconButton OnClick="(() => OpenDialog(null))" Icon="@Icons.Material.Filled.Article" Size="Size.Large" />
-                </MudTooltip>
-                <MudTable T="Post" Items="@posts" Dense="true" Hover="true" Striped="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
-                    <HeaderContent>
-                        <MudTh>Date</MudTh>
-                        <MudTh>Title</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd Style="cursor: pointer;" DataLabel="Date">@Utils.UtcTicks2Local(context.DatePublished)</MudTd>
-                        <MudTd Style="cursor: pointer;" DataLabel="Title">@context.Header</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
-                    </PagerContent>
-                </MudTable>
-            }
-        </MudItem>
-    </MudGrid>
+<MudGrid>
+	<MudItem xs="12" sm="12" md="10" lg="8" xl="6">
+		@if (posts == null)
+		{
+			<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+		}
+		else
+		{
+			<MudGrid Class="align-center mb-2">
+				<MudItem>
+					<MudButton OnClick="(() => OpenDialog(null))" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Article" Color="Color.Primary" Style="shades-text text-white">Add Post</MudButton>
+				</MudItem>
+				<MudItem>
+					<MudText Typo="Typo.subtitle2" >Click on a row to edit/delete post</MudText>
+				</MudItem>
+			</MudGrid>
+
+			<MudTable T="Post" Items="@posts" Dense="true" Hover="true" Striped="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
+				<HeaderContent>
+					<MudTh>Date</MudTh>
+					<MudTh>Title</MudTh>
+				</HeaderContent>
+				<RowTemplate>
+					<MudTd Style="cursor: pointer;" DataLabel="Date">@Utils.UtcTicks2Local(context.DatePublished)</MudTd>
+					<MudTd Style="cursor: pointer;" DataLabel="Title">@context.Header</MudTd>
+				</RowTemplate>
+				<PagerContent>
+					<MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
+				</PagerContent>
+			</MudTable>
+		}
+	</MudItem>
+</MudGrid>
 
 @code {
-    private IEnumerable<Post> posts;
-    private Post selectedPost = null;
+	private IEnumerable<Post> posts;
+	private Post selectedPost = null;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadData();
+	}
 
-    private async Task LoadData()
-    {
-        var client = new Blogger.BloggerClient(grpcChannel);
-        posts = (await client.GetPostsAsync(new Empty())).PostRepeated.ToList();
-    }
+	private async Task LoadData()
+	{
+		var client = new Blogger.BloggerClient(grpcChannel);
+		posts = (await client.GetPostsAsync(new Empty())).PostRepeated.ToList();
+	}
 
-    //private void RowClick(TableRowClickEventArgs<Post> post)
-    private async Task RowClick()
-    {
-        // NOTE: "rowClickPost" (post.Item) is the same as "selectedPost"
-        //var rowClickPost = post.Item;
-        //Console.WriteLine($"selectedPost.Header: {rowClickPost.Header}");
-        await OpenDialog(selectedPost);
-    }
+	//private void RowClick(TableRowClickEventArgs<Post> post)
+	private async Task RowClick()
+	{
+		// NOTE: "rowClickPost" (post.Item) is the same as "selectedPost"
+		//var rowClickPost = post.Item;
+		//Console.WriteLine($"selectedPost.Header: {rowClickPost.Header}");
+		await OpenDialog(selectedPost);
+	}
 
-    private string RowStyle(Post post, int index)
-    {
-        if (post.Id == selectedPost?.Id)
-            return $"background: rgba(249,77,0, 0.30);"; // Table Hover Darker
-        else
-            return "";
-    }
+	private string RowStyle(Post post, int index)
+	{
+		if (post.Id == selectedPost?.Id)
+			return $"background: rgba(249,77,0, 0.30);"; // Table Hover Darker
+		else
+			return "";
+	}
 
-    private async Task OpenDialog(Post post)
-    {
-        var parameters = new DialogParameters();
-        if (post is not null) // update post
-        {
-            parameters.Add("Id", post.Id);
-            parameters.Add("Header", post.Header);
-            parameters.Add("SubHeader", post.SubHeader);
-            parameters.Add("Content", post.Content);
-            parameters.Add("ImageUrl", post.ImageUrl);
-            parameters.Add("MoreInfoUrl", post.MoreInfoUrl);
-        }
+	private async Task OpenDialog(Post post)
+	{
+		var parameters = new DialogParameters();
+		if (post is not null) // update post
+		{
+			parameters.Add("Id", post.Id);
+			parameters.Add("Header", post.Header);
+			parameters.Add("SubHeader", post.SubHeader);
+			parameters.Add("Content", post.Content);
+			parameters.Add("ImageUrl", post.ImageUrl);
+			parameters.Add("MoreInfoUrl", post.MoreInfoUrl);
+		}
 
-        var options = new DialogOptions()
-        {
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            CloseButton = false,
-            DisableBackdropClick = true,
-            NoHeader = false,
-            Position = DialogPosition.TopCenter
-        };
+		var options = new DialogOptions()
+		{
+			MaxWidth = MaxWidth.Medium,
+			FullWidth = true,
+			CloseButton = false,
+			DisableBackdropClick = true,
+			NoHeader = false,
+			Position = DialogPosition.TopCenter
+		};
 
-        var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
-        var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
-        var result = await dialog.Result;
+		var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
+		var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
+		var result = await dialog.Result;
 
-        if (!result.Cancelled)
-        {
-            Snackbar.Add(result.Data.ToString() , Severity.Info);
-            await LoadData();
-        }
-    }
+		if (!result.Cancelled)
+		{
+			Snackbar.Add(result.Data.ToString(), Severity.Success);
+			await LoadData();
+		}
+	}
 }
