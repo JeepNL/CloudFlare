@@ -92,11 +92,12 @@
 			MaxWidth = MaxWidth.Medium,
 			FullWidth = true,
 			CloseButton = false,
-			DisableBackdropClick = true,
-			NoHeader = false,
+			DisableBackdropClick = false,
+			NoHeader = true,
 			Position = DialogPosition.TopCenter
 		};
 
+		// No Header
 		var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
 		var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
 		var result = await dialog.Result;

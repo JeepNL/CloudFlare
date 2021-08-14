@@ -12,23 +12,24 @@
 <MudLayout>
 	<MudAppBar Dense="true" Elevation="12">
 		<MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-		@* One row below for display resolution #MobileFirst *@
-		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-			<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits</MudText>
-		</MudHidden>
-		<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
-			<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
-		</MudHidden>
+		<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
 		<MudSpacer />
-		<MudTooltip Text="Theme Switcher" Delayed="0.2">
-			<MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme" />
-		</MudTooltip>
-		<MudTooltip Text="BlazorBits Source on GitHub">
-			<MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/JeepNL/CloudFlare/" Target="_blank" />
-		</MudTooltip>
-		<MudTooltip Text="Contact me on Twitter">
-			<MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Inherit" Link="https://twitter.com/J_aa_p" Target="_blank" />
-		</MudTooltip>
+		<MudMenu Direction="Direction.Right" OffsetY="true">
+			<ActivatorContent>
+				<MudIcon Icon="@Icons.Material.Filled.MoreVert" />
+			</ActivatorContent>
+			<ChildContent>
+				<MudMenuItem>
+					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme">Light/Dark</MudButton>
+				</MudMenuItem>
+				<MudMenuItem>
+					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/JeepNL/CloudFlare/" Target="_blank">GitHub Repo</MudButton>
+				</MudMenuItem>
+				<MudMenuItem>
+					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Custom.Brands.Twitter" Color="Color.Inherit" Link="https://twitter.com/J_aa_p" Target="_blank">Contact me</MudButton>
+				</MudMenuItem>
+			</ChildContent>
+		</MudMenu>
 	</MudAppBar>
 	<MudDrawer @bind-Open="drawerOpen" Elevation="12" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
 		<NavMenu />
@@ -42,6 +43,7 @@
 </MudLayout>
 
 @code {
+	MudTheme currentTheme = new MudTheme();
 	bool drawerOpen = true;
 	bool dark = false;
 
@@ -51,479 +53,35 @@
 		if (!string.IsNullOrEmpty(theme))
 		{
 			if (theme == "light")
-				currentTheme = defaultTheme;
+				currentTheme.Palette = DefaultTheme.DefaultPalette();
 			else
-				currentTheme = darkTheme;
+			{
+				currentTheme.Palette = DarkTheme.DarkPalette();
+				dark = true;
+			}
 		}
 		else
-			currentTheme = defaultTheme;
+			currentTheme.Palette = DefaultTheme.DefaultPalette();
 
-		dark = (currentTheme == defaultTheme) ? false : true;
+		currentTheme.Typography = Design.MultiTypography("Ubuntu");
+		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 	}
 
 	private void ChangeTheme()
 	{
-		currentTheme = (currentTheme == defaultTheme) ? darkTheme : defaultTheme;
+		dark = !dark;
+		currentTheme.Palette = (dark) ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
+		currentTheme.Typography = Design.MultiTypography("Ubuntu");
+		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 
-		if (currentTheme == defaultTheme)
-			localStorage.SetItemAsString("bb_theme", "light");
-		else
+		if (dark)
 			localStorage.SetItemAsString("bb_theme", "dark");
-
-		dark = (currentTheme == defaultTheme) ? false : true;
+		else
+			localStorage.SetItemAsString("bb_theme", "light");
 	}
 
 	void DrawerToggle()
 	{
 		drawerOpen = !drawerOpen;
 	}
-
-	MudTheme currentTheme = new MudTheme();
-	MudTheme defaultTheme = new MudTheme()
-	{
-		Palette = new Palette()
-		{
-			Black = "#000000",
-			White = "#ffffff",
-
-			//PrimaryContrastText = "#",
-			//PrimaryDarken = "#",
-			//PrimaryLighten = "#",
-			Primary = "#f94d00ff",  // Orange - Btn/Lnk
-
-
-			//SecondaryDarken = "#",
-			//SecondaryLighten = "#",
-			Secondary = "#ffc40cff",  // Yellow
-			SecondaryContrastText = "1b1b1bff", // Eerie Black
-
-			//TertiaryContrastText = "#",
-			//TertiaryDarken = "#",
-			//TertiaryLighten = "#",
-			Tertiary = "#ba160cff",  // Red
-
-			//DarkContrastText = "#",
-			//DarkDarken = "#",
-			//DarkLighten = "#",
-			Dark = "#1b1b1bff", // Eerie Black
-
-			//InfoLighten = "", // #TODO What/Where?
-			Info = "#c0c0c0ff", // Gray Light
-			InfoContrastText = "1b1b1bff", // Dark (Eerie Black)
-			InfoDarken = "555555ff", // Gray Dark
-
-			//SuccessContrastText = "#",
-			//SuccessDarken = "#",
-			//SuccessLighten = "#",
-			Success = "#f94d00ff", // Primary
-
-			//WarningLighten = "#",
-			Warning = "#ffc40cff", // Secondary
-			WarningContrastText = "1b1b1bff", // Dark (Eerie Black)
-			WarningDarken = "555555ff", // Gray Dark
-
-			//ErrorContrastText = "#",
-			//ErrorDarken = "#",
-			//ErrorLighten = "#",
-			Error = "#ba160cff", // Tertiary - also form input error
-
-			AppbarText = "#fffafaff", // Drawer
-			AppbarBackground = "#f94d00ff", // Primary
-
-			LinesDefault = "#555555ff", // Gray Dark
-			LinesInputs = "#808080ff", // Gray
-			Divider = "#c0c0c0ff", // Gray Light
-			DividerLight = "#dcdcdcff", // Gray Lighter
-
-			Background = "#f8f8ffff", // Ghost White
-			BackgroundGrey = "#dcdcdcff", // Gray Lighter
-			Surface = "#f5f5f5ff", // White Smoke - Background Tables + Background Modal + Background Paper - No ransparancyT
-			DrawerBackground = "#fffafaff", // Snow White
-			DrawerText = "#1b1b1bff", // Dark (Eerie Black)
-			DrawerIcon = "#555555", // Davy's Gray
-			OverlayDark = "rgba(27,27,27, 0.50)", // Dark (Eerie Black) - Transparant
-			OverlayLight = "rgba(27,27,27, 0.25)", // Dark (Eerie Black) - Transparant
-
-			TableHover = "rgba(249,77,0, 0.15)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
-			TableLines = "rgba(0,0,0, 0.15)", // Black - Transparant
-			TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
-
-			TextPrimary = "#1b1b1bff", // Dark (Eerie Black) - Default Text / Input Text
-			TextSecondary = "#555555ff", // Gray Dark - Input Helper Text
-			TextDisabled = "#c0c0c0ff", // Gray Light - Input Text Disabled
-			ActionDefault = "#f94d00ff", // Primary Input Text Box Hover / MudIconButton default
-			ActionDisabled = "#c0c0c0ff", // Gray
-			ActionDisabledBackground = "#dcdcdcff", // Gray Lighter
-
-			HoverOpacity = 0.08,  // selected drawer text - default 0.06
-
-			// Shades of gray"
-			GrayLighter = "#dcdcdcff",
-			GrayLight = "#c0c0c0ff",
-			GrayDefault = "#808080ff",
-			GrayDark = "#555555ff",
-			GrayDarker = "#555555ff", // Gray Dark - Not darker => for tooltip background
-		},
-		LayoutProperties = new LayoutProperties()
-		{
-			DrawerWidthLeft = "220px"
-		},
-		Typography = new Typography()
-		{
-			// https://github.com/Garderoben/MudBlazor/blob/dev/src/MudBlazor/Themes/Models/Typography.cs
-			// https://developers.google.com/fonts/docs/css2#axis_ranges
-			Default = new Default()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 400,
-				LineHeight = 1.43,
-				LetterSpacing = ".01071em"
-			},
-			H1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "6rem",
-				FontWeight = 300,
-				LineHeight = 1.167,
-				LetterSpacing = "-.01562em"
-			},
-			H2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "3.75rem",
-				FontWeight = 300,
-				LineHeight = 1.2,
-				LetterSpacing = "-.00833em"
-			},
-			H3 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "3rem",
-				FontWeight = 300,
-				LineHeight = 1.167,
-				LetterSpacing = "0"
-			},
-			H4 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "2.125rem",
-				FontWeight = 300,
-				LineHeight = 1.235,
-				LetterSpacing = ".00735em"
-			},
-			H5 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1.5rem",
-				FontWeight = 300,
-				LineHeight = 1.334,
-				LetterSpacing = "0"
-			},
-			H6 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1.25rem",
-				FontWeight = 400,
-				LineHeight = 1.6,
-				LetterSpacing = ".0075em"
-			},
-			Subtitle1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1rem",
-				FontWeight = 400,
-				LineHeight = 1.75,
-				LetterSpacing = ".00938em"
-			},
-			Subtitle2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 500,
-				LineHeight = 1.57,
-				LetterSpacing = ".00714em"
-			},
-			Body1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1rem",
-				FontWeight = 400,
-				LineHeight = 1.5,
-				LetterSpacing = ".00938em"
-			},
-			Body2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 400,
-				LineHeight = 1.43,
-				LetterSpacing = ".01071em"
-			},
-			Button = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 500,
-				LineHeight = 1.75,
-				LetterSpacing = ".02857em"
-			},
-			Caption = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".75rem",
-				FontWeight = 400,
-				LineHeight = 1.66,
-				LetterSpacing = ".03333em"
-			},
-			Overline = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".75rem",
-				FontWeight = 400,
-				LineHeight = 2.66,
-				LetterSpacing = ".08333em"
-			}
-		}
-	};
-
-	MudTheme darkTheme = new MudTheme()
-	{
-		Palette = new Palette()
-		{
-			Black = "#000000",
-			White = "#ffffff",
-
-			//PrimaryContrastText = "#",
-			//PrimaryDarken = "#",
-			//PrimaryLighten = "#",
-			Primary = "#f94d00ff",  // Orange - Btn/Lnk
-
-			//SecondaryDarken = "#",
-			//SecondaryLighten = "#",
-			Secondary = "#ffc40cff",  // Yellow
-			SecondaryContrastText = "#343434ff", // Jet
-
-			//TertiaryContrastText = "#",
-			//TertiaryDarken = "#",
-			//TertiaryLighten = "#",
-			Tertiary = "#ba160cff",  // Red
-
-			//DarkContrastText = "#",
-			//DarkDarken = "#",
-			//DarkLighten = "#",
-			Dark = "#080808ff", // # Vampire black - Default Square
-
-			//InfoLighten = "#", //
-			//Info = "#", //
-			Info = "#c0c0c0ff", //# Silver
-			InfoContrastText = "#080808ff", // Vampire Black
-			InfoDarken = "#f8f8ffff", // Ghost White
-
-			//SuccessContrastText = "#",
-			//SuccessDarken = "#",
-			//SuccessLighten = "#",
-			Success = "#f94d00ff", // Primary
-
-			//WarningDarken = "#", //
-			//WarningLighten = "#",
-			Warning = "#ffc40cff", // Secondary
-			WarningContrastText = "#1a1110ff", // Licorice
-
-			//ErrorContrastText = "",
-			//ErrorDarken = "",
-			//ErrorLighten = "",
-			Error = "#ba160cff", // Tertiary - also form input error
-
-			AppbarText = "#f8f8ffff", // Ghost White
-			AppbarBackground = "#f94d00ff", // Primary
-
-			LinesDefault = "#555555ff", // Gray Dark
-			LinesInputs = "#808080ff", // Gray
-			Divider = "#c0c0c0ff", // Gray Light
-			DividerLight = "#dcdcdcff", // Gray Lighter
-
-			Background = "#242424ff", // Gray 242424 (36, 36, 36))
-			BackgroundGrey = "#dcdcdcff", // Gray Lighter
-			Surface = "#1b1b1bff", // Eerie Black - Background Tables + Background Modal + Background Paper - No Transparancy
-			DrawerBackground = "#343434ff", // Jet
-			DrawerText = "#f8f8ffff", // Ghost White
-			DrawerIcon = "#808080ff", // Trolley Grey
-			OverlayDark = "rgba(8,8,8, 0.50)", // Dark (Vampire Black) - Transparant
-			OverlayLight = "rgba(8,8,8, 0.25)", // Dark (Vampire Black) - Transparant
-
-			TableHover = "rgba(249,77,0, 0.30)", // Primary - Transparant - Table Row Select - Also For Selected Row (GrpcBlogger.Razor)
-			TableLines = "rgba(255,255,255, 0.15)", // White Transparant
-			TableStriped = "rgba(249,77,0, 0.05)", // Primary - Transparant
-
-			TextPrimary = "#f8f8ffff", // Ghost White - Default Text / Input Text
-			TextSecondary = "#c0c0c0ff", // Silver - Input Helper Text
-			TextDisabled = "#808080ff", // Gray - Input Text Disabled
-			ActionDefault = "#f94d00ff", // Primary - Input Text Box Hover / MudIconButton default
-			ActionDisabled = "#555555ff", // Davy's Gray
-			ActionDisabledBackground = "#343434ff", // Jet
-
-			HoverOpacity = 0.08,  // selected drawer text - default 0.06
-
-			// Shades of gray"
-			GrayLighter = "#dcdcdcff",
-			GrayLight = "#c0c0c0ff",
-			GrayDefault = "#808080ff",
-			GrayDark = "#555555ff",
-			GrayDarker = "#414a4cff", // Outer Space - Not darker => for tooltip background
-		},
-		LayoutProperties = new LayoutProperties()
-		{
-			DrawerWidthLeft = "220px"
-		},
-		Typography = new Typography()
-		{
-			// https://github.com/Garderoben/MudBlazor/blob/dev/src/MudBlazor/Themes/Models/Typography.cs
-			// https://developers.google.com/fonts/docs/css2#axis_ranges
-			Default = new Default()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 400,
-				LineHeight = 1.43,
-				LetterSpacing = ".01071em"
-			},
-			H1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "6rem",
-				FontWeight = 300,
-				LineHeight = 1.167,
-				LetterSpacing = "-.01562em"
-			},
-			H2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "3.75rem",
-				FontWeight = 300,
-				LineHeight = 1.2,
-				LetterSpacing = "-.00833em"
-			},
-			H3 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "3rem",
-				FontWeight = 300,
-				LineHeight = 1.167,
-				LetterSpacing = "0"
-			},
-			H4 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "2.125rem",
-				FontWeight = 300,
-				LineHeight = 1.235,
-				LetterSpacing = ".00735em"
-			},
-			H5 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1.5rem",
-				FontWeight = 300,
-				LineHeight = 1.334,
-				LetterSpacing = "0"
-			},
-			H6 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1.25rem",
-				FontWeight = 400,
-				LineHeight = 1.6,
-				LetterSpacing = ".0075em"
-			},
-			Subtitle1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1rem",
-				FontWeight = 400,
-				LineHeight = 1.75,
-				LetterSpacing = ".00938em"
-			},
-			Subtitle2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 500,
-				LineHeight = 1.57,
-				LetterSpacing = ".00714em"
-			},
-			Body1 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = "1rem",
-				FontWeight = 400,
-				LineHeight = 1.5,
-				LetterSpacing = ".00938em"
-			},
-			Body2 = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 400,
-				LineHeight = 1.43,
-				LetterSpacing = ".01071em"
-			},
-			Button = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".875rem",
-				FontWeight = 500,
-				LineHeight = 1.75,
-				LetterSpacing = ".02857em"
-			},
-			Caption = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".75rem",
-				FontWeight = 400,
-				LineHeight = 1.66,
-				LetterSpacing = ".03333em"
-			},
-			Overline = new()
-			{
-				FontFamily = new[] { "Ubuntu", "Helvetica", "Arial", "sans-serif" },
-				FontSize = ".75rem",
-				FontWeight = 400,
-				LineHeight = 2.66,
-				LetterSpacing = ".08333em"
-			}
-		}
-		//,
-		//Shadows = new Shadow() // #TODO
-		//{
-		//    Elevation = new string[] {
-		//        "none",
-		//        "0px 2px 1px -1px rgba(13, 17, 23, 0.2),0px 1px 1px 0px rgba(13, 17, 23, 0.14),0px 1px 3px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 3px 1px -2px rgba(13, 17, 23, 0.2),0px 2px 2px 0px rgba(13, 17, 23, 0.14),0px 1px 5px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 3px 3px -2px rgba(13, 17, 23, 0.2),0px 3px 4px 0px rgba(13, 17, 23, 0.14),0px 1px 8px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 2px 4px -1px rgba(13, 17, 23, 0.2),0px 4px 5px 0px rgba(13, 17, 23, 0.14),0px 1px 10px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 3px 5px -1px rgba(13, 17, 23, 0.2),0px 5px 8px 0px rgba(13, 17, 23, 0.14),0px 1px 14px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 3px 5px -1px rgba(13, 17, 23, 0.2),0px 6px 10px 0px rgba(13, 17, 23, 0.14),0px 1px 18px 0px rgba(13, 17, 23, 0.12)",
-		//        "0px 4px 5px -2px rgba(13, 17, 23, 0.2),0px 7px 10px 1px rgba(13, 17, 23, 0.14),0px 2px 16px 1px rgba(13, 17, 23, 0.12)",
-		//        "0px 5px 5px -3px rgba(13, 17, 23, 0.2),0px 8px 10px 1px rgba(13, 17, 23, 0.14),0px 3px 14px 2px rgba(13, 17, 23, 0.12)",
-		//        "0px 5px 6px -3px rgba(13, 17, 23, 0.2),0px 9px 12px 1px rgba(13, 17, 23, 0.14),0px 3px 16px 2px rgba(13, 17, 23, 0.12)",
-		//        "0px 6px 6px -3px rgba(13, 17, 23, 0.2),0px 10px 14px 1px rgba(13, 17, 23, 0.14),0px 4px 18px 3px rgba(13, 17, 23, 0.12)",
-		//        "0px 6px 7px -4px rgba(13, 17, 23, 0.2),0px 11px 15px 1px rgba(13, 17, 23, 0.14),0px 4px 20px 3px rgba(13, 17, 23, 0.12)",
-		//        "0px 7px 8px -4px rgba(13, 17, 23, 0.2),0px 12px 17px 2px rgba(13, 17, 23, 0.14),0px 5px 22px 4px rgba(13, 17, 23, 0.12)",
-		//        "0px 7px 8px -4px rgba(13, 17, 23, 0.2),0px 13px 19px 2px rgba(13, 17, 23, 0.14),0px 5px 24px 4px rgba(13, 17, 23, 0.12)",
-		//        "0px 7px 9px -4px rgba(13, 17, 23, 0.2),0px 14px 21px 2px rgba(13, 17, 23, 0.14),0px 5px 26px 4px rgba(13, 17, 23, 0.12)",
-		//        "0px 8px 9px -5px rgba(13, 17, 23, 0.2),0px 15px 22px 2px rgba(13, 17, 23, 0.14),0px 6px 28px 5px rgba(13, 17, 23, 0.12)",
-		//        "0px 8px 10px -5px rgba(13, 17, 23, 0.2),0px 16px 24px 2px rgba(13, 17, 23, 0.14),0px 6px 30px 5px rgba(13, 17, 23, 0.12)",
-		//        "0px 8px 11px -5px rgba(13, 17, 23, 0.2),0px 17px 26px 2px rgba(13, 17, 23, 0.14),0px 6px 32px 5px rgba(13, 17, 23, 0.12)",
-		//        "0px 9px 11px -5px rgba(13, 17, 23, 0.2),0px 18px 28px 2px rgba(13, 17, 23, 0.14),0px 7px 34px 6px rgba(13, 17, 23, 0.12)",
-		//        "0px 9px 12px -6px rgba(13, 17, 23, 0.2),0px 19px 29px 2px rgba(13, 17, 23, 0.14),0px 7px 36px 6px rgba(13, 17, 23, 0.12)",
-		//        "0px 10px 13px -6px rgba(13, 17, 23, 0.2),0px 20px 31px 3px rgba(13, 17, 23, 0.14),0px 8px 38px 7px rgba(13, 17, 23, 0.12)",
-		//        "0px 10px 13px -6px rgba(13, 17, 23, 0.2),0px 21px 33px 3px rgba(13, 17, 23, 0.14),0px 8px 40px 7px rgba(13, 17, 23, 0.12)",
-		//        "0px 10px 14px -6px rgba(13, 17, 23, 0.2),0px 22px 35px 3px rgba(13, 17, 23, 0.14),0px 8px 42px 7px rgba(13, 17, 23, 0.12)",
-		//        "0px 11px 14px -7px rgba(13, 17, 23, 0.2),0px 23px 36px 3px rgba(13, 17, 23, 0.14),0px 9px 44px 8px rgba(13, 17, 23, 0.12)",
-		//        "0px 11px 15px -7px rgba(13, 17, 23, 0.2),0px 24px 38px 3px rgba(13, 17, 23, 0.14),0px 9px 46px 8px rgba(13, 17, 23, 0.12)",
-		//        "0px 5px 5px -3px rgba(13, 17, 23, .06), 0 8px 10px 1px rgba(13, 17, 23, .042), 0 3px 14px 2px rgba(13, 17, 23, .036)"
-		//    }
-		//}
-	};
 }

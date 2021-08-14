@@ -1,13 +1,42 @@
 ﻿@inject GrpcChannel grpcChannel
+@inject IDialogService DialogService
 
 <MudDialog DisableSidePadding="true">
 	<DialogContent>
-		<MudContainer Style="max-height: 300px; overflow-y: scroll">
+		<MudGrid>
+			<MudItem xs="12" Class="mx-4 d-flex">
+				<MudText Typo="Typo.h6" Color="Color.Primary">@title</MudText>
+				<MudSpacer />
+				<MudMenu Direction="Direction.Right" OffsetY="true" Dense="true">
+					<ActivatorContent>
+						<MudIcon Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" />
+					</ActivatorContent>
+					<ChildContent>
+						<MudMenuItem>
+							<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Primary" Color="Color.Inherit" OnClick="SubmitForm">Save</MudButton>
+						</MudMenuItem>
+						<MudMenuItem>
+							<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Inherit" Color="Color.Inherit" OnClick="Cancel">Close</MudButton>
+						</MudMenuItem>
+						@if (postModel.Id != 0)
+						{
+							<MudMenuItem>
+								<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Tertiary" Color="Color.Inherit" OnClick="DeleteDialog">Delete</MudButton>
+							</MudMenuItem>
+						}
+					</ChildContent>
+				</MudMenu>
+			</MudItem>
+		</MudGrid>
+		<MudDivider Class="my-2" />
+		<MudContainer Style="max-height: 460px; overflow-y: scroll">
 			<MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-				<MudTextField Class="mt-4" T="string" @bind-Value="postModel.Header" Label="Header" Required="true" Validation="@Utils.FluentValidate(80, true, "Header", 10).Validation" Immediate="true" />
+				<MudFocusTrap Disabled="postModel.Id != 0" DefaultFocus="DefaultFocus">
+					<MudTextField Class="mt-4" T="string" @bind-Value="postModel.Header" Label="Header" Required="true" Validation="@Utils.FluentValidate(80, true, "Header", 10).Validation" Immediate="true" />
+				</MudFocusTrap>
 				<MudTextField Class="mt-4" T="string" @bind-Value="postModel.SubHeader" Label="Subheader" Validation="@Utils.FluentValidate(128, false, "Subheader").Validation" Immediate="true" />
 				<MudTextField Class="mt-4" T="string" @bind-Value="postModel.Content" Label="Content" Required="true" Lines="4" Validation="@Utils.FluentValidate(8192, true, "Content", 10).Validation" Immediate="true" />
-				<MudGrid Class="mt-1">
+				<MudGrid Class="mt-1 mb-0">
 					<MudItem xs="12" md="6">
 						<MudTextField T="string" @bind-Value="postModel.ImageUrl" Label="Image Url" Placeholder="https://" Validation="@Utils.FluentValidate(256, false, "Image URL").Validation" Immediate="true" />
 					</MudItem>
@@ -18,23 +47,7 @@
 			</MudForm>
 		</MudContainer>
 	</DialogContent>
-	<DialogActions>
-		@if (postModel.Id != 0)
-		{
-			<MudElement>
-				<MudIconButton OnClick="@ToggleDeleteAck" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Color="Color.Tertiary"></MudIconButton>
-				<MudPopover Open="@deleteAck" Class="d-flex pa-3 ma-3" Style="width:94px;">
-					<MudIconButton Class="ma-0 pa-0" OnClick="@ToggleDeleteAck" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Color="Color.Inherit"></MudIconButton>
-					<MudIconButton Class="ma-0 pa-0" OnClick="DeleteBlogPost" Size="Size.Large" Icon="@Icons.Material.Filled.Delete" Color="Color.Tertiary"></MudIconButton>
-				</MudPopover>
-			</MudElement>
-		}
-		<MudIconButton OnClick="Cancel" Size="Size.Large" Icon="@Icons.Material.Filled.Cancel" Color="Color.Inherit" Disabled="deleteAck"></MudIconButton>
-		<MudIconButton OnClick="SubmitForm" Size="Size.Large" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Default" Disabled="deleteAck"></MudIconButton>
-	</DialogActions>
 </MudDialog>
-
-<MudOverlay Visible="deleteAck" DarkBackground="true" Absolute="true"></MudOverlay>
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -45,11 +58,12 @@
 	[Parameter] public string ImageUrl { get; set; }
 	[Parameter] public string MoreInfoUrl { get; set; }
 
-	bool success = false;
-	bool deleteAck = false;
-	string[] errors = { };
 	MudForm form;
 	Post postModel;
+	DefaultFocus DefaultFocus { get; set; } = DefaultFocus.FirstChild;
+	bool success = false;
+	string[] errors = { }; // not used yet
+	string title = string.Empty;
 
 	protected override void OnInitialized()
 	{
@@ -71,8 +85,9 @@
 	protected override void OnParametersSet()
 	{
 		base.OnParametersSet();
-		if (Id != 0) // update
+		if (Id != 0) // Update
 		{
+			title = "Edit Blog Post";
 			postModel.Id = Id;
 			postModel.Header = Header;
 			postModel.SubHeader = SubHeader;
@@ -81,6 +96,8 @@
 			postModel.MoreInfoUrl = MoreInfoUrl;
 			postModel.ActionEnum = Post.Types.Action.Update; // if update change postModel.ActionEnum
 		}
+		else
+			title = "Add Blog Post";
 	}
 
 	private async Task SubmitForm()
@@ -88,10 +105,33 @@
 		form.Validate();
 		if (success)
 		{
-			var client = new Blogger.BloggerClient(grpcChannel);
-			ResultResponse serverReply = await client.SubsertPostAsync(postModel);
-			MudDialog.Close(DialogResult.Ok(serverReply.Message));
+			// Anything changed?
+			if (postModel.Header != Header ||
+				postModel.SubHeader != SubHeader ||
+				postModel.Content != Content ||
+				postModel.ImageUrl != ImageUrl ||
+				postModel.MoreInfoUrl != MoreInfoUrl)
+			{
+				var client = new Blogger.BloggerClient(grpcChannel);
+				ResultResponse serverReply = await client.SubsertPostAsync(postModel);
+				MudDialog.Close(DialogResult.Ok(serverReply.Message));
+			}
+			else // No changes
+				Cancel();
 		}
+	}
+
+	private async void DeleteDialog()
+	{
+		bool? result = await DialogService.ShowMessageBox(
+			"Delete Blog Post?",
+			"This action can not be undone.",
+			yesText: "YES",
+			cancelText: "NO"
+		);
+
+		if (result is not null)
+			await DeleteBlogPost();
 	}
 
 	private async Task DeleteBlogPost()
@@ -104,12 +144,4 @@
 	}
 
 	private void Cancel() => MudDialog.Cancel();
-
-	private void ToggleDeleteAck()
-	{
-		if (deleteAck)
-			deleteAck = false;
-		else
-			deleteAck = true;
-	}
 }
