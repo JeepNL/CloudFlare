@@ -1,0 +1,79 @@
+﻿@page "/auth/forgot"
+@using System.ComponentModel.DataAnnotations
+@inject GrpcChannel grpcChannel
+@inject NavigationManager NavMan
+
+<MudText Typo="Typo.h4">Forgot Password</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">@subTitle</MudText>
+
+<div style="max-width: 340px;">
+	@if (!mailSend)
+	{
+		<MudCard>
+			<MudCardContent>
+				<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Password" Variant="Variant.Filled">
+					Ýou'll only receive an email if your email address is registered here.
+				</MudAlert>
+				<MudForm @ref="form" @bind-IsValid="@formValidated">
+					<MudTextField Class="mb-3" T="string" @bind-Value="forgotUser.Email" Label="Email"
+							  Required="true"
+							  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+							  autocomplete="email" />
+				</MudForm>
+			</MudCardContent>
+			<MudCardActions>
+				<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(backUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Back</MudButton>
+				<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Send</MudButton>
+			</MudCardActions>
+		</MudCard>
+	}
+	else
+	{
+		<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Warning" Icon="@Icons.Material.Filled.AlternateEmail" Variant="Variant.Filled">
+			If you're a registered user at BlazorBits you'll receive an email with a link to reset your password. The link is valid for 15 minutes from now.
+		</MudAlert>
+	}
+</div>
+
+
+@code {
+	MudForm form;
+	AutherUser forgotUser;
+
+	bool formValidated = false;
+	bool mailSend = false;
+	string backUrl = "/auth/login";
+	string subTitle = "We'll send you an email with reset instructions";
+
+	protected override void OnInitialized()
+	{
+		forgotUser = new()
+		{
+			Email = string.Empty,
+			Password = string.Empty,
+			Guid = new Guid().ToString(),
+			RememberMe = false,
+			ActionEnum = AutherUser.Types.Action.ForgotPassword
+		};
+	}
+
+	private async Task SubmitForm()
+	{
+		form.Validate();
+		if (formValidated)
+		{
+			mailSend = true;
+			var client = new Auther.AutherClient(grpcChannel);
+			UserResult serverReply = await client.AuthRpcAsync(forgotUser);
+			subTitle = "We've sent you an email with reset instructions";
+
+			//if (!serverReply.Success)
+			//{
+			//}
+			//else
+			//{
+			//}
+		}
+	}
+
+}

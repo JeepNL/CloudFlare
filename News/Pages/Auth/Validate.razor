@@ -1,0 +1,50 @@
+﻿@page "/auth/validate/{ValidateGuid}/{ValidateEmail}/"
+@page "/auth/validate/error/{ValidateError}/"
+@inject GrpcChannel grpcChannel
+@inject NavigationManager NavMan
+
+<MudText Typo="Typo.h4">New User</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Email address validation</MudText>
+
+<div style="max-width: 340px;">
+	<MudAlert Class="mt-4" Severity="@severity" Variant="Variant.Filled">@validationMessage</MudAlert>
+</div>
+
+@code {
+	[Parameter] public string ValidateEmail { get; set; } = string.Empty;
+	[Parameter] public string ValidateGuid { get; set; } = string.Empty;
+	[Parameter] public string ValidateError { get; set; } = string.Empty;
+
+	string validationMessage = "Please wait ...";
+	Severity severity = Severity.Info;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (!string.IsNullOrEmpty(ValidateError))
+		{
+			validationMessage = ValidateError;
+			severity = Severity.Error;
+		}
+		else if (!string.IsNullOrEmpty(ValidateGuid) && !string.IsNullOrEmpty(ValidateEmail))
+		{
+			AutherUser validateUserEmail = new()
+			{
+				Email = Utils.fromB64(ValidateEmail),
+				Password = string.Empty,
+				Guid = ValidateGuid,
+				RememberMe = false,
+				ActionEnum = AutherUser.Types.Action.Validate
+			};
+
+			var client = new Auther.AutherClient(grpcChannel);
+			UserResult serverReply = await client.AuthRpcAsync(validateUserEmail);
+
+			if (!serverReply.Success)
+				NavMan.NavigateTo($"/auth/validate/error/{serverReply.Error}/");
+			else
+				NavMan.NavigateTo($"/auth/login/welcome/");
+		}
+		else
+			NavMan.NavigateTo($"/auth/validate/error/Expired or invalid link./");
+	}
+}

@@ -1,10 +1,28 @@
-﻿<MudNavMenu Class="mt-6">
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="/blogger" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Article">Blogger</MudNavLink>
-    <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.WbSunny">Weather</MudNavLink>
-    <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.ExposurePlus1">Counter</MudNavLink>
-    <MudNavLink Href="/greeter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Greeter</MudNavLink>
-    <MudNavLink Href="/theme" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ColorLens">Themer</MudNavLink>
-
-    <MudElement Class="ml-4"><MudTooltip Text=".NET ROCKS 🎤"><img src="/images/dotNETDropMic.webp" width="125" /></MudTooltip></MudElement>
+﻿<MudNavMenu Class="mt-2">
+	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+	<MudNavLink Href="/blogger" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Article">Blogger</MudNavLink>
+	<MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.WbSunny">Weather</MudNavLink>
+	<MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.ExposurePlus1">Counter</MudNavLink>
+	<MudNavLink Href="/greeter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.WavingHand">Greeter</MudNavLink>
+	<AuthorizeView Roles="Administrator">
+		<Authorized>
+			<MudNavLink Href="/filer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FileUpload">Filer</MudNavLink>
+			<MudNavLink Href="/theme" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ColorLens">Themer</MudNavLink>
+		</Authorized>
+	</AuthorizeView>
+	<MudDivider Class="mt-4" />
+	<AuthorizeView>
+		<NotAuthorized>
+			<MudNavLink Href="/auth/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+			<MudNavLink Href="/auth/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HowToReg">Register</MudNavLink>
+		</NotAuthorized>
+		<Authorized>
+			<MudNavLink Href="/auth/account" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">Account</MudNavLink>
+			<MudNavLink Href="/auth/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+		</Authorized>
+	</AuthorizeView>
+	<MudDivider Class="mb-4" />
+	<MudElement Class="ml-4">
+		<MudTooltip Text=".NET ROCKS 🎤"><img src="/images/dotNETDropMic.webp" width="125" /></MudTooltip>
+	</MudElement>
 </MudNavMenu>

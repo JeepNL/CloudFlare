@@ -40,5 +40,29 @@ namespace News.Helpers
 				input = input.Substring(0, maxLength - 3) + "...";
 			return input;
 		}
+
+		public static string fromB64(string b64str)
+		{
+			string decrypted;
+			try
+			{
+				byte[] b = Convert.FromBase64String(b64str);
+				decrypted = System.Text.ASCIIEncoding.ASCII.GetString(b);
+			}
+			catch // (FormatException fe)
+			{
+				decrypted = "";
+				//decrypted = fe.ToString();
+			}
+			return decrypted;
+		}
+
+		public static string toB64(string input)
+		{
+			byte[] b = System.Text.ASCIIEncoding.ASCII.GetBytes(input);
+			string encrypted = Convert.ToBase64String(b);
+			return encrypted;
+		}
+
 	}
 }

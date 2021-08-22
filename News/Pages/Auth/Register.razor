@@ -1,0 +1,159 @@
+﻿@page "/auth/register"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@inject GrpcChannel grpcChannel
+@inject NavigationManager NavMan
+@inject ClipboardService clipboardService
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h4">Register</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Create a new account or <MudLink Href="/auth/login">login</MudLink> to your account</MudText>
+
+<div style="max-width: 340px;">
+	@if (registering)
+	{
+		<MudCard>
+			<MudCardContent>
+				@if (!string.IsNullOrEmpty(registerError))
+				{
+					<MudAlert Class="mb-6 mt-4" Severity="Severity.Error" Variant="Variant.Filled">@registerError</MudAlert>
+				}
+				<MudForm @ref="form" @bind-IsValid="@formValidated">
+					<MudTextField Class="mb-3" T="string" @bind-Value="registerUser.Email" Label="Email" HelperText="Enter your email address"
+							  Required="true"
+							  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+							  Immediate="true"
+							  autocomplete="email" />
+					<MudTextField Class="mb-3" @ref="pwField" T="string" @bind-Value="registerUser.Password" Label="Password" HelperText="Choose a strong password"
+							  InputType="passwordInput"
+							  Required="true" RequiredError="Password is required!"
+							  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+							  Adornment="Adornment.End"
+							  AdornmentIcon="@passwordInputIcon"
+							  OnAdornmentClick="ShowPassword"
+							  autocomplete="new-password" />
+					<MudTextField Class="mb-2" T="string" @bind-Value="validatePassword" Label="Repeat password"
+							  InputType="passwordInput"
+							  Validation="@(new Func<string, string>(PasswordMatch))"
+							  autocomplete="new-password" />
+				</MudForm>
+			</MudCardContent>
+			<MudCardActions>
+				<MudButton title="Generate a strong password." OnClick="GeneratePassword" Disabled="@(!isGeneratePasswordVisible)" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Generate password</MudButton>
+				<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Register</MudButton>
+			</MudCardActions>
+		</MudCard>
+	}
+	else
+	{
+		<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled">One moment please ...</MudAlert>
+	}
+</div>
+
+
+@code {
+	MudForm form;
+	AutherUser registerUser;
+	MudTextField<string> pwField;
+	InputType passwordInput = InputType.Password;
+
+	bool formValidated = false;
+	bool registering = true;
+	bool isPasswordVisible = false;
+	bool isGeneratePasswordVisible = true;
+	string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+	string validatePassword = string.Empty;
+	string registerError = string.Empty;
+
+	protected override void OnInitialized()
+	{
+		registerUser = new()
+		{
+			Email = string.Empty,
+			Password = string.Empty,
+			Guid = string.Empty,
+			RememberMe = false,
+			ActionEnum = AutherUser.Types.Action.Register
+		};
+	}
+
+	private async Task SubmitForm()
+	{
+		form.Validate();
+		if (formValidated)
+		{
+			registering = false;
+			registerError = string.Empty;
+			var client = new Auther.AutherClient(grpcChannel);
+			UserResult serverReply = await client.AuthRpcAsync(registerUser);
+
+			if (!serverReply.Success)
+			{
+				registering = true;
+				registerError = serverReply.Error;
+				registerUser.Email = string.Empty;
+				registerUser.Password = string.Empty;
+				validatePassword = string.Empty;
+			}
+			else
+				NavMan.NavigateTo($"/auth/login/register"); // JustRegistered
+		}
+	}
+
+	private async Task GeneratePassword()
+	{
+		isGeneratePasswordVisible = false;
+		isPasswordVisible = true;
+		passwordInputIcon = Icons.Material.Filled.Visibility;
+		passwordInput = InputType.Text;
+		registerUser.Password = RandomPassword.Generate();
+		validatePassword = registerUser.Password;
+		await clipboardService.WriteTextAsync(registerUser.Password);
+		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Success);
+		await Task.Delay(2500);
+		isGeneratePasswordVisible = true;
+	}
+
+	private void ShowPassword()
+	{
+		if (isPasswordVisible)
+		{
+			isPasswordVisible = false;
+			passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+			passwordInput = InputType.Password;
+		}
+		else
+		{
+			isPasswordVisible = true;
+			passwordInputIcon = Icons.Material.Filled.Visibility;
+			passwordInput = InputType.Text;
+		}
+	}
+
+	private IEnumerable<string> PasswordStrength(string pw)
+	{
+		if (string.IsNullOrWhiteSpace(pw))
+		{
+			yield return "Password is required";
+			yield break;
+		}
+		if (pw.Length < 8)
+			yield return "Use at least 8 characters";
+		if (!Regex.IsMatch(pw, @"[A-Z]"))
+			yield return "Use at least 1 capital letter";
+		if (!Regex.IsMatch(pw, @"[a-z]"))
+			yield return "Use at least 1 lowercase letter";
+		if (!Regex.IsMatch(pw, @"[0-9]"))
+			yield return "Use at least 1 digit";
+
+		if (!Regex.IsMatch(pw, @"[~`!@#$€%^&*\-_=+|\\/?><,.:;\(\)\{\}\[\]]"))
+			yield return @"Use at least 1 special char like: !@#$€%^&*-_=+?";
+	}
+
+	private string PasswordMatch(string arg)
+	{
+		if (pwField.Value != arg)
+			return "Passwords don't match";
+		return null;
+	}
+}

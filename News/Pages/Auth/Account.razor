@@ -1,0 +1,15 @@
+﻿@page "/auth/account"
+@attribute [Authorize(Policy = Policies.IsUser)]
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@inject GrpcChannel grpcChannel
+
+<MudText Typo="Typo.h4">Account</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Manage your BlazorBits account</MudText>
+
+<div style="max-width: 340px;">
+	<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Icon="@Icons.Material.Filled.Construction" Variant="Variant.Filled">Under construction ...</MudAlert>
+</div>
+
+@code {
+}

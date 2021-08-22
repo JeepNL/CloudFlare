@@ -2,27 +2,33 @@
 
 <MudText Typo="Typo.h4">Blazor Is The Future!</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">And the future is now!</MudText>
+
+@*<AuthorizeView>
+	<Authorized>
+		<MudText Class="my-2" Typo="Typo.subtitle1">Hello, @context.User.Identity.Name</MudText>
+	</Authorized>
+</AuthorizeView>*@
+
 <MudGrid>
-    <MudItem xs="12" sm="12" md="12" lg="11" xl="10">
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.body1">
-                This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/" Target="_blank">ASP.NET Core 6 Preview 7</MudLink> Mobile Friendly Blazor WebAssembly Single Page Application using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the client side, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>. The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a co-located Ubuntu 20.04 VPS for its dynamic data.
-            </MudText>
-        </MudPaper>
+	<MudItem xs="12" sm="12" md="12" lg="11" xl="10">
+		<MudPaper Elevation="2" Class="pa-4">
+			<MudText Typo="Typo.body1">
+				This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/" Target="_blank">ASP.NET Core 6 Preview 7</MudLink> Mobile Friendly Blazor WebAssembly Single Page Application using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the client side, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>. The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a co-located Ubuntu 20.04 VPS for its dynamic data.
+			</MudText>
+		</MudPaper>
 
-        <MudAlert Elevation="2" Severity="Severity.Warning" Variant="Variant.Text" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
-            <MudText Typo="Typo.body1">
-                <MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1">Niels Swimberghe</MudLink></MudTooltip> wrote a great
-                <MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1">blog post</MudLink></MudTooltip> on how to deploy your Blazor WebAssembly app to Cloudflare Pages.
-            </MudText>
-        </MudAlert>
+		<MudAlert Elevation="2" Severity="Severity.Warning" Variant="Variant.Text" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
+			<MudText Typo="Typo.body1">
+				<MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1">Niels Swimberghe</MudLink></MudTooltip> wrote a great
+				<MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1">blog post</MudLink></MudTooltip> on how to deploy your Blazor WebAssembly app to Cloudflare Pages.
+			</MudText>
+		</MudAlert>
 
-        <MudPaper Elevation="2" Class="mt-6 px-4 pb-4 pt-2">
-            <MudText Typo="Typo.body1" Class="my-1">To use the latest .NET 6 Preview SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
-            <MudAlert Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
-                curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;
-            </MudAlert>
-        </MudPaper>
-
-    </MudItem>
+		<MudPaper Elevation="2" Class="mt-6 px-4 pb-4 pt-2">
+			<MudText Typo="Typo.body1" Class="my-1">To use the latest .NET 6 Preview SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
+			<MudAlert Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
+				curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;
+			</MudAlert>
+		</MudPaper>
+	</MudItem>
 </MudGrid>

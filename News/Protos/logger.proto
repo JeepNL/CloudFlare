@@ -1,0 +1,32 @@
+﻿syntax = "proto3";
+option csharp_namespace = "ApiGrpc.Protos";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+package logr;
+
+service LoggerRpc {
+  rpc PostRec (LogRec) returns (google.protobuf.Empty);
+  rpc GetRec (LogQuery) returns (LogRec);
+  rpc GetRecs (google.protobuf.Empty) returns (LogRecs);
+}
+
+message LogRec {
+	enum Action {
+		SYSTEM = 0;
+		USER = 1;
+		AUDIT = 2;
+	}
+    int32 id = 1;
+    google.protobuf.StringValue uid = 2;
+	google.protobuf.StringValue rem = 3;
+	string desc = 4;
+	bool success = 5;
+	int64 date = 6;
+	Action action_enum = 7;
+}
+message LogRecs {
+	repeated LogRec log_rec_repeated = 1;
+}
+message LogQuery {
+	int32 id = 1;
+}

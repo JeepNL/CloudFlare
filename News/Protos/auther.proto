@@ -1,0 +1,47 @@
+﻿syntax = "proto3";
+option csharp_namespace = "ApiGrpc.Protos";
+import "google/protobuf/wrappers.proto";
+package auther;
+
+service Auther {
+  rpc AuthRpc (AutherUser) returns (UserResult);
+  rpc AccountRpc (AutherAccount) returns (AccountResult);
+}
+
+message AutherUser {
+	enum Action {
+		LOGIN = 0;
+		REGISTER = 1;
+		VALIDATE = 2;
+		FORGOT_PASSWORD = 3;
+		VALIDATE_PASSWORD = 4;
+		RESET_PASSWORD = 5;
+	}
+	string email = 1;
+	google.protobuf.StringValue password = 2;
+	google.protobuf.StringValue guid = 3;
+	bool remember_me = 4;
+	Action action_enum = 5;
+}
+message UserResult {
+	bool success = 1;
+	google.protobuf.StringValue error = 2;
+	google.protobuf.StringValue token = 3;
+}
+
+message AutherAccount {
+	enum Action {
+		CHANGE_EMAIL = 0;
+		CHANGE_PASSWORD = 1;
+	}
+	string current_email = 1;
+	google.protobuf.StringValue current_password = 2;
+	google.protobuf.StringValue new_email = 3;
+	google.protobuf.StringValue new_password = 4;
+	google.protobuf.StringValue guid = 5;
+	Action action_enum = 6;
+}
+message AccountResult {
+	bool success = 1;
+	google.protobuf.StringValue error = 2;
+}

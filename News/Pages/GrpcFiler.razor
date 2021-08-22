@@ -1,0 +1,52 @@
+﻿@page "/filer"
+@attribute [Authorize(Policy = Policies.IsAdministrator)]
+@inject NavigationManager NavMan
+@inject IAuthService AuthService
+@inject GrpcChannel grpcChannel
+
+<MudText Typo="Typo.h4">Upload</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Upload an image using a gRPC service</MudText>
+
+<InputFile OnChange="UploadFile" />
+
+@code {
+	async Task UploadFile(InputFileChangeEventArgs e)
+	{
+		IBrowserFile file = e.File;
+		string fileName = file.Name;
+		int fileSize = (int)file.Size;
+
+		if (fileSize < 1024 * 256) // 256kB
+		{
+			await using Stream fileStream = file.OpenReadStream(fileSize);
+			await using MemoryStream memoryStream = new(fileSize);
+			await fileStream.CopyToAsync(memoryStream);
+			memoryStream.Position = 0;
+			byte[] byteArray = memoryStream.ToArray();
+			Google.Protobuf.ByteString contentBytes = Google.Protobuf.ByteString.CopyFrom(byteArray, 0, fileSize);
+			BytesContent contentStruct = new()
+			{
+				Block = 1,
+				Content = contentBytes,
+				FileName = fileName
+			};
+
+			Result result = new();
+			Metadata headers = await AuthService.AddMetaDataHeader();
+			var client = new Filer.FilerClient(grpcChannel);
+			try
+			{
+				result = await client.UploadAsync(contentStruct, headers);
+			}
+			catch
+			{
+				await AuthService.Logout();
+				NavMan.NavigateTo("/auth/login");
+			}
+		}
+		else
+		{
+			Console.WriteLine("Max. image size: 256kB");
+		};
+	}
+}

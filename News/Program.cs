@@ -1,9 +1,12 @@
 using Blazored.LocalStorage;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Web;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
+using News.Helpers;
+using News.Services;
 
 namespace News
 {
@@ -14,14 +17,22 @@ namespace News
 			var builder = WebAssemblyHostBuilder.CreateDefault(args);
 			builder.RootComponents.Add<App>("#app");
 
+			builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
 			// Modify HTML <head> in components: https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/
 			//builder.RootComponents.Add<HeadOutlet>("head::after");
 
+			builder.Services.AddOptions();
+			builder.Services.AddAuthorizationCore(config =>
+			{
+				config.AddPolicy(Policies.IsAdministrator, Policies.IsAdministratorPolicy());
+				config.AddPolicy(Policies.IsModerator, Policies.IsModeratorPolicy());
+				config.AddPolicy(Policies.IsUser, Policies.IsUserPolicy());
+			});
+			builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+			builder.Services.AddScoped<IAuthService, AuthService>();
+
 			builder.Services.AddBlazoredLocalStorage();
-
-			//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-			//builder.Services.AddMudServices();
 			builder.Services.AddMudServices(config =>
 			{
 				config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -51,6 +62,9 @@ namespace News
 					//MaxRetryAttempts = 3 // ?? #TODO
 				});
 			});
+
+			builder.Services.AddScoped<ClipboardService>();
+
 			await builder.Build().RunAsync();
 		}
 	}
