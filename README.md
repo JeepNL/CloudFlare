@@ -12,4 +12,4 @@ This demo receives its data from a remote .NET 6 gRPC service running on a co-lo
 
 Everything .NET! 😉
 
-![Static Blazor WASM Website on CloudFlare Pages](Screenshot.webp)
+![Static Blazor WASM Website on CloudFlare Pages](Screenshot.jpg)

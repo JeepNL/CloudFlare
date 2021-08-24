@@ -1,163 +1,273 @@
-﻿namespace News.Helpers
+﻿///////////////////////////////////////////////////////////////////////////////
+// SAMPLE: Generates random password, which complies with the strong password
+//         rules and does not contain ambiguous characters.
+//
+// To run this sample, create a new Visual C# project using the Console
+// Application template and replace the contents of the Class1.cs file with
+// the code below.
+//
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+// EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Copyright (C) 2004 Obviex(TM). All rights reserved.
+//
+using System.Security.Cryptography;
+
+/// <summary>
+/// This class can generate random passwords, which do not include ambiguous
+/// characters, such as I, l, and 1. The generated password will be made of
+/// 7-bit ASCII symbols. Every four characters will include one lower case
+/// character, one upper case character, one number, and one special symbol
+/// (such as '%') in a random order. The password will always start with an
+/// alpha-numeric character; it will not start with a special symbol (we do
+/// this because some back-end systems do not like certain special
+/// characters in the first position).
+/// </summary>
+
+namespace News.Helpers
 {
-	public class RandomPassword
-	{
-		// Define default min and max password lengths.
-		private static readonly int DEFAULT_MIN_PASSWORD_LENGTH = 12;
-		private static readonly int DEFAULT_MAX_PASSWORD_LENGTH = 12;
+    public class RandomPassword
+    {
+        // Define default min and max password lengths.
+        private static readonly int DEFAULT_MIN_PASSWORD_LENGTH = 12;
+        private static readonly int DEFAULT_MAX_PASSWORD_LENGTH = 16;
 
-		// Define supported password characters divided into groups.
-		// You can add (or remove) characters to (from) these groups.
-		private static readonly string PASSWORD_CHARS_LCASE = "abcdefgjkmnpqrstwxyz";
-		private static readonly string PASSWORD_CHARS_UCASE = "ABCDEFGHJKLMNPQRSTWXYZ";
-		private static readonly string PASSWORD_CHARS_NUMERIC = "23456789";
-		private static readonly string PASSWORD_CHARS_SPECIAL = "@#$%^&*€?-_";
+        // Define supported password characters divided into groups.
+        // You can add (or remove) characters to (from) these groups.
+        private static readonly string PASSWORD_CHARS_LCASE = "abcdefgjkmnpqrstwxyz";
+        private static readonly string PASSWORD_CHARS_UCASE = "ABCDEFGHJKLMNPQRSTWXYZ";
+        private static readonly string PASSWORD_CHARS_NUMERIC = "23456789";
+        private static readonly string PASSWORD_CHARS_SPECIAL = "@#$%^&*€?";
 
-		public static string Generate()
-		{
-			return Generate(DEFAULT_MIN_PASSWORD_LENGTH,
-							DEFAULT_MAX_PASSWORD_LENGTH);
-		}
+        /// <summary>
+        /// Generates a random password.
+        /// </summary>
+        /// <returns>
+        /// Randomly generated password.
+        /// </returns>
+        /// <remarks>
+        /// The length of the generated password will be determined at
+        /// random. It will be no shorter than the minimum default and
+        /// no longer than maximum default.
+        /// </remarks>
+        public static string Generate()
+        {
+            return Generate(DEFAULT_MIN_PASSWORD_LENGTH,
+                            DEFAULT_MAX_PASSWORD_LENGTH);
+        }
 
-		public static string Generate(int length)
-		{
-			return Generate(length, length);
-		}
+        /// <summary>
+        /// Generates a random password of the exact length.
+        /// </summary>
+        /// <param name="length">
+        /// Exact password length.
+        /// </param>
+        /// <returns>
+        /// Randomly generated password.
+        /// </returns>
+        public static string Generate(int length)
+        {
+            return Generate(length, length);
+        }
 
-		public static string Generate(int minLength,
-									  int maxLength)
-		{
-			// Make sure that input parameters are valid.
-			if (minLength <= 0 || maxLength <= 0 || minLength > maxLength)
-				return null;
+        /// <summary>
+        /// Generates a random password.
+        /// </summary>
+        /// <param name="minLength">
+        /// Minimum password length.
+        /// </param>
+        /// <param name="maxLength">
+        /// Maximum password length.
+        /// </param>
+        /// <returns>
+        /// Randomly generated password.
+        /// </returns>
+        /// <remarks>
+        /// The length of the generated password will be determined at
+        /// random and it will fall with the range determined by the
+        /// function parameters.
+        /// </remarks>
+        public static string Generate(int minLength,
+                                      int maxLength)
+        {
+            // Make sure that input parameters are valid.
+            if (minLength <= 0 || maxLength <= 0 || minLength > maxLength)
+                return null;
 
-			// Create a local array containing supported password characters
-			// grouped by types. You can remove character groups from this
-			// array, but doing so will weaken the password strength.
-			char[][] charGroups = new char[][]
-			{
-			PASSWORD_CHARS_LCASE.ToCharArray(),
-			PASSWORD_CHARS_UCASE.ToCharArray(),
-			PASSWORD_CHARS_NUMERIC.ToCharArray(),
-			PASSWORD_CHARS_SPECIAL.ToCharArray()
-			};
+            // Create a local array containing supported password characters
+            // grouped by types. You can remove character groups from this
+            // array, but doing so will weaken the password strength.
+            char[][] charGroups = new char[][]
+            {
+            PASSWORD_CHARS_LCASE.ToCharArray(),
+            PASSWORD_CHARS_UCASE.ToCharArray(),
+            PASSWORD_CHARS_NUMERIC.ToCharArray(),
+            PASSWORD_CHARS_SPECIAL.ToCharArray()
+            };
 
-			// Use this array to track the number of unused characters in each
-			// character group.
-			int[] charsLeftInGroup = new int[charGroups.Length];
+            // Use this array to track the number of unused characters in each
+            // character group.
+            int[] charsLeftInGroup = new int[charGroups.Length];
 
-			// Initially, all characters in each group are not used.
-			for (int i = 0; i < charsLeftInGroup.Length; i++)
-				charsLeftInGroup[i] = charGroups[i].Length;
+            // Initially, all characters in each group are not used.
+            for (int i = 0; i < charsLeftInGroup.Length; i++)
+                charsLeftInGroup[i] = charGroups[i].Length;
 
-			// Use this array to track (iterate through) unused character groups.
-			int[] leftGroupsOrder = new int[charGroups.Length];
+            // Use this array to track (iterate through) unused character groups.
+            int[] leftGroupsOrder = new int[charGroups.Length];
 
-			// Initially, all character groups are not used.
-			for (int i = 0; i < leftGroupsOrder.Length; i++)
-				leftGroupsOrder[i] = i;
+            // Initially, all character groups are not used.
+            for (int i = 0; i < leftGroupsOrder.Length; i++)
+                leftGroupsOrder[i] = i;
 
-			Random random = new();
+            // Because we cannot use the default randomizer, which is based on the
+            // current time (it will produce the same "random" number within a
+            // second), we will use a random number generator to seed the
+            // randomizer.
 
-			// This array will hold password characters.
-			char[] password; // = null;
+            // Use a 4-byte array to fill it with random bytes and convert it then
+            // to an integer value.
+            // Original:
+            //byte[] randomBytes = new byte[4];
+            // New .NET 6, see: https://devblogs.microsoft.com/dotnet/new-dotnet-6-apis-driven-by-the-developer-community/#cspng-cryptographically-secure-pseudorandom-number-generator
+            byte[] bytes = RandomNumberGenerator.GetBytes(4);
 
-			// Allocate appropriate memory for the password.
-			if (minLength < maxLength)
-				password = new char[random.Next(minLength, maxLength + 1)];
-			else
-				password = new char[minLength];
+            //Original
+            // Generate 4 random bytes.
+            //RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            //rng.GetBytes(randomBytes);
 
-			// Index of the next character to be added to password.
-			int nextCharIdx;
+            // Convert 4 bytes into a 32-bit integer value.
+            // Original
+            //int seed = BitConverter.ToInt32(randomBytes, 0);
+            // New .NET 6
+            int seed = BitConverter.ToInt32(bytes, 0);
 
-			// Index of the next character group to be processed.
-			int nextGroupIdx;
+            // Now, this is real randomization.
+            Random random = new Random(seed);
 
-			// Index which will be used to track not processed character groups.
-			int nextLeftGroupsOrderIdx;
+            // This array will hold password characters.
+            char[] password; // = null;
 
-			// Index of the last non-processed character in a group.
-			int lastCharIdx;
+            // Allocate appropriate memory for the password.
+            if (minLength < maxLength)
+                password = new char[random.Next(minLength, maxLength + 1)];
+            else
+                password = new char[minLength];
 
-			// Index of the last non-processed group.
-			int lastLeftGroupsOrderIdx = leftGroupsOrder.Length - 1;
+            // Index of the next character to be added to password.
+            int nextCharIdx;
 
-			// Generate password characters one at a time.
-			for (int i = 0; i < password.Length; i++)
-			{
-				// If only one character group remained unprocessed, process it;
-				// otherwise, pick a random character group from the unprocessed
-				// group list. To allow a special character to appear in the
-				// first position, increment the second parameter of the Next
-				// function call by one, i.e. lastLeftGroupsOrderIdx + 1.
-				if (lastLeftGroupsOrderIdx == 0)
-					nextLeftGroupsOrderIdx = 0;
-				else
-					nextLeftGroupsOrderIdx = random.Next(0,
-														 lastLeftGroupsOrderIdx);
+            // Index of the next character group to be processed.
+            int nextGroupIdx;
 
-				// Get the actual index of the character group, from which we will
-				// pick the next character.
-				nextGroupIdx = leftGroupsOrder[nextLeftGroupsOrderIdx];
+            // Index which will be used to track not processed character groups.
+            int nextLeftGroupsOrderIdx;
 
-				// Get the index of the last unprocessed characters in this group.
-				lastCharIdx = charsLeftInGroup[nextGroupIdx] - 1;
+            // Index of the last non-processed character in a group.
+            int lastCharIdx;
 
-				// If only one unprocessed character is left, pick it; otherwise,
-				// get a random character from the unused character list.
-				if (lastCharIdx == 0)
-					nextCharIdx = 0;
-				else
-					nextCharIdx = random.Next(0, lastCharIdx + 1);
+            // Index of the last non-processed group.
+            int lastLeftGroupsOrderIdx = leftGroupsOrder.Length - 1;
 
-				// Add this character to the password.
-				password[i] = charGroups[nextGroupIdx][nextCharIdx];
+            // Generate password characters one at a time.
+            for (int i = 0; i < password.Length; i++)
+            {
+                // If only one character group remained unprocessed, process it;
+                // otherwise, pick a random character group from the unprocessed
+                // group list. To allow a special character to appear in the
+                // first position, increment the second parameter of the Next
+                // function call by one, i.e. lastLeftGroupsOrderIdx + 1.
+                if (lastLeftGroupsOrderIdx == 0)
+                    nextLeftGroupsOrderIdx = 0;
+                else
+                    nextLeftGroupsOrderIdx = random.Next(0,
+                                                         lastLeftGroupsOrderIdx);
 
-				// If we processed the last character in this group, start over.
-				if (lastCharIdx == 0)
-					charsLeftInGroup[nextGroupIdx] =
-											  charGroups[nextGroupIdx].Length;
-				// There are more unprocessed characters left.
-				else
-				{
-					// Swap processed character with the last unprocessed character
-					// so that we don't pick it until we process all characters in
-					// this group.
-					if (lastCharIdx != nextCharIdx)
-					{
-						char temp = charGroups[nextGroupIdx][lastCharIdx];
-						charGroups[nextGroupIdx][lastCharIdx] =
-									charGroups[nextGroupIdx][nextCharIdx];
-						charGroups[nextGroupIdx][nextCharIdx] = temp;
-					}
-					// Decrement the number of unprocessed characters in
-					// this group.
-					charsLeftInGroup[nextGroupIdx]--;
-				}
+                // Get the actual index of the character group, from which we will
+                // pick the next character.
+                nextGroupIdx = leftGroupsOrder[nextLeftGroupsOrderIdx];
 
-				// If we processed the last group, start all over.
-				if (lastLeftGroupsOrderIdx == 0)
-					lastLeftGroupsOrderIdx = leftGroupsOrder.Length - 1;
-				// There are more unprocessed groups left.
-				else
-				{
-					// Swap processed group with the last unprocessed group
-					// so that we don't pick it until we process all groups.
-					if (lastLeftGroupsOrderIdx != nextLeftGroupsOrderIdx)
-					{
-						int temp = leftGroupsOrder[lastLeftGroupsOrderIdx];
-						leftGroupsOrder[lastLeftGroupsOrderIdx] =
-									leftGroupsOrder[nextLeftGroupsOrderIdx];
-						leftGroupsOrder[nextLeftGroupsOrderIdx] = temp;
-					}
-					// Decrement the number of unprocessed groups.
-					lastLeftGroupsOrderIdx--;
-				}
-			}
+                // Get the index of the last unprocessed characters in this group.
+                lastCharIdx = charsLeftInGroup[nextGroupIdx] - 1;
 
-			// Convert password characters into a string and return the result.
-			return new string(password);
-		}
-	}
+                // If only one unprocessed character is left, pick it; otherwise,
+                // get a random character from the unused character list.
+                if (lastCharIdx == 0)
+                    nextCharIdx = 0;
+                else
+                    nextCharIdx = random.Next(0, lastCharIdx + 1);
+
+                // Add this character to the password.
+                password[i] = charGroups[nextGroupIdx][nextCharIdx];
+
+                // If we processed the last character in this group, start over.
+                if (lastCharIdx == 0)
+                    charsLeftInGroup[nextGroupIdx] =
+                                              charGroups[nextGroupIdx].Length;
+                // There are more unprocessed characters left.
+                else
+                {
+                    // Swap processed character with the last unprocessed character
+                    // so that we don't pick it until we process all characters in
+                    // this group.
+                    if (lastCharIdx != nextCharIdx)
+                    {
+                        char temp = charGroups[nextGroupIdx][lastCharIdx];
+                        charGroups[nextGroupIdx][lastCharIdx] =
+                                    charGroups[nextGroupIdx][nextCharIdx];
+                        charGroups[nextGroupIdx][nextCharIdx] = temp;
+                    }
+                    // Decrement the number of unprocessed characters in
+                    // this group.
+                    charsLeftInGroup[nextGroupIdx]--;
+                }
+
+                // If we processed the last group, start all over.
+                if (lastLeftGroupsOrderIdx == 0)
+                    lastLeftGroupsOrderIdx = leftGroupsOrder.Length - 1;
+                // There are more unprocessed groups left.
+                else
+                {
+                    // Swap processed group with the last unprocessed group
+                    // so that we don't pick it until we process all groups.
+                    if (lastLeftGroupsOrderIdx != nextLeftGroupsOrderIdx)
+                    {
+                        int temp = leftGroupsOrder[lastLeftGroupsOrderIdx];
+                        leftGroupsOrder[lastLeftGroupsOrderIdx] =
+                                    leftGroupsOrder[nextLeftGroupsOrderIdx];
+                        leftGroupsOrder[nextLeftGroupsOrderIdx] = temp;
+                    }
+                    // Decrement the number of unprocessed groups.
+                    lastLeftGroupsOrderIdx--;
+                }
+            }
+
+            // Convert password characters into a string and return the result.
+            return new string(password);
+        }
+    }
+
+    /// <summary>
+    /// Illustrates the use of the RandomPassword class.
+    /// </summary>
+
+    //public class RandomPasswordTest
+    //{
+    //    /// <summary>
+    //    /// The main entry point for the application.
+    //    /// </summary>
+    //    [STAThread]
+    //    static void Main(string[] args)
+    //    {
+    //        // Print 100 randomly generated passwords (8-to-10 char long).
+    //        for (int i = 0; i < 100; i++)
+    //            Console.WriteLine(RandomPassword.Generate(8, 10));
+    //    }
+    //}
+
+    //
+    // END OF FILE
+    ///////////////////////////////////////////////////////////////////////////////
 }

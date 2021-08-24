@@ -5,15 +5,24 @@
 
 @*<AuthorizeView>
 	<Authorized>
-		<MudText Class="my-2" Typo="Typo.subtitle1">Hello, @context.User.Identity.Name</MudText>
+	<MudText Class="my-2" Typo="Typo.subtitle1">Hello, @context.User.Identity.Name</MudText>
 	</Authorized>
-</AuthorizeView>*@
+	</AuthorizeView>*@
 
 <MudGrid>
-	<MudItem xs="12" sm="12" md="12" lg="11" xl="10">
+	<MudItem xs="12" xl="11">
 		<MudPaper Elevation="2" Class="pa-4">
+			<MudText Typo="Typo.h5" Class="mb-4">About BlazorBits</MudText>
 			<MudText Typo="Typo.body1">
-				This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/" Target="_blank">ASP.NET Core 6 Preview 7</MudLink> Mobile Friendly Blazor WebAssembly Single Page Application using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the client side, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>. The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a co-located Ubuntu 20.04 VPS for its dynamic data.
+				This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/" Target="_blank">ASP.NET Core 6 Preview 7</MudLink>
+				<i>(August 10th, 2021)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
+				Application <i>(SPA)</i> prototype using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the
+				client side, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>. The website is using
+				remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a co-located
+				<MudLink Href="https://www.transip.eu/vps/bladevps/" Target="_blank">TransIp/X4</MudLink> Ubuntu 20.04 VPS for its dynamic data and register/login. You can
+				find the client side source on <MudLink Href="https://github.com/JeepNL/CloudFlare" Target="_blank">GitHub</MudLink>. Oh, I almost forgot, light and dark
+				themes are also supported and when you register here the email you receive to verify your email address passes SPF/DKIM/DMARC validations. Free SSL
+				certificate provided by <MudLink Href="https://letsencrypt.org/" Target="_blank">Let's Encrypt</MudLink> and only 1 tracking cookie is placed by Cloudflare.
 			</MudText>
 		</MudPaper>
 
@@ -30,5 +39,54 @@
 				curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;
 			</MudAlert>
 		</MudPaper>
+	</MudItem>
+
+	<MudItem>
+		<MudText Typo="Typo.h5">Books you want, you need, you can't live without 😉</MudText>
+		<MudText Typo="Typo.body1"><i>I do like to promote stuff I love!</i></MudText>
+	</MudItem>
+
+	<MudItem xs="12" md="12" Class="d-flex flex-wrap">
+		<MudItem Class="d-flex flex-wrap mr-4 mb-8">
+			<MudLink Href="https://www.manning.com/books/blazor-in-action" Target="_blank"><img src="/images/Sainty-Blazor-MEAP.webp" width="360" height="451" /></MudLink>
+			<MudCard Elevation=0 Class="ma-0 pa-0" Style="height: 451px;">
+				<MudCardContent Class="pa-4 ma-0" Style="width:360px;">
+					<MudText Typo="Typo.h6" Class="my-0">Blazor In Action (MEAP)</MudText>
+					<MudButton Class="ma-0 pa-0" Link="https://twitter.com/Chris_Sainty" Target="_blank"
+							   Variant="Variant.Text" EndIcon="@Icons.Custom.Brands.Twitter" Color="Color.Primary"
+							   Style="text-transform:none">Chris Sainty</MudButton>
+					<MudText Typo="Typo.body1" Class="my-3">An example-driven guide to building reusable UI components and web frontends - all with Blazor, C#, and .NET.</MudText>
+					<MudText Typo="Typo.body2" Class="mb-0">
+						Blazor, a powerful C#-based frontend framework from Microsoft, makes it easy to create fast rich web applications without
+						the limitations of typical JavaScript-based tools. Blazor components seamlessly blend C# and standard HTML markup, so you can build web frontends
+						using the same technology as your server-side code. With Blazor WebAssembly, you can also run your C# code natively in the browser.
+					</MudText>
+				</MudCardContent>
+				<MudCardActions Class="pa-0 ma-0">
+					<MudLink Typo="Typo.subtitle1" Class="ml-4 my-0" Color="Color.Primary" Href="https://www.manning.com/books/blazor-in-action" Target="_blank">More info ...</MudLink>
+				</MudCardActions>
+			</MudCard>
+		</MudItem>
+
+		<MudItem Class="d-flex flex-wrap mb-8">
+			<MudLink Href="https://www.manning.com/books/entity-framework-core-in-action-second-edition" Target="_blank"><img src="/images/Smith-EFC-2ed-HI.webp" width="360" height="451" /></MudLink>
+			<MudCard Elevation=0 Class="mr-0 pa-0" Style="height: 451px;">
+				<MudCardContent Class="pa-4 ma-0" Style="width:360px;">
+					<MudText Typo="Typo.h6" Class="my-0">Entity Framework Core in Action, Second Edition</MudText>
+					<MudButton Class="ma-0 pa-0" Link="https://twitter.com/thereformedprog" Target="_blank"
+							   Variant="Variant.Text" EndIcon="@Icons.Custom.Brands.Twitter" Color="Color.Primary"
+							   Style="text-transform:none">Jon P Smith</MudButton>
+					<MudText Typo="Typo.body1" Class="my-3">Entity Framework Core in Action, Second Edition is an in-depth guide to reading and writing databases with EF Core.</MudText>
+					<MudText Typo="Typo.body2" Class="mb-0">
+						Revised from the bestselling original edition, it’s filled with over 100 diagrams, code snippets, and examples—including building and scaling your
+						own bookselling web application. Learn from author Jon Smith’s extensive experience working with EF Core in production, as you discover time-saving
+						patterns and best practices for security, performance tuning, and unit testing. All of the book’s code is available on GitHub.
+					</MudText>
+				</MudCardContent>
+				<MudCardActions Class="pa-0 ma-0">
+					<MudLink Typo="Typo.subtitle1" Class="ml-4 mt-0" Color="Color.Primary" Href="https://www.manning.com/books/entity-framework-core-in-action-second-edition" Target="_blank">More info ...</MudLink>
+				</MudCardActions>
+			</MudCard>
+		</MudItem>
 	</MudItem>
 </MudGrid>

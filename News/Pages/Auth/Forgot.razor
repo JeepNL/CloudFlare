@@ -11,9 +11,6 @@
 	{
 		<MudCard>
 			<MudCardContent>
-				<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Password" Variant="Variant.Filled">
-					Ýou'll only receive an email if your email address is registered here.
-				</MudAlert>
 				<MudForm @ref="form" @bind-IsValid="@formValidated">
 					<MudTextField Class="mb-3" T="string" @bind-Value="forgotUser.Email" Label="Email"
 							  Required="true"
