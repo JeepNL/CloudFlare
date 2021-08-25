@@ -11,25 +11,28 @@
 
 <MudGrid>
 	<MudItem xs="12" xl="11">
-		<MudPaper Elevation="2" Class="pa-4">
-			<MudText Typo="Typo.h5" Class="mb-4">About BlazorBits</MudText>
-			<MudText Typo="Typo.body1">
+		<MudPaper Elevation="2" Class="pa-2">
+			<img src="/images/dotNETDropMic.webp" width="140" align="right" style="margin-left: 0.5em" />
+			<MudText Typo="Typo.h5" Class="pa-2">About BlazorBits</MudText>
+			<MudText Typo="Typo.body1" Class="pa-2">
 				This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/" Target="_blank">ASP.NET Core 6 Preview 7</MudLink>
 				<i>(August 10th, 2021)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
 				Application <i>(SPA)</i> prototype using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the
-				client side, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>. The website is using
-				remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a co-located
-				<MudLink Href="https://www.transip.eu/vps/bladevps/" Target="_blank">TransIp/X4</MudLink> Ubuntu 20.04 VPS for its dynamic data and register/login. You can
-				find the client side source on <MudLink Href="https://github.com/JeepNL/CloudFlare" Target="_blank">GitHub</MudLink>. Oh, I almost forgot, light and dark
-				themes are also supported and when you register here the email you receive to verify your email address passes SPF/DKIM/DMARC validations. Free SSL
-				certificate provided by <MudLink Href="https://letsencrypt.org/" Target="_blank">Let's Encrypt</MudLink> and only 1 tracking cookie is placed by Cloudflare.
+				front-end <i>(client side)</i>, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>.
+				The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a
+				co-located <MudLink Href="https://www.transip.eu/vps/bladevps/" Target="_blank">TransIp/X4</MudLink> Ubuntu 20.04 Virtual Private Server <i>(VPS)</i> for its
+				dynamic data from a remote SQLite database and for authorization & authentication <i>(register & login)</i>. You can find the client side source on
+				<MudLink Href="https://github.com/JeepNL/CloudFlare" Target="_blank">GitHub</MudLink>. Oh, I almost forgot, light and dark themes are also supported and
+				when you register  the email you'll receive to verify your email address passes SPF/DKIM/DMARC validations. Free SSL certificate for the back-end server
+				provided by <MudLink Href="https://letsencrypt.org/" Target="_blank">Let's Encrypt</MudLink> and only 1 tracking cookie is placed by Cloudflare.
 			</MudText>
 		</MudPaper>
 
 		<MudAlert Elevation="2" Severity="Severity.Warning" Variant="Variant.Text" Icon="@Icons.Material.Outlined.TextSnippet" Class="mt-6">
 			<MudText Typo="Typo.body1">
 				<MudTooltip Text="Niels Swimberghe on Twitter"><MudLink Href="https://twitter.com/RealSwimburger" Target="_blank" Typo="Typo.body1">Niels Swimberghe</MudLink></MudTooltip> wrote a great
-				<MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1">blog post</MudLink></MudTooltip> on how to deploy your Blazor WebAssembly app to Cloudflare Pages.
+				<MudTooltip Text="RTBP 😉"><MudLink Href="https://swimburger.net/blog/dotnet/how-to-deploy-blazor-webassembly-to-cloudflare-pages" Target="_blank" Typo="Typo.body1">blog post</MudLink></MudTooltip> on
+				how to deploy your Blazor WebAssembly app to Cloudflare Pages.
 			</MudText>
 		</MudAlert>
 
@@ -42,7 +45,7 @@
 	</MudItem>
 
 	<MudItem>
-		<MudText Typo="Typo.h5">Books you want, you need, you can't live without 😉</MudText>
+		<MudText Typo="Typo.h5">Books you want, you need, you really can't live without 😉</MudText>
 		<MudText Typo="Typo.body1"><i>I do like to promote stuff I love!</i></MudText>
 	</MudItem>
 
@@ -90,3 +93,7 @@
 		</MudItem>
 	</MudItem>
 </MudGrid>
+
+@code {
+
+}
