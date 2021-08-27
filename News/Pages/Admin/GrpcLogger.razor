@@ -24,12 +24,12 @@ else
 			@*<MudTh>Suc</MudTh>*@
 			<MudTh>User-Agent</MudTh>
 			<MudTh>Lang</MudTh>
-			<MudTh>Origin</MudTh>
+			@*<MudTh>Origin</MudTh>*@
 			<MudTh>Referer</MudTh>
 			<MudTh>Browser</MudTh>
 			<MudTh>Mob</MudTh>
 			<MudTh>Platform</MudTh>
-			<MudTh>Host</MudTh>
+			@*<MudTh>Host</MudTh>*@
 			<MudTh>Remote</MudTh>
 			@*<MudTh>Det</MudTh>*@
 			@*<MudTh>Mth</MudTh>*@
@@ -42,14 +42,14 @@ else
 			@*<MudTd DataLabel="Desc">@context.Desc</MudTd>*@
 			@*<MudTd DataLabel="ActionEnum">@context.ActionEnum</MudTd>*@
 			@*<MudTd DataLabel="Success">@context.Success</MudTd>*@
-			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 35)</MudTd>
-			<MudTd DataLabel="AcceptLanguage">@Utils.Abbreviate(context.AcceptLanguage, 10)</MudTd>
-			<MudTd DataLabel="Origin">@context.Origin</MudTd>
+			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 30)</MudTd>
+			<MudTd DataLabel="AcceptLanguage">@Utils.Abbreviate(context.AcceptLanguage, 8)</MudTd>
+			@*<MudTd DataLabel="Origin">@context.Origin</MudTd>*@
 			<MudTd DataLabel="Referer">@context.Referer</MudTd>
 			<MudTd DataLabel="SecChUa">@Utils.Abbreviate(context.SecChUa, 20)</MudTd>
 			<MudTd DataLabel="SecChUaMobile">@context.SecChUaMobile</MudTd>
 			<MudTd DataLabel="SecChUaPlatform">@context.SecChUaPlatform</MudTd>
-			<MudTd DataLabel="Host">@context.Host</MudTd>
+			@*<MudTd DataLabel="Host">@context.Host</MudTd>*@
 			<MudTd DataLabel="Peer">@context.Peer</MudTd>
 			@*<MudTd DataLabel="StatusDetail">@context.StatusDetail</MudTd>*@
 			@*<MudTd DataLabel="Method">@context.Method</MudTd>*@
