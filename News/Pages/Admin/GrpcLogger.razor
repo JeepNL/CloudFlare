@@ -1,0 +1,75 @@
+﻿@page "/admin/loggr"
+@attribute [Authorize(Policy = Policies.IsAdministrator)]
+@inject IAuthService AuthService
+@inject GrpcChannel grpcChannel
+
+<MudText Typo="Typo.h4">Logger</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">What, who &amp; where ...</MudText>
+
+@if (loading)
+{
+	<MudText Typo="Typo.body1">Loading</MudText>
+}
+else
+{
+	@*<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">*@
+	<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4">
+		<HeaderContent>
+			@*<MudTh>Id</MudTh>*@
+			<MudTh>DateTime</MudTh>
+			@*<MudTh>Ses</MudTh>*@
+			@*<MudTh>Req</MudTh>*@
+			@*<MudTh>Desc</MudTh>*@
+			@*<MudTh>Act</MudTh>*@
+			@*<MudTh>Suc</MudTh>*@
+			<MudTh>User-Agent</MudTh>
+			<MudTh>Lang</MudTh>
+			<MudTh>Origin</MudTh>
+			<MudTh>Referer</MudTh>
+			<MudTh>Browser</MudTh>
+			<MudTh>Mob</MudTh>
+			<MudTh>Platform</MudTh>
+			<MudTh>Host</MudTh>
+			<MudTh>Remote</MudTh>
+			@*<MudTh>Det</MudTh>*@
+			@*<MudTh>Mth</MudTh>*@
+		</HeaderContent>
+		<RowTemplate>
+			@*<MudTd DataLabel="Id">@context.Id</MudTd>*@
+			<MudTd DataLabel="Date">@Utils.UtcTicks2Local(context.Date)</MudTd>
+			@*<MudTd DataLabel="Session">@context.Session</MudTd>*@
+			@*<MudTd DataLabel="Request">@context.Request</MudTd>*@
+			@*<MudTd DataLabel="Desc">@context.Desc</MudTd>*@
+			@*<MudTd DataLabel="ActionEnum">@context.ActionEnum</MudTd>*@
+			@*<MudTd DataLabel="Success">@context.Success</MudTd>*@
+			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 35)</MudTd>
+			<MudTd DataLabel="AcceptLanguage">@Utils.Abbreviate(context.AcceptLanguage, 10)</MudTd>
+			<MudTd DataLabel="Origin">@context.Origin</MudTd>
+			<MudTd DataLabel="Referer">@context.Referer</MudTd>
+			<MudTd DataLabel="SecChUa">@Utils.Abbreviate(context.SecChUa, 20)</MudTd>
+			<MudTd DataLabel="SecChUaMobile">@context.SecChUaMobile</MudTd>
+			<MudTd DataLabel="SecChUaPlatform">@context.SecChUaPlatform</MudTd>
+			<MudTd DataLabel="Host">@context.Host</MudTd>
+			<MudTd DataLabel="Peer">@context.Peer</MudTd>
+			@*<MudTd DataLabel="StatusDetail">@context.StatusDetail</MudTd>*@
+			@*<MudTd DataLabel="Method">@context.Method</MudTd>*@
+		</RowTemplate>
+		<PagerContent>
+			<MudTablePager PageSizeOptions="new int[]{50, 100, 250}" />
+		</PagerContent>
+	</MudTable>
+}
+
+@code {
+	private IEnumerable<Log> logs;
+	bool loading = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		LogQuery query = new() { Take = 0 };
+		Metadata headers = await AuthService.AddMetaDataHeader();
+		var client = new Lggr.LggrClient(grpcChannel);
+		logs = (await client.GetSelectAsync(query, headers)).LogRepeated.ToList();
+		loading = false;
+	}
+}

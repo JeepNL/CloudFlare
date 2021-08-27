@@ -6,7 +6,6 @@ package auther;
 service Auther {
   rpc AuthRpc (AutherUser) returns (UserResult);
   rpc AccountRpc (AutherAccount) returns (AccountResult);
-  rpc InfoRpc (AutherInfo) returns (InfoResult);
 }
 
 message AutherUser {
@@ -47,18 +46,4 @@ message AutherAccount {
 message AccountResult {
 	bool success = 1;
 	google.protobuf.StringValue error = 2;
-}
-
-message AutherInfo {
-	int64 session = 1;
-}
-
-message InfoResult {
-	int32 id = 1;
-	bool ok = 2;
-	google.protobuf.StringValue lc = 3;
-	google.protobuf.StringValue lp = 4;
-	google.protobuf.StringValue rm = 5;
-	google.protobuf.StringValue rp = 6;
-	google.protobuf.StringValue hd = 7;
 }

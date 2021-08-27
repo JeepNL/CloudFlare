@@ -1,6 +1,5 @@
 ﻿@inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
-@inject IApiClientService _apiClientService;
 @inject ISyncLocalStorageService localStorage
 
 <MudScrollToTop>
@@ -69,25 +68,22 @@
 		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 	}
 
-	//protected override async Task OnAfterRenderAsync(bool firstRender)
-	//{
-	//	if (firstRender)
-	//	{
-	//		IPAddress2 ipAddress = await _apiClientService.GetUserIPAsync();
-	//		Log logModel = new()
-	//		{
-	//			Session = 0, // #TODO (StateService)
-	//			Uid = string.Empty, // #TODO
-	//			Rem = ipAddress.IP,
-	//			Desc = "INIT: MainLayout",
-	//			Success = (ipAddress.IP.Substring(0, 6) == "Error:" ? false : true),
-	//			Date = DateTimeOffset.UtcNow.Ticks,
-	//			ActionEnum = ApiGrpc.Protos.Action.System
-	//		};
-	//		var client = new Lggr.LggrClient(grpcChannel);
-	//		PostResponse postResponse = await client.PostAsync(logModel);
-	//	}
-	//}
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			Log logModel = new()
+			{
+				Session = 1,
+				Request = "INIT: MainLayout",
+				Desc = "Description",
+				ActionEnum = ApiGrpc.Protos.Action.System,
+				Success = true
+			};
+			var client = new Lggr.LggrClient(grpcChannel);
+			PostResponse postResponse = await client.PostAsync(logModel);
+		}
+	}
 
 	private void ChangeTheme()
 	{

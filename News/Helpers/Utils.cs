@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.Text;
 
 namespace News.Helpers
 {
@@ -46,23 +47,20 @@ namespace News.Helpers
 			string decrypted;
 			try
 			{
-				byte[] b = Convert.FromBase64String(b64str);
-				decrypted = System.Text.ASCIIEncoding.ASCII.GetString(b);
+				byte[] outputBytes = Convert.FromBase64String(b64str);
+				decrypted = Encoding.ASCII.GetString(outputBytes);
 			}
-			catch // (FormatException fe)
+			catch (FormatException fe)
 			{
-				decrypted = "";
-				//decrypted = fe.ToString();
+				decrypted = fe.Message;
 			}
 			return decrypted;
 		}
 
 		public static string toB64(string input)
 		{
-			byte[] b = System.Text.ASCIIEncoding.ASCII.GetBytes(input);
-			string encrypted = Convert.ToBase64String(b);
-			return encrypted;
+			byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+			return Convert.ToBase64String(inputBytes);
 		}
-
 	}
 }
