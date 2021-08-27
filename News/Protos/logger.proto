@@ -4,29 +4,52 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 package logr;
 
-service LoggerRpc {
-  rpc PostRec (LogRec) returns (google.protobuf.Empty);
-  rpc GetRec (LogQuery) returns (LogRec);
-  rpc GetRecs (google.protobuf.Empty) returns (LogRecs);
+service Lggr {
+  rpc Post (Log) returns (PostResponse);
+  rpc GetSingle (LogId) returns (Log);
+  rpc GetSelect (LogQuery) returns (Logs);
 }
 
-message LogRec {
-	enum Action {
-		SYSTEM = 0;
-		USER = 1;
-		AUDIT = 2;
-	}
+enum Action {
+	ALL = 0; // for query only
+	SYSTEM = 1;
+	USER = 2;
+	AUDIT = 3;
+}
+
+message Log {
     int32 id = 1;
-    google.protobuf.StringValue uid = 2;
-	google.protobuf.StringValue rem = 3;
-	string desc = 4;
-	bool success = 5;
-	int64 date = 6;
-	Action action_enum = 7;
+	int64 session = 2;
+    google.protobuf.StringValue uid = 3;
+	google.protobuf.StringValue rem = 4;
+	string desc = 5;
+	bool success = 6;
+	int64 date = 7;
+	Action action_enum = 8;
 }
-message LogRecs {
-	repeated LogRec log_rec_repeated = 1;
+message Logs {
+	repeated Log log_repeated = 1;
 }
-message LogQuery {
+
+message PostResponse {
 	int32 id = 1;
+}
+
+message LogId {
+	int32 id = 1;
+}
+
+message LogQuery {
+	enum Success {
+		FALSE = 0;
+		TRUE = 1;
+		ALL = 2;
+	}
+	int32 id = 1;
+	int64 session = 2;
+	int32 take = 3;
+	int64 from_date = 4;
+	int64 to_date = 5;
+	Action action_enum = 6;
+	Success success_enum = 7;
 }

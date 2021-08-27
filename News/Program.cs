@@ -65,6 +65,12 @@ namespace News
 
 			builder.Services.AddScoped<ClipboardService>();
 
+			builder.Services.AddHttpClient("IP", (options) => {
+				options.Timeout = TimeSpan.FromSeconds(3);
+				options.BaseAddress = new Uri("https://jsonip.com");
+			});
+			builder.Services.AddScoped<IApiClientService, ApiClientService>();
+
 			await builder.Build().RunAsync();
 		}
 	}

@@ -9,7 +9,39 @@
 
 <InputFile OnChange="UploadFile" />
 
+@if (ready)
+{
+	<MudText Typo="Typo.body1">Upload Finished</MudText>
+}
+
+<MudDivider Class="my-4" />
+
+<MudButton Class="my-4" Variant="Variant.Filled" Color="Color.Primary" OnClick="RInfo">Remote Info </MudButton>
+
+<MudText Typo="Typo.body1">Local IP: @iResult.Lc</MudText>
+<MudText Typo="Typo.body1">Local Port: @iResult.Lp</MudText>
+<MudText Typo="Typo.body1">Remote IP: @iResult.Rm</MudText>
+<MudText Typo="Typo.body1">Remote Port: @iResult.Rp</MudText>
+<MudText Typo="Typo.body1">Headers: @iResult.Hd</MudText>
+
 @code {
+	bool ready = false;
+	InfoResult iResult = new()
+	{
+		Id = 1,
+		Ok = true,
+		Lc = string.Empty,
+		Lp = string.Empty,
+		Rm = string.Empty,
+		Rp = string.Empty,
+		Hd = string.Empty
+	};
+
+	//protected override void OnInitialized()
+	//{
+
+	//}
+
 	async Task UploadFile(InputFileChangeEventArgs e)
 	{
 		IBrowserFile file = e.File;
@@ -48,5 +80,18 @@
 		{
 			Console.WriteLine("Max. image size: 256kB");
 		};
+		ready = true;
+	}
+
+	async Task RInfo()
+	{
+		AutherInfo aInfo = new()
+		{
+			Session = 1
+		};
+		//Metadata headers = await AuthService.AddMetaDataHeader();
+		var client = new Auther.AutherClient(grpcChannel);
+		//iResult = await client.InfoRpcAsync(aInfo, headers);
+		iResult = await client.InfoRpcAsync(aInfo);
 	}
 }
