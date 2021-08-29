@@ -1,0 +1,103 @@
+﻿@page "/admin/tester"
+@attribute [Authorize(Policy = Policies.IsAdministrator)]
+@using System.Text.Json;
+@using System.Security.Claims
+@inject IAuthService AuthService
+@inject GrpcChannel grpcChannel
+@inject ISyncLocalStorageService localStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudText Typo="Typo.h4">Tester</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
+
+<MudText Class="mb-4" Typo="Typo.body1">Email from Base64: @emailFromB64</MudText>
+<MudText Class="mb-4" Typo="Typo.body1">Claim expiration: @claimExpDt</MudText>
+
+<MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
+	<thead>
+		<tr style="color:white; background-color:orangered">
+			<th colspan="2">Claims</th>
+		</tr>
+		<tr style="color:black; background-color:lightgray">
+			<th>Key</th>
+			<th>Value</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var claim in _claims)
+		{
+			<tr>
+				<td>@claim.Type</td>
+				<td>@claim.Value</td>
+			</tr>
+		}
+	</tbody>
+</MudSimpleTable>
+
+<MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
+	<thead>
+		<tr style="color:white; background-color:orangered">
+			<th colspan="2">CookieModel</th>
+		</tr>
+		<tr style="color:black; background-color:lightgray">
+			<th>Key</th>
+			<th>Value</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr><td>Session</td><td>@cookieModel.Session</td></tr>
+		<tr><td>State</td><td>@cookieModel.State</td></tr>
+		<tr><td>Theme</td><td>@cookieModel.Theme</td></tr>
+		<tr><td>ScreenRes</td><td>@cookieModel.ScreenRes</td></tr>
+	</tbody>
+</MudSimpleTable>
+
+<MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
+	<thead>
+		<tr style="color:white; background-color:orangered">
+			<th colspan="2">StateModel</th>
+		</tr>
+		<tr style="color:black; background-color:lightgray">
+			<th>Key</th>
+			<th>Value</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr><td>S</td><td>@stateModel.S</td></tr>
+		<tr><td>SI</td><td>@stateModel.SI</td></tr>
+		<tr><td>SE</td><td>@stateModel.SE</td></tr>
+	</tbody>
+</MudSimpleTable>
+
+@code {
+	IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+	DateTimeOffset claimExpDt = default;
+	CookieModel cookieModel = new();
+	StateModel stateModel = new();
+	string emailFromB64 = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		if (user.Identity.IsAuthenticated)
+		{
+			_claims = user.Claims;
+			emailFromB64 = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
+			//long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
+			long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
+			claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
+			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+		}
+
+		IOString encryptedState = new()
+		{
+			InputOutput = cookieModel.State
+		};
+		var client = new Auther.AutherClient(grpcChannel);
+		Metadata headers = await AuthService.AddMetaDataHeader();
+		IOString decrypted = await client.DecryptAsync(encryptedState, headers);
+		string decryptedState = decrypted.InputOutput;
+		stateModel = JsonSerializer.Deserialize<StateModel>(decryptedState);
+	}
+}

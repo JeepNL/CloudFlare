@@ -2,7 +2,7 @@
 {
 	public class UserModel
 	{
-		public string Email { get; set; }
-		public bool IsAuthenticated { get; set; }
+		public bool IsAuthenticated { get; set; } = false;
+		public string Email { get; set; } = string.Empty;
 	}
 }

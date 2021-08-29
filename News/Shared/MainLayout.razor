@@ -1,6 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Text.Json;
+@using System.Security.Claims
+@inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
 @inject ISyncLocalStorageService localStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudScrollToTop>
 	<MudFab Color="Color.Primary" Icon="@Icons.Filled.ArrowCircleUp" />
@@ -44,16 +47,25 @@
 </MudLayout>
 
 @code {
+	IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 	MudTheme currentTheme = new MudTheme();
 	bool drawerOpen = true;
 	bool dark = false;
+	string cookie = string.Empty;
+	CookieModel cookieModel = new();
 
 	protected override void OnInitialized()
 	{
-		string theme = localStorage.GetItemAsString("bb_theme");
-		if (!string.IsNullOrEmpty(theme))
+		cookie = localStorage.GetItemAsString("bb_state");
+		if (string.IsNullOrEmpty(cookie))
 		{
-			if (theme == "light")
+			currentTheme.Palette = DefaultTheme.DefaultPalette();
+			cookieModel.Theme = "light";
+		}
+		else
+		{
+			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+			if (cookieModel.Theme == "light")
 				currentTheme.Palette = DefaultTheme.DefaultPalette();
 			else
 			{
@@ -61,9 +73,6 @@
 				dark = true;
 			}
 		}
-		else
-			currentTheme.Palette = DefaultTheme.DefaultPalette();
-
 		currentTheme.Typography = Design.MultiTypography("Ubuntu");
 		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 	}
@@ -72,16 +81,45 @@
 	{
 		if (firstRender)
 		{
+			string name = string.Empty;
+			var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+			if (user.Identity.IsAuthenticated)
+			{
+				_claims = user.Claims;
+				name = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
+			}
+			else if (!string.IsNullOrEmpty(cookie))
+			{
+				// #TODO edit statestring in cookie.
+				UserState userState = new()
+				{
+					CookieStateString = cookieModel.State
+				};
+				var autherClient = new Auther.AutherClient(grpcChannel);
+				StateResponse stateResponse = await autherClient.GetUserAsync(userState);
+				name = stateResponse.Name;
+			}
+
+			Guid newGuid = Guid.NewGuid();
 			Log logModel = new()
 			{
-				Session = 1,
-				Request = "INIT: MainLayout",
-				Desc = "Description",
-				ActionEnum = ApiGrpc.Protos.Action.System,
-				Success = true
+				Session = newGuid.ToString(),
+				Request = "Init",
+				Name = name,
+				Authenticated = user.Identity.IsAuthenticated,
+				CookieExists = string.IsNullOrEmpty(cookie) ? false : true,
+				Success = true,
+				ActionEnum = ApiGrpc.Protos.Action.System
 			};
-			var client = new Lggr.LggrClient(grpcChannel);
-			PostResponse postResponse = await client.PostAsync(logModel);
+
+			var loggerClient = new Lggr.LggrClient(grpcChannel);
+			PostResponse postResponse = await loggerClient.PostAsync(logModel);
+
+			// if cookie exists or not, set a new one with different session id (init)
+			cookieModel.Session = logModel.Session;
+			cookieModel.State = postResponse.Status;
+			localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
 		}
 	}
 
@@ -92,10 +130,14 @@
 		currentTheme.Typography = Design.MultiTypography("Ubuntu");
 		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 
+		cookieModel.Theme = "dark";
+
 		if (dark)
-			localStorage.SetItemAsString("bb_theme", "dark");
+			cookieModel.Theme = "dark";
 		else
-			localStorage.SetItemAsString("bb_theme", "light");
+			cookieModel.Theme = "light";
+
+		localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
 	}
 
 	void DrawerToggle()

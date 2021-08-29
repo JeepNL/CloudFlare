@@ -6,6 +6,8 @@ package auther;
 service Auther {
   rpc AuthRpc (AutherUser) returns (UserResult);
   rpc AccountRpc (AutherAccount) returns (AccountResult);
+  rpc Decrypt (IOString) returns (IOString);
+  rpc GetUser (UserState) returns (StateResponse);
 }
 
 message AutherUser {
@@ -46,4 +48,16 @@ message AutherAccount {
 message AccountResult {
 	bool success = 1;
 	google.protobuf.StringValue error = 2;
+}
+
+message IOString {
+	string input_output = 1;
+}
+
+message UserState {
+	string cookie_state_string = 1;
+}
+message StateResponse {
+	string name = 1;
+	string id = 2;
 }

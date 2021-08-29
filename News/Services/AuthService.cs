@@ -48,32 +48,30 @@ namespace News.Services
 			return headers;
 		}
 
+		// Check if authToken isn't expired (in App.razor)
+		// #TODO Do this in ApiAuthenticationStateProvider.cs instead of here.
 		public async Task<UserModel> ValidateAuth()
 		{
+			UserModel ValidateUser = new();
 			IEnumerable<Claim> userClaims = Enumerable.Empty<Claim>();
-
-			UserModel ValidateUser = new()
-			{
-				Email = "",
-				IsAuthenticated = false
-			};
-
 			AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
 			ClaimsPrincipal user = authState.User;
 
-			if (user.Identity.Name == null)
-			{
+			if (!user.Identity.IsAuthenticated)
 				return ValidateUser;
-			}
-			ValidateUser.Email = user.Identity.Name;
 
+			ValidateUser.Email = user.Identity.Name;
 			userClaims = user.Claims;
-			int expClaim = Convert.ToInt32(userClaims.FirstOrDefault(e => e.Type == "exp").Value);
-			DateTimeOffset dtClaimExp = DateTimeOffset.FromUnixTimeSeconds(expClaim).ToLocalTime();
+			//long expClaim = Convert.ToInt64(userClaims.FirstOrDefault(e => e.Type == "exp")?.Value);
+			long expClaimUnix = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
+			DateTimeOffset dtClaimExp = DateTimeOffset.FromUnixTimeSeconds(expClaimUnix).ToLocalTime();
 			DateTimeOffset dtClaimNow = DateTimeOffset.Now;
 
 			if (dtClaimNow < dtClaimExp)
+			{
+				// #TODO Refresh Token, see App.Razor
 				ValidateUser.IsAuthenticated = true;
+			}
 
 			return ValidateUser;
 		}

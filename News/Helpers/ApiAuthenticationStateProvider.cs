@@ -27,6 +27,8 @@ namespace News.Helpers
 
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
 
+			// #TODO Check if token has expired. Do it here instead of ValidateAuth in AuthService.cs
+
 			return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
 		}
 

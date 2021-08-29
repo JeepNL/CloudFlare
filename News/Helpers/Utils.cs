@@ -42,7 +42,7 @@ namespace News.Helpers
 			return input;
 		}
 
-		public static string fromB64(string b64str)
+		public static string FromB64(string b64str)
 		{
 			string decrypted;
 			try
@@ -57,7 +57,7 @@ namespace News.Helpers
 			return decrypted;
 		}
 
-		public static string toB64(string input)
+		public static string ToB64(string input)
 		{
 			byte[] inputBytes = Encoding.ASCII.GetBytes(input);
 			return Convert.ToBase64String(inputBytes);

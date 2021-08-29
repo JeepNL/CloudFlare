@@ -32,14 +32,16 @@
 
 @code {
 	bool load = false;
+
 	protected override async Task OnInitializedAsync()
 	{
-		Console.WriteLine("Welcome to BlazorBits!");
 		UserModel validateUser = new();
+
+		// #TODO (INIT) Refresh Token, see AuthService.cs
+		// check if expired authToken exists
 		validateUser = await AuthService.ValidateAuth();
 		if (!validateUser.IsAuthenticated && !string.IsNullOrEmpty(validateUser.Email))
-			await AuthService.Logout(); // expired authToken exists
-
+			await AuthService.Logout();
 		load = true;
 	}
 }

@@ -17,15 +17,18 @@ else
 		<HeaderContent>
 			@*<MudTh>Id</MudTh>*@
 			<MudTh>DateTime</MudTh>
-			@*<MudTh>Ses</MudTh>*@
-			@*<MudTh>Req</MudTh>*@
-			@*<MudTh>Desc</MudTh>*@
-			@*<MudTh>Act</MudTh>*@
+			<MudTh>Session</MudTh>
+			<MudTh>Req</MudTh>
+			<MudTh>Name</MudTh>
+			<MudTh>Auth</MudTh>
+			<MudTh>Ck?</MudTh>
 			@*<MudTh>Suc</MudTh>*@
+			<MudTh>Action</MudTh>
+			@*<MudTh>Desc</MudTh>*@
 			<MudTh>User-Agent</MudTh>
 			<MudTh>Lang</MudTh>
 			@*<MudTh>Origin</MudTh>*@
-			<MudTh>Referer</MudTh>
+			<MudTh>Ref</MudTh>
 			<MudTh>Browser</MudTh>
 			<MudTh>Mob</MudTh>
 			<MudTh>Platform</MudTh>
@@ -37,16 +40,19 @@ else
 		<RowTemplate>
 			@*<MudTd DataLabel="Id">@context.Id</MudTd>*@
 			<MudTd DataLabel="Date">@Utils.UtcTicks2Local(context.Date)</MudTd>
-			@*<MudTd DataLabel="Session">@context.Session</MudTd>*@
-			@*<MudTd DataLabel="Request">@context.Request</MudTd>*@
+			<MudTd DataLabel="Session">@Utils.Abbreviate(context.Session, 11)</MudTd>
+			<MudTd DataLabel="Request">@context.Request</MudTd>
+			<MudTd DataLabel="Name">@context.Name</MudTd>
+			<MudTd DataLabel="Authenticated">@context.Authenticated</MudTd>
+			<MudTd DataLabel="CookieExists">@context.CookieExists</MudTd>
+			<MudTd DataLabel="ActionEnum">@context.ActionEnum</MudTd>
 			@*<MudTd DataLabel="Desc">@context.Desc</MudTd>*@
-			@*<MudTd DataLabel="ActionEnum">@context.ActionEnum</MudTd>*@
 			@*<MudTd DataLabel="Success">@context.Success</MudTd>*@
-			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 30)</MudTd>
+			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 18)</MudTd>
 			<MudTd DataLabel="AcceptLanguage">@Utils.Abbreviate(context.AcceptLanguage, 8)</MudTd>
 			@*<MudTd DataLabel="Origin">@context.Origin</MudTd>*@
 			<MudTd DataLabel="Referer">@context.Referer</MudTd>
-			<MudTd DataLabel="SecChUa">@Utils.Abbreviate(context.SecChUa, 20)</MudTd>
+			<MudTd DataLabel="SecChUa">@Utils.Abbreviate(context.SecChUa, 13)</MudTd>
 			<MudTd DataLabel="SecChUaMobile">@context.SecChUaMobile</MudTd>
 			<MudTd DataLabel="SecChUaPlatform">@context.SecChUaPlatform</MudTd>
 			@*<MudTd DataLabel="Host">@context.Host</MudTd>*@

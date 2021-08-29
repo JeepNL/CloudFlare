@@ -19,30 +19,31 @@ enum Action {
 message Log {
     int32 id = 1;
 	int64 date = 2;
-	int64 session = 3;
+	string session = 3;
 	string request = 4;
-	google.protobuf.StringValue Desc = 5;
-	Action action_enum = 6;
-	bool success = 7;
-	google.protobuf.StringValue user_agent = 8;
-	google.protobuf.StringValue accept_language = 9;
-	google.protobuf.StringValue origin = 10;
-	google.protobuf.StringValue referer = 11;
-	google.protobuf.StringValue sec_ch_ua = 12;
-	google.protobuf.StringValue sec_ch_ua_mobile = 13;
-	google.protobuf.StringValue sec_ch_ua_platform = 14;
-	google.protobuf.StringValue host = 15;
-	google.protobuf.StringValue peer = 16;
-	google.protobuf.StringValue status_detail = 17;
-	google.protobuf.StringValue method = 18;
-
+	string name = 5;
+	bool authenticated = 6;
+	bool cookie_exists = 7;
+	bool success = 8;
+	Action action_enum = 9;
+	google.protobuf.StringValue Desc = 10;
+	google.protobuf.StringValue user_agent = 11;
+	google.protobuf.StringValue accept_language = 12;
+	google.protobuf.StringValue origin = 13;
+	google.protobuf.StringValue referer = 14;
+	google.protobuf.StringValue sec_ch_ua = 15;
+	google.protobuf.StringValue sec_ch_ua_mobile = 16;
+	google.protobuf.StringValue sec_ch_ua_platform = 17;
+	google.protobuf.StringValue host = 18;
+	google.protobuf.StringValue peer = 19;
+	google.protobuf.StringValue status_detail = 20;
+	google.protobuf.StringValue method = 21;
 }
 message Logs {
 	repeated Log log_repeated = 1;
 }
-
 message PostResponse {
-	bool ok = 1;
+	string Status = 1; // encrypted StateString
 }
 
 message LogId {

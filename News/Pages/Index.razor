@@ -39,7 +39,7 @@
 		<MudPaper Elevation="2" Class="mt-6 px-4 pb-4 pt-2">
 			<MudText Typo="Typo.body1" Class="my-1">To use the latest .NET 6 Preview SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
 			<MudAlert Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
-				curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;
+				<samp>curl -sSL https://dot.net/v1/dotnet-install.sh > dotnet-install.sh; chmod +x dotnet-install.sh; ./dotnet-install.sh <b>--channel 6.0 --version latest</b> -InstallDir ./dotnet; ./dotnet/dotnet --info; ./dotnet/dotnet publish -c Release -o output;</samp>
 			</MudAlert>
 		</MudPaper>
 	</MudItem>

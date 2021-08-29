@@ -1,9 +1,11 @@
 ﻿@page "/auth/login"
 @page "/auth/login/{FollowUp}/"
+@using System.Text.Json;
 @using System.ComponentModel.DataAnnotations
 @inject GrpcChannel grpcChannel
 @inject IAuthService AuthService
 @inject NavigationManager NavMan
+@inject ISyncLocalStorageService localStorage
 
 <MudText Typo="Typo.h4">Login</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Login to your account or <MudLink Href="/auth/register">register</MudLink> a new account</MudText>
@@ -107,6 +109,26 @@ else
 			else
 			{
 				await AuthService.SetToken(serverReply.Token);
+
+				CookieModel cookieModel = new();
+				cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+
+				Log logModel = new()
+				{
+					Session = cookieModel.Session,
+					Request = "Login",
+					Name = loginUser.Email,
+					Authenticated = true,
+					CookieExists = true,
+					Success = true,
+					ActionEnum = ApiGrpc.Protos.Action.User
+				};
+
+				var logClient = new Lggr.LggrClient(grpcChannel);
+				PostResponse logClientResponse = await logClient.PostAsync(logModel);
+				cookieModel.State = logClientResponse.Status;
+				localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+
 				NavMan.NavigateTo("/");
 			}
 		}

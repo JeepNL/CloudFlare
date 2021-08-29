@@ -29,7 +29,7 @@
 		{
 			AutherUser validateUserEmail = new()
 			{
-				Email = Utils.fromB64(ValidateEmail),
+				Email = ValidateEmail, // encrypted
 				Password = string.Empty,
 				Guid = ValidateGuid,
 				RememberMe = false,
