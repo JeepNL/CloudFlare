@@ -1,16 +1,16 @@
 ﻿@page "/admin/tester"
-@attribute [Authorize(Policy = Policies.IsAdministrator)]
 @using System.Text.Json;
 @using System.Security.Claims
+@attribute [Authorize(Policy = Policies.IsAdministrator)]
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject GrpcChannel grpcChannel
 @inject ISyncLocalStorageService localStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <MudText Typo="Typo.h4">Tester</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
 
-<MudText Class="mb-4" Typo="Typo.body1">Email from Base64: @emailFromB64</MudText>
 <MudText Class="mb-4" Typo="Typo.body1">Claim expiration: @claimExpDt</MudText>
 
 <MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
@@ -88,16 +88,13 @@
 			long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
 			claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
 			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
-		}
 
-		IOString encryptedState = new()
-		{
-			InputOutput = cookieModel.State
-		};
-		var client = new Auther.AutherClient(grpcChannel);
-		Metadata headers = await AuthService.AddMetaDataHeader();
-		IOString decrypted = await client.DecryptAsync(encryptedState, headers);
-		string decryptedState = decrypted.InputOutput;
-		stateModel = JsonSerializer.Deserialize<StateModel>(decryptedState);
+			CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
+			var client = new Auther.AutherClient(grpcChannel);
+			Metadata headers = await AuthService.AddMetaDataHeader();
+			var response = await client.GetUserStateAsync(cookieState, headers);
+			string result = response.CookieStateInputOutput;
+			stateModel = JsonSerializer.Deserialize<StateModel>(result);
+		}
 	}
 }

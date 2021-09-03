@@ -18,18 +18,35 @@ namespace News.Helpers
 		}
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 		{
-			var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+			ClaimsIdentity claimsIdentity;
+			string savedToken = await _localStorage.GetItemAsync<string>("authToken");
 
-			if (string.IsNullOrWhiteSpace(savedToken))
-			{
+			if (string.IsNullOrEmpty(savedToken))
 				return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+			else
+			{
+				claimsIdentity = new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt");
+				long expClaim = Convert.ToInt64(claimsIdentity.FindFirst(c => c.Type == "exp")?.Value);
+				DateTimeOffset dtOffsetClaimExp = DateTimeOffset.FromUnixTimeSeconds(expClaim).ToLocalTime();
+				DateTimeOffset dtOffsetNow = DateTimeOffset.Now;
+				if (dtOffsetNow > dtOffsetClaimExp)
+				{
+					await _localStorage.RemoveItemAsync("authToken");
+
+					// from MarkUserAsLoggedOut below
+					// not "MarkUserAsLoggedOut()" because of "anonymousUser" --> return new AuthenticationState(anonymousUser);
+					ClaimsPrincipal anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
+					Task<AuthenticationState> authState = Task.FromResult(new AuthenticationState(anonymousUser));
+					NotifyAuthenticationStateChanged(authState);
+
+					// from AuthService.cs - Logout
+					_httpClient.DefaultRequestHeaders.Authorization = null;
+					return new AuthenticationState(anonymousUser);
+				}
 			}
 
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
-
-			// #TODO Check if token has expired. Do it here instead of ValidateAuth in AuthService.cs
-
-			return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+			return new AuthenticationState(new ClaimsPrincipal(claimsIdentity));
 		}
 
 		public void MarkUserAsAuthenticated(string token)

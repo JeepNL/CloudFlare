@@ -1,14 +1,34 @@
 ﻿using FluentValidation;
 using System.Text;
+//using System.Globalization;
+//using System.Text.RegularExpressions;
 
 namespace News.Helpers
 {
+
 	public static class Utils
 	{
 		public static DateTime UtcTicks2Local(long ticks)
 		{
 			DateTime dt = new DateTime(ticks).ToLocalTime();
 			return dt;
+		}
+
+		public static FluentValueValidator<string> FluentEmailValidate(bool val)
+		{
+
+			FluentValueValidator<string> validateEmail = default;
+			if (val) // email panel open
+				validateEmail = new(s => s
+					.NotEmpty().WithMessage("Email address is required")
+					.EmailAddress().WithMessage("A valid email is required")
+					.MaximumLength(100).WithMessage("Max length 100 characters"));
+			else // email panel closed
+				validateEmail = new(s => s
+					.MinimumLength(0)
+					.MaximumLength(100).WithMessage("Max length 100 characters"));
+
+			return validateEmail;
 		}
 
 		public static FluentValueValidator<string> FluentValidate(int maxLength = 20, bool required = default, string label = default, int minLength = default)
@@ -62,5 +82,51 @@ namespace News.Helpers
 			byte[] inputBytes = Encoding.ASCII.GetBytes(input);
 			return Convert.ToBase64String(inputBytes);
 		}
+
+		//public static bool IsValidEmail(string email)
+		//{
+		//	// see: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
+
+		//	if (string.IsNullOrWhiteSpace(email))
+		//		return false;
+
+		//	try
+		//	{
+		//		// Normalize the domain
+		//		email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
+		//							  RegexOptions.None, TimeSpan.FromMilliseconds(200));
+
+		//		// Examines the domain part of the email and normalizes it.
+		//		string DomainMapper(Match match)
+		//		{
+		//			// Use IdnMapping class to convert Unicode domain names.
+		//			var idn = new IdnMapping();
+
+		//			// Pull out and process domain name (throws ArgumentException on invalid)
+		//			string domainName = idn.GetAscii(match.Groups[2].Value);
+
+		//			return match.Groups[1].Value + domainName;
+		//		}
+		//	}
+		//	catch (RegexMatchTimeoutException e)
+		//	{
+		//		return false;
+		//	}
+		//	catch (ArgumentException e)
+		//	{
+		//		return false;
+		//	}
+
+		//	try
+		//	{
+		//		return Regex.IsMatch(email,
+		//			@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+		//			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+		//	}
+		//	catch (RegexMatchTimeoutException)
+		//	{
+		//		return false;
+		//	}
+		//}
 	}
 }

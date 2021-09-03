@@ -4,34 +4,35 @@
 @inject NavigationManager NavMan
 
 <MudText Typo="Typo.h4">Forgot Password</MudText>
-<MudText Class="mb-4" Typo="Typo.subtitle1">@subTitle</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Fill in your email address to receive an email with reset instructions</MudText>
 
-<div style="max-width: 340px;">
-	@if (!mailSend)
-	{
-		<MudCard>
-			<MudCardContent>
-				<MudForm @ref="form" @bind-IsValid="@formValidated">
-					<MudTextField Class="mb-3" T="string" @bind-Value="forgotUser.Email" Label="Email"
-							  Required="true"
-							  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
-							  autocomplete="email" />
-				</MudForm>
-			</MudCardContent>
-			<MudCardActions>
-				<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(backUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Back</MudButton>
-				<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Send</MudButton>
-			</MudCardActions>
-		</MudCard>
-	}
-	else
-	{
-		<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Warning" Icon="@Icons.Material.Filled.AlternateEmail" Variant="Variant.Filled">
-			If you're a registered user at BlazorBits you'll receive an email with a link to reset your password. The link is valid for 15 minutes from now.
-		</MudAlert>
-	}
-</div>
-
+<MudGrid>
+	<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
+		@if (!mailSend)
+		{
+			<MudCard>
+				<MudCardContent>
+					<MudForm @ref="form" @bind-IsValid="@formValidated">
+						<MudTextField Class="mb-3" T="string" @bind-Value="forgotUser.Email" Label="Email"
+								  Required="true"
+								  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+								  autocomplete="email" />
+					</MudForm>
+				</MudCardContent>
+				<MudCardActions>
+					<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(backUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Back</MudButton>
+					<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Send</MudButton>
+				</MudCardActions>
+			</MudCard>
+		}
+		else
+		{
+			<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Warning" Icon="@Icons.Material.Filled.AlternateEmail" Variant="Variant.Filled">
+				If you're a registered user at BlazorBits you'll receive an email with a link to reset your password. The link is valid for 15 minutes from now.
+			</MudAlert>
+		}
+	</MudItem>
+</MudGrid>
 
 @code {
 	MudForm form;
@@ -40,7 +41,6 @@
 	bool formValidated = false;
 	bool mailSend = false;
 	string backUrl = "/auth/login";
-	string subTitle = "We'll send you an email with reset instructions";
 
 	protected override void OnInitialized()
 	{
@@ -48,7 +48,7 @@
 		{
 			Email = string.Empty,
 			Password = string.Empty,
-			Guid = string.Empty,
+			EditGuid = string.Empty,
 			RememberMe = false,
 			ActionEnum = AutherUser.Types.Action.ForgotPassword
 		};
@@ -62,15 +62,6 @@
 			mailSend = true;
 			var client = new Auther.AutherClient(grpcChannel);
 			UserResult serverReply = await client.AuthRpcAsync(forgotUser);
-			subTitle = "We've sent you an email with reset instructions";
-
-			//if (!serverReply.Success)
-			//{
-			//}
-			//else
-			//{
-			//}
 		}
 	}
-
 }

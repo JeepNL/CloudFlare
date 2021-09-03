@@ -2,7 +2,7 @@
 @using System.Security.Claims
 @inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
-@inject ISyncLocalStorageService localStorage
+@inject ILocalStorageService localStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudScrollToTop>
@@ -47,16 +47,27 @@
 </MudLayout>
 
 @code {
-	IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+	//IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
 	MudTheme currentTheme = new MudTheme();
 	bool drawerOpen = true;
 	bool dark = false;
 	string cookie = string.Empty;
+	string name = string.Empty;
+	bool auth = false;
 	CookieModel cookieModel = new();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		cookie = localStorage.GetItemAsString("bb_state");
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		if (user.Identity.IsAuthenticated)
+		{
+			auth = true;
+			//claims = user.Claims;
+			name = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
+		}
+
+		cookie = await localStorage.GetItemAsStringAsync("bb_state"); // get Cookie (1)
 		if (string.IsNullOrEmpty(cookie))
 		{
 			currentTheme.Palette = DefaultTheme.DefaultPalette();
@@ -64,7 +75,8 @@
 		}
 		else
 		{
-			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+			cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state")); // if exist init cookieModel (2)
+
 			if (cookieModel.Theme == "light")
 				currentTheme.Palette = DefaultTheme.DefaultPalette();
 			else
@@ -73,6 +85,7 @@
 				dark = true;
 			}
 		}
+
 		currentTheme.Typography = Design.MultiTypography("Ubuntu");
 		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 	}
@@ -81,24 +94,12 @@
 	{
 		if (firstRender)
 		{
-			string name = string.Empty;
-			var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-			var user = authState.User;
-			if (user.Identity.IsAuthenticated)
+			if (!string.IsNullOrEmpty(cookie))
 			{
-				_claims = user.Claims;
-				name = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
-			}
-			else if (!string.IsNullOrEmpty(cookie))
-			{
-				// #TODO edit statestring in cookie.
-				UserState userState = new()
-				{
-					CookieStateString = cookieModel.State
-				};
+				CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
 				var autherClient = new Auther.AutherClient(grpcChannel);
-				StateResponse stateResponse = await autherClient.GetUserAsync(userState);
-				name = stateResponse.Name;
+				var reponse = await autherClient.GetNameIdAsync(cookieState);
+				name = reponse.Name;
 			}
 
 			Guid newGuid = Guid.NewGuid();
@@ -107,7 +108,7 @@
 				Session = newGuid.ToString(),
 				Request = "Init",
 				Name = name,
-				Authenticated = user.Identity.IsAuthenticated,
+				Authenticated = auth,
 				CookieExists = string.IsNullOrEmpty(cookie) ? false : true,
 				Success = true,
 				ActionEnum = ApiGrpc.Protos.Action.System
@@ -119,11 +120,11 @@
 			// if cookie exists or not, set a new one with different session id (init)
 			cookieModel.Session = logModel.Session;
 			cookieModel.State = postResponse.Status;
-			localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+			await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
 		}
 	}
 
-	private void ChangeTheme()
+	private async Task ChangeTheme()
 	{
 		dark = !dark;
 		currentTheme.Palette = (dark) ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
@@ -137,7 +138,7 @@
 		else
 			cookieModel.Theme = "light";
 
-		localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+		await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
 	}
 
 	void DrawerToggle()

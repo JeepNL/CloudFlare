@@ -1,23 +1,41 @@
 ﻿@page "/admin/filer"
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavMan
 @inject IAuthService AuthService
 @inject GrpcChannel grpcChannel
 
+
 <MudText Typo="Typo.h4">Upload</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Upload an image using a gRPC service</MudText>
 
-<InputFile OnChange="UploadFile" />
+<AuthorizeView Roles="Administrator">
+	<Authorized>
+		<InputFile OnChange="UploadFile" />
 
-<MudDivider Class="my-4" />
+		<MudDivider Class="my-4" />
 
-@if (ready)
-{
-	<MudText Typo="Typo.body1">Upload Finished</MudText>
-}
+		@if (ready)
+		{
+			<MudText Typo="Typo.body1">Upload Finished</MudText>
+		}
+	</Authorized>
+</AuthorizeView>
+
 
 @code {
 	bool ready = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+		// AuthenticationStateProvider does an automatic redirect to login page
+		//var user = authState.User;
+		//if (user.Identity.IsAuthenticated)
+		//{
+		//}
+	}
 
 	async Task UploadFile(InputFileChangeEventArgs e)
 	{

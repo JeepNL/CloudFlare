@@ -7,10 +7,10 @@
 <MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit/Delete blog posts using a remote gRPC service</MudText>
 
 <MudGrid>
-	<MudItem xs="12" sm="12" md="12" lg="10" xl="8">
-		@if (posts == null)
+	<MudItem xs="12" lg="10" xl="8">
+		@if (posts is null)
 		{
-			<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+			<MudText Typo="Typo.body1">Loading</MudText>
 		}
 		else
 		{

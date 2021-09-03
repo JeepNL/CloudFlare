@@ -16,38 +16,41 @@
 }
 else
 {
-	<div style="max-width: 340px;">
-		<MudCard>
-			<MudCardContent>
-				@if (!string.IsNullOrEmpty(loginError))
-				{
-					<MudAlert Class="mb-6" Severity="Severity.Error" Variant="Variant.Filled">@loginError</MudAlert>
-				}
-				else if (!string.IsNullOrEmpty(followUpMessage))
-				{
-					<MudAlert Class="mb-6" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Info" Variant="Variant.Filled">@followUpMessage</MudAlert>
-				}
+	@*<div style="max-width: 340px;">
+		</div>*@
+	<MudGrid>
+		<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
+			<MudCard>
+				<MudCardContent>
+					@if (!string.IsNullOrEmpty(loginError))
+					{
+						<MudAlert Class="mb-6" Severity="Severity.Error" Variant="Variant.Filled">@loginError</MudAlert>
+					}
+					else if (!string.IsNullOrEmpty(followUpMessage))
+					{
+						<MudAlert Class="mb-6" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Info" Variant="Variant.Filled">@followUpMessage</MudAlert>
+					}
 
-				<MudForm @ref="form" @bind-IsValid="@formValidated">
-					<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Email" Label="Email"
-							  Required="true"
-							  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
-							  Immediate="true"
-							  autocomplete="email" />
-					<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Password" Label="Password"
-							  InputType="InputType.Password"
-							  Required="true" RequiredError="Required"
-							  autocomplete="current-password" />
-				</MudForm>
-			</MudCardContent>
-			<MudCardActions>
-				<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(forgotUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Forgot your password?</MudButton>
-				<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
-			</MudCardActions>
-		</MudCard>
-	</div>
+					<MudForm @ref="form" @bind-IsValid="@formValidated">
+						<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Email" Label="Email"
+								  Required="true"
+								  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+								  Immediate="true"
+								  autocomplete="email" />
+						<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Password" Label="Password"
+								  InputType="InputType.Password"
+								  Required="true" RequiredError="Required"
+								  autocomplete="current-password" />
+					</MudForm>
+				</MudCardContent>
+				<MudCardActions>
+					<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(forgotUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Forgot your password?</MudButton>
+					<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+				</MudCardActions>
+			</MudCard>
+		</MudItem>
+	</MudGrid>
 }
-
 
 @code {
 	[Parameter] public string FollowUp { get; set; }
@@ -66,7 +69,7 @@ else
 		{
 			Email = string.Empty,
 			Password = string.Empty,
-			Guid = string.Empty,
+			EditGuid = string.Empty,
 			RememberMe = false,
 			ActionEnum = AutherUser.Types.Action.Login
 		};
@@ -84,6 +87,9 @@ else
 				break;
 			case "welcome":
 				followUpMessage = "Thank you for validating your email address!";
+				break;
+			case "success":
+				followUpMessage = "Your account credentials have succesfully been updated.";
 				break;
 			default:
 				followUpMessage = string.Empty;

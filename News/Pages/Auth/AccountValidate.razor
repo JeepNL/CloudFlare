@@ -1,10 +1,11 @@
-﻿@page "/auth/validate/{ValidateGuid}/{ValidateEmail}/"
-@page "/auth/validate/error/{ValidateError}/"
+﻿@page "/auth/accountvalidate/{ValidateGuid}/{ValidateEmail}/"
+@page "/auth/accountvalidate/error/{ValidateError}/"
 @inject GrpcChannel grpcChannel
 @inject NavigationManager NavMan
+@inject IAuthService AuthService
 
-<MudText Typo="Typo.h4">New User</MudText>
-<MudText Class="mb-4" Typo="Typo.subtitle1">Email address validation</MudText>
+<MudText Typo="Typo.h4">Account Changes</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Account changes validation</MudText>
 
 <MudGrid>
 	<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
@@ -13,8 +14,9 @@
 </MudGrid>
 
 @code {
-	[Parameter] public string ValidateEmail { get; set; } = string.Empty;
 	[Parameter] public string ValidateGuid { get; set; } = string.Empty;
+	[Parameter] public string ValidateEmail { get; set; } = string.Empty;
+	[Parameter] public string ValidateId { get; set; } = string.Empty;
 	[Parameter] public string ValidateError { get; set; } = string.Empty;
 
 	string validationMessage = "Please wait ...";
@@ -29,24 +31,25 @@
 		}
 		else if (!string.IsNullOrEmpty(ValidateGuid) && !string.IsNullOrEmpty(ValidateEmail))
 		{
-			AutherUser validateUserEmail = new()
+			AutherAccountValidate validateAccountChanges = new()
 			{
-				Email = ValidateEmail, // encrypted
-				Password = string.Empty,
+				Id = ValidateId,
+				Email = ValidateEmail,
 				EditGuid = ValidateGuid,
-				RememberMe = false,
-				ActionEnum = AutherUser.Types.Action.Validate
 			};
 
 			var client = new Auther.AutherClient(grpcChannel);
-			UserResult serverReply = await client.AuthRpcAsync(validateUserEmail);
+			AccountValidateResponse serverReply = await client.AccountValidateRpcAsync(validateAccountChanges);
 
 			if (!serverReply.Success)
-				NavMan.NavigateTo($"/auth/validate/error/{serverReply.Error}/");
+				NavMan.NavigateTo($"/auth/accountvalidate/error/{serverReply.Error}/");
 			else
-				NavMan.NavigateTo("/auth/login/welcome/");
+			{
+				await AuthService.Logout();
+				NavMan.NavigateTo("/auth/login/success/");
+			}
 		}
 		else
-			NavMan.NavigateTo("/auth/validate/error/Expired or invalid link./");
+			NavMan.NavigateTo("/auth/accountvalidate/error/Expired or invalid link./");
 	}
 }

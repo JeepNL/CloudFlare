@@ -8,6 +8,5 @@ namespace News.Services
 		Task Logout();
 		Task SetToken(string Token);
 		Task<Metadata> AddMetaDataHeader();
-		Task<UserModel> ValidateAuth();
 	}
 }

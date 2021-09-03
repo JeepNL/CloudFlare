@@ -9,47 +9,48 @@
 <MudText Typo="Typo.h4">Register</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Create a new account or <MudLink Href="/auth/login">login</MudLink> to your account</MudText>
 
-<div style="max-width: 340px;">
-	@if (registering)
-	{
-		<MudCard>
-			<MudCardContent>
-				@if (!string.IsNullOrEmpty(registerError))
-				{
-					<MudAlert Class="mb-6 mt-4" Severity="Severity.Error" Variant="Variant.Filled">@registerError</MudAlert>
-				}
-				<MudForm @ref="form" @bind-IsValid="@formValidated">
-					<MudTextField Class="mb-3" T="string" @bind-Value="registerUser.Email" Label="Email" HelperText="Enter your email address"
-							  Required="true"
-							  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
-							  Immediate="true"
-							  autocomplete="email" />
-					<MudTextField Class="mb-3" @ref="pwField" T="string" @bind-Value="registerUser.Password" Label="Password" HelperText="Choose a strong password"
-							  InputType="passwordInput"
-							  Required="true" RequiredError="Password is required!"
-							  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
-							  Adornment="Adornment.End"
-							  AdornmentIcon="@passwordInputIcon"
-							  OnAdornmentClick="ShowPassword"
-							  autocomplete="new-password" />
-					<MudTextField Class="mb-2" T="string" @bind-Value="validatePassword" Label="Repeat password"
-							  InputType="passwordInput"
-							  Validation="@(new Func<string, string>(PasswordMatch))"
-							  autocomplete="new-password" />
-				</MudForm>
-			</MudCardContent>
-			<MudCardActions>
-				<MudButton title="Generate a strong password." OnClick="GeneratePassword" Disabled="@(!isGeneratePasswordVisible)" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Generate password</MudButton>
-				<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Register</MudButton>
-			</MudCardActions>
-		</MudCard>
-	}
-	else
-	{
-		<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled">One moment please ...</MudAlert>
-	}
-</div>
-
+<MudGrid>
+	<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
+		@if (registering)
+		{
+			<MudCard>
+				<MudCardContent>
+					@if (!string.IsNullOrEmpty(registerError))
+					{
+						<MudAlert Class="mb-6 mt-4" Severity="Severity.Error" Variant="Variant.Filled">@registerError</MudAlert>
+					}
+					<MudForm @ref="form" @bind-IsValid="@formValidated">
+						<MudTextField Class="mb-3" T="string" @bind-Value="registerUser.Email" Label="Email" HelperText="Enter your email address"
+								  Required="true"
+								  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+								  Immediate="false"
+								  autocomplete="email" />
+						<MudTextField Class="mb-3" @ref="pwField" T="string" @bind-Value="registerUser.Password" Label="Password" HelperText="Choose a strong password"
+								  InputType="passwordInput"
+								  Required="true" RequiredError="Password is required!"
+								  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+								  Adornment="Adornment.End"
+								  AdornmentIcon="@passwordInputIcon"
+								  OnAdornmentClick="ShowPassword"
+								  autocomplete="new-password" />
+						<MudTextField Class="mb-2" T="string" @bind-Value="validatePassword" Label="Repeat password"
+								  InputType="passwordInput"
+								  Validation="@(new Func<string, string>(PasswordMatch))"
+								  autocomplete="new-password" />
+					</MudForm>
+				</MudCardContent>
+				<MudCardActions>
+					<MudButton title="Generate a strong password." OnClick="GeneratePassword" Disabled="@(!isGeneratePasswordVisible)" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Generate password</MudButton>
+					<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Register</MudButton>
+				</MudCardActions>
+			</MudCard>
+		}
+		else
+		{
+			<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled">One moment please ...</MudAlert>
+		}
+	</MudItem>
+</MudGrid>
 
 @code {
 	MudForm form;
@@ -71,7 +72,7 @@
 		{
 			Email = string.Empty,
 			Password = string.Empty,
-			Guid = string.Empty,
+			EditGuid = string.Empty,
 			RememberMe = false,
 			ActionEnum = AutherUser.Types.Action.Register
 		};

@@ -1,12 +1,13 @@
 ﻿@page "/admin/loggr"
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject GrpcChannel grpcChannel
 
 <MudText Typo="Typo.h4">Logger</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">What, who &amp; where ...</MudText>
 
-@if (loading)
+@if (logs is null)
 {
 	<MudText Typo="Typo.body1">Loading</MudText>
 }
@@ -68,14 +69,23 @@ else
 
 @code {
 	private IEnumerable<Log> logs;
-	bool loading = true;
 
 	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		if (user.Identity.IsAuthenticated)
+		{
+			await LoadData();
+		}
+
+	}
+
+	private async Task LoadData()
 	{
 		LogQuery query = new() { Take = 0 };
 		Metadata headers = await AuthService.AddMetaDataHeader();
 		var client = new Lggr.LggrClient(grpcChannel);
 		logs = (await client.GetSelectAsync(query, headers)).LogRepeated.ToList();
-		loading = false;
 	}
 }

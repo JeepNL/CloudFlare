@@ -5,9 +5,10 @@ package auther;
 
 service Auther {
   rpc AuthRpc (AutherUser) returns (UserResult);
-  rpc AccountRpc (AutherAccount) returns (AccountResult);
-  rpc Decrypt (IOString) returns (IOString);
-  rpc GetUser (UserState) returns (StateResponse);
+  rpc AccountRpc (AutherAccount) returns (AccountResponse);
+  rpc AccountValidateRpc (AutherAccountValidate) returns (AccountValidateResponse);
+  rpc GetUserState (CookieState) returns (CookieState);
+  rpc GetNameId (CookieState) returns (NameIdResponse);
 }
 
 message AutherUser {
@@ -21,7 +22,7 @@ message AutherUser {
 	}
 	string email = 1;
 	google.protobuf.StringValue password = 2;
-	google.protobuf.StringValue guid = 3;
+	google.protobuf.StringValue edit_guid = 3;
 	bool remember_me = 4;
 	Action action_enum = 5;
 }
@@ -31,33 +32,60 @@ message UserResult {
 	google.protobuf.StringValue token = 3;
 }
 
-message AutherAccount {
-	enum Theme {
-		LIGHT = 0;
-		DARK = 1;
-	}
-	google.protobuf.StringValue first_name = 1;
-	google.protobuf.StringValue last_name = 2;
-	google.protobuf.StringValue current_email = 3;
-	google.protobuf.StringValue current_password = 4;
-	google.protobuf.StringValue new_email = 5;
-	google.protobuf.StringValue new_password = 6;
-	google.protobuf.StringValue guid = 7;
-	Theme theme_enum = 8;
+enum Theme {
+	LIGHT = 0;
+	DARK = 1;
+	SPECIAL = 2;
 }
-message AccountResult {
+message AutherAccount {
+	enum Action {
+		GET = 0;
+		UPDATE = 1;
+	}
+	string id = 1;
+	string current_email = 2;
+	google.protobuf.StringValue new_email = 3;
+	google.protobuf.StringValue first_name = 4;
+	google.protobuf.StringValue last_name = 5;
+	google.protobuf.StringValue current_password = 6;
+	google.protobuf.StringValue new_password = 7;
+	google.protobuf.StringValue edit_guid = 8;
+	Theme account_theme_enum = 9;
+	Action action_enum = 10;
+}
+message AccountResponse {
+	enum Result {
+		GET_OK = 0;
+		FIRSTNAME_LASTNAME = 1;
+		EMAIL_SENT = 2;
+		ALREADY_SENT = 3;
+		ERROR = 4;
+	}
+	Result account_result_enum = 1;
+	string id = 2;
+	string email = 3;
+	string edit_guid = 4;
+	google.protobuf.StringValue first_name = 5;
+	google.protobuf.StringValue last_name = 6;
+	google.protobuf.StringValue error = 7;
+	Theme account_theme_enum = 8;
+}
+
+message AutherAccountValidate {
+	string id = 1;
+	string email = 2;
+	string edit_guid = 3;
+}
+message AccountValidateResponse {
 	bool success = 1;
 	google.protobuf.StringValue error = 2;
 }
 
-message IOString {
-	string input_output = 1;
+message CookieState {
+	string cookie_state_input_output = 1;
 }
 
-message UserState {
-	string cookie_state_string = 1;
-}
-message StateResponse {
+message NameIdResponse {
 	string name = 1;
 	string id = 2;
 }
