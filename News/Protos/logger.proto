@@ -10,18 +10,17 @@ service Lggr {
 }
 
 enum Action {
-	ALL = 0; // for query only
-	SYSTEM = 1;
-	USER = 2;
-	AUDIT = 3;
+	SYSTEM = 0;
+	USER = 1;
+	AUDIT = 2;
 }
 
 message Log {
     int32 id = 1;
 	int64 date = 2;
-	string session = 3;
+	string se = 3;
 	string request = 4;
-	string name = 5;
+	string em = 5;
 	bool authenticated = 6;
 	bool cookie_exists = 7;
 	bool success = 8;
@@ -35,9 +34,24 @@ message Log {
 	google.protobuf.StringValue sec_ch_ua_mobile = 16;
 	google.protobuf.StringValue sec_ch_ua_platform = 17;
 	google.protobuf.StringValue host = 18;
-	google.protobuf.StringValue peer = 19;
-	google.protobuf.StringValue status_detail = 20;
-	google.protobuf.StringValue method = 21;
+	google.protobuf.StringValue pe = 19;
+	google.protobuf.StringValue if = 20;
+	google.protobuf.StringValue is = 21;
+	google.protobuf.StringValue xf = 22;
+	google.protobuf.StringValue ci = 23;
+	google.protobuf.StringValue po = 24;
+	google.protobuf.StringValue st = 25;
+	google.protobuf.StringValue sc = 26;
+	google.protobuf.StringValue co = 27;
+	google.protobuf.StringValue cc = 28;
+	google.protobuf.StringValue eu = 29;
+	google.protobuf.StringValue la = 30;
+	google.protobuf.StringValue lo = 31;
+	google.protobuf.StringValue an = 32;
+	google.protobuf.StringValue ao = 33;
+	google.protobuf.StringValue ai = 34;
+	google.protobuf.StringValue status_detail = 35;
+	google.protobuf.StringValue method = 36;
 }
 message Logs {
 	repeated Log log_repeated = 1;
@@ -51,16 +65,11 @@ message LogId {
 }
 
 message LogQuery {
-	enum Success {
-		FALSE = 0;
-		TRUE = 1;
-		ALL = 2;
-	}
 	int32 id = 1;
 	int64 session = 2;
 	int32 take = 3;
 	int64 from_date = 4;
 	int64 to_date = 5;
 	Action action_enum = 6;
-	Success success_enum = 7;
+	bool success = 7;
 }

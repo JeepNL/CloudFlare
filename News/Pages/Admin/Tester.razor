@@ -63,9 +63,24 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr><td>S</td><td>@stateModel.S</td></tr>
-		<tr><td>SI</td><td>@stateModel.SI</td></tr>
-		<tr><td>SE</td><td>@stateModel.SE</td></tr>
+		<tr><td>Se</td><td>@stateModel.Se</td></tr>
+		<tr><td>Pe</td><td>@stateModel.Pe</td></tr>
+		<tr><td>If</td><td>@stateModel.If</td></tr>
+		<tr><td>Is</td><td>@stateModel.Is</td></tr>
+		<tr><td>Xf</td><td>@stateModel.Xf</td></tr>
+		<tr><td>Em</td><td>@stateModel.Em</td></tr>
+		<tr><td>Ci</td><td>@stateModel.Ci</td></tr>
+		<tr><td>Po</td><td>@stateModel.Po</td></tr>
+		<tr><td>St</td><td>@stateModel.St</td></tr>
+		<tr><td>Sc</td><td>@stateModel.Sc</td></tr>
+		<tr><td>Co</td><td>@stateModel.Co</td></tr>
+		<tr><td>Cc</td><td>@stateModel.Cc</td></tr>
+		<tr><td>Eu</td><td>@stateModel.Eu</td></tr>
+		<tr><td>La</td><td>@stateModel.La</td></tr>
+		<tr><td>Lo</td><td>@stateModel.Lo</td></tr>
+		<tr><td>An</td><td>@stateModel.An</td></tr>
+		<tr><td>Ao</td><td>@stateModel.Ao</td></tr>
+		<tr><td>Ai</td><td>@stateModel.Ai</td></tr>
 	</tbody>
 </MudSimpleTable>
 
@@ -83,7 +98,7 @@
 		if (user.Identity.IsAuthenticated)
 		{
 			_claims = user.Claims;
-			emailFromB64 = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
+			emailFromB64 = Utils.FromB64(user.Identity.Name);
 			//long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
 			long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
 			claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();

@@ -104,7 +104,7 @@
 
 		if (!result.Cancelled)
 		{
-			Snackbar.Add(result.Data.ToString(), Severity.Success);
+			Snackbar.Add(result.Data.ToString(), MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
 			await LoadData();
 		}
 	}

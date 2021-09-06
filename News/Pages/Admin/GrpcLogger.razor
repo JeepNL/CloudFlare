@@ -5,7 +5,7 @@
 @inject GrpcChannel grpcChannel
 
 <MudText Typo="Typo.h4">Logger</MudText>
-<MudText Class="mb-4" Typo="Typo.subtitle1">What, who &amp; where ...</MudText>
+<MudText Class="mb-4" Typo="Typo.subtitle1">Who, where &amp; what ...</MudText>
 
 @if (logs is null)
 {
@@ -16,50 +16,40 @@ else
 	@*<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">*@
 	<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4">
 		<HeaderContent>
-			@*<MudTh>Id</MudTh>*@
 			<MudTh>DateTime</MudTh>
 			<MudTh>Session</MudTh>
 			<MudTh>Req</MudTh>
 			<MudTh>Name</MudTh>
 			<MudTh>Auth</MudTh>
 			<MudTh>Ck?</MudTh>
-			@*<MudTh>Suc</MudTh>*@
-			<MudTh>Action</MudTh>
-			@*<MudTh>Desc</MudTh>*@
 			<MudTh>User-Agent</MudTh>
 			<MudTh>Lang</MudTh>
-			@*<MudTh>Origin</MudTh>*@
 			<MudTh>Ref</MudTh>
-			<MudTh>Browser</MudTh>
-			<MudTh>Mob</MudTh>
-			<MudTh>Platform</MudTh>
-			@*<MudTh>Host</MudTh>*@
-			<MudTh>Remote</MudTh>
-			@*<MudTh>Det</MudTh>*@
-			@*<MudTh>Mth</MudTh>*@
+			<MudTh>If</MudTh>
+			<MudTh>Cc</MudTh>
+			<MudTh>Sc</MudTh>
+			<MudTh>Ci</MudTh>
+			<MudTh>Po</MudTh>
+			<MudTh>Ao</MudTh>
+			<MudTh>Eu</MudTh>
 		</HeaderContent>
 		<RowTemplate>
-			@*<MudTd DataLabel="Id">@context.Id</MudTd>*@
 			<MudTd DataLabel="Date">@Utils.UtcTicks2Local(context.Date)</MudTd>
-			<MudTd DataLabel="Session">@Utils.Abbreviate(context.Session, 11)</MudTd>
+			<MudTd DataLabel="Session">@Utils.Abbreviate(context.Se, 11)</MudTd>
 			<MudTd DataLabel="Request">@context.Request</MudTd>
-			<MudTd DataLabel="Name">@context.Name</MudTd>
+			<MudTd DataLabel="Name">@context.Em</MudTd>
 			<MudTd DataLabel="Authenticated">@context.Authenticated</MudTd>
 			<MudTd DataLabel="CookieExists">@context.CookieExists</MudTd>
-			<MudTd DataLabel="ActionEnum">@context.ActionEnum</MudTd>
-			@*<MudTd DataLabel="Desc">@context.Desc</MudTd>*@
-			@*<MudTd DataLabel="Success">@context.Success</MudTd>*@
 			<MudTd DataLabel="UserAgent">@Utils.Abbreviate(context.UserAgent, 18)</MudTd>
 			<MudTd DataLabel="AcceptLanguage">@Utils.Abbreviate(context.AcceptLanguage, 8)</MudTd>
-			@*<MudTd DataLabel="Origin">@context.Origin</MudTd>*@
-			<MudTd DataLabel="Referer">@context.Referer</MudTd>
-			<MudTd DataLabel="SecChUa">@Utils.Abbreviate(context.SecChUa, 13)</MudTd>
-			<MudTd DataLabel="SecChUaMobile">@context.SecChUaMobile</MudTd>
-			<MudTd DataLabel="SecChUaPlatform">@context.SecChUaPlatform</MudTd>
-			@*<MudTd DataLabel="Host">@context.Host</MudTd>*@
-			<MudTd DataLabel="Peer">@context.Peer</MudTd>
-			@*<MudTd DataLabel="StatusDetail">@context.StatusDetail</MudTd>*@
-			@*<MudTd DataLabel="Method">@context.Method</MudTd>*@
+			<MudTd DataLabel="Referer">@Utils.Abbreviate(context.Referer.Replace("https://", ""), 15)</MudTd>
+			<MudTd DataLabel="If">@context.If</MudTd>
+			<MudTd DataLabel="Cc">@context.Cc</MudTd>
+			<MudTd DataLabel="Sc">@context.Sc</MudTd>
+			<MudTd DataLabel="Ci">@Utils.Abbreviate(context.Ci, 13)</MudTd>
+			<MudTd DataLabel="Po">@context.Po</MudTd>
+			<MudTd DataLabel="Ao">@Utils.Abbreviate(context.Ao, 13)</MudTd>
+			<MudTd DataLabel="Eu">@context.Eu</MudTd>
 		</RowTemplate>
 		<PagerContent>
 			<MudTablePager PageSizeOptions="new int[]{50, 100, 250}" />
@@ -78,7 +68,6 @@ else
 		{
 			await LoadData();
 		}
-
 	}
 
 	private async Task LoadData()

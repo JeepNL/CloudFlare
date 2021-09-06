@@ -110,7 +110,7 @@
 		registerUser.Password = RandomPassword.Generate();
 		validatePassword = registerUser.Password;
 		await clipboardService.WriteTextAsync(registerUser.Password);
-		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Success);
+		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
 		await Task.Delay(2500);
 		isGeneratePasswordVisible = true;
 	}

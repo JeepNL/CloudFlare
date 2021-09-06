@@ -1,5 +1,5 @@
 ﻿@using System.Text.Json;
-@using System.Security.Claims
+@*@using System.Security.Claims*@
 @inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
 @inject ILocalStorageService localStorage
@@ -47,27 +47,22 @@
 </MudLayout>
 
 @code {
-	//IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
 	MudTheme currentTheme = new MudTheme();
+	CookieModel cookieModel = new();
+	string cookie = string.Empty;
 	bool drawerOpen = true;
 	bool dark = false;
-	string cookie = string.Empty;
-	string name = string.Empty;
-	bool auth = false;
-	CookieModel cookieModel = new();
 
 	protected override async Task OnInitializedAsync()
 	{
-		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
-		if (user.Identity.IsAuthenticated)
-		{
-			auth = true;
-			//claims = user.Claims;
-			name = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value);
-		}
+		currentTheme.Typography = Design.MultiTypography("Ubuntu");
+		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 
-		cookie = await localStorage.GetItemAsStringAsync("bb_state"); // get Cookie (1)
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		bool auth = (authState.User.Identity.IsAuthenticated) ? true : false;
+
+		string name = string.Empty;
+		cookie = await localStorage.GetItemAsStringAsync("bb_state");
 		if (string.IsNullOrEmpty(cookie))
 		{
 			currentTheme.Palette = DefaultTheme.DefaultPalette();
@@ -75,7 +70,7 @@
 		}
 		else
 		{
-			cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state")); // if exist init cookieModel (2)
+			cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state"));
 
 			if (cookieModel.Theme == "light")
 				currentTheme.Palette = DefaultTheme.DefaultPalette();
@@ -84,61 +79,42 @@
 				currentTheme.Palette = DarkTheme.DarkPalette();
 				dark = true;
 			}
+
+			CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
+			var autherClient = new Auther.AutherClient(grpcChannel);
+			var response = await autherClient.GetNameIdAsync(cookieState);
+			name = response.Name;
 		}
 
-		currentTheme.Typography = Design.MultiTypography("Ubuntu");
-		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
-	}
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
+		Guid newGuid = Guid.NewGuid();
+		Log logModel = new()
 		{
-			if (!string.IsNullOrEmpty(cookie))
-			{
-				CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
-				var autherClient = new Auther.AutherClient(grpcChannel);
-				var reponse = await autherClient.GetNameIdAsync(cookieState);
-				name = reponse.Name;
-			}
+			Se = newGuid.ToString(),
+			Request = "Init",
+			Em = name,
+			Authenticated = auth,
+			CookieExists = string.IsNullOrEmpty(cookie) ? false : true,
+			Success = true,
+			ActionEnum = ApiGrpc.Protos.Action.System
+		};
 
-			Guid newGuid = Guid.NewGuid();
-			Log logModel = new()
-			{
-				Session = newGuid.ToString(),
-				Request = "Init",
-				Name = name,
-				Authenticated = auth,
-				CookieExists = string.IsNullOrEmpty(cookie) ? false : true,
-				Success = true,
-				ActionEnum = ApiGrpc.Protos.Action.System
-			};
+		var loggerClient = new Lggr.LggrClient(grpcChannel);
+		PostResponse postResponse = await loggerClient.PostAsync(logModel);
 
-			var loggerClient = new Lggr.LggrClient(grpcChannel);
-			PostResponse postResponse = await loggerClient.PostAsync(logModel);
-
-			// if cookie exists or not, set a new one with different session id (init)
-			cookieModel.Session = logModel.Session;
-			cookieModel.State = postResponse.Status;
-			await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
-		}
+		cookieModel.Session = logModel.Se;
+		cookieModel.State = postResponse.Status;
+		await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
 	}
 
 	private async Task ChangeTheme()
 	{
-		dark = !dark;
-		currentTheme.Palette = (dark) ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
+		cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state"));
+		currentTheme.Palette = (dark) ? DefaultTheme.DefaultPalette() : DarkTheme.DarkPalette();
+		cookieModel.Theme = (dark) ? "light" : "dark";
 		currentTheme.Typography = Design.MultiTypography("Ubuntu");
 		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
-
-		cookieModel.Theme = "dark";
-
-		if (dark)
-			cookieModel.Theme = "dark";
-		else
-			cookieModel.Theme = "light";
-
 		await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
+		dark = !dark;
 	}
 
 	void DrawerToggle()

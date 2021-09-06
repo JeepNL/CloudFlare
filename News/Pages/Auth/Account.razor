@@ -125,8 +125,8 @@
 				Id = user.FindFirst("Id").Value ?? string.Empty,
 				FirstName = user.FindFirst("FirstName").Value ?? string.Empty,
 				LastName = user.FindFirst("LastName").Value ?? string.Empty,
-				CurrentEmail = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value),
-				NewEmail = Utils.FromB64(user.FindFirst(System.Security.Claims.ClaimTypes.Name).Value),
+				CurrentEmail = Utils.FromB64(user.Identity.Name),
+				NewEmail = Utils.FromB64(user.Identity.Name),
 				NewPassword = string.Empty,
 				EditGuid = string.Empty,
 			};
@@ -181,12 +181,12 @@
 
 				if (serverReply.AccountResultEnum == AccountResponse.Types.Result.FirstnameLastname)
 				{
-					Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Success);
+					Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
 					formEditing = true;
 				}
 				else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.EmailSent)
 				{
-					Snackbar.Add("Email sent.", MudBlazor.Severity.Success);
+					Snackbar.Add("Email sent.", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
 					string desc = string.Empty;
 					if ((userAccount.CurrentEmail != userAccount.NewEmail) && passwordPanelIsOpen)
 						desc = "email and password";
@@ -230,7 +230,7 @@
 		userAccount.NewPassword = RandomPassword.Generate();
 		validatePassword = userAccount.NewPassword;
 		await clipboardService.WriteTextAsync(userAccount.NewPassword);
-		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Success);
+		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
 		await Task.Delay(2500);
 		isGeneratePasswordVisible = true;
 	}
