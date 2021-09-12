@@ -7,21 +7,21 @@
 			<MudItem xs="12" Class="mx-4 d-flex">
 				<MudText Typo="Typo.h6" Color="Color.Primary">@title</MudText>
 				<MudSpacer />
-				<MudMenu Direction="Direction.Right" OffsetY="true" Dense="true">
+				<MudMenu Class="pa-0 ma-0" Direction="Direction.Right" OffsetY="true" Dense="true">
 					<ActivatorContent>
 						<MudIcon Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary" />
 					</ActivatorContent>
 					<ChildContent>
-						<MudMenuItem>
-							<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Primary" Color="Color.Inherit" OnClick="SubmitForm">Save</MudButton>
+						<MudMenuItem Class="pa-0 ma-0">
+							<MudButton Class="pl-4 pr-8 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Primary" Color="Color.Inherit" OnClick="SubmitForm">Save</MudButton>
 						</MudMenuItem>
-						<MudMenuItem>
-							<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Inherit" Color="Color.Inherit" OnClick="Cancel">Close</MudButton>
+						<MudMenuItem Class="pa-0 ma-0">
+							<MudButton Class="pl-4 pr-6 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Cancel" IconColor="Color.Inherit" Color="Color.Inherit" OnClick="Cancel">Close</MudButton>
 						</MudMenuItem>
 						@if (postModel.Id != 0)
 						{
-							<MudMenuItem>
-								<MudButton Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Tertiary" Color="Color.Inherit" OnClick="DeleteDialog">Delete</MudButton>
+							<MudMenuItem Class="pa-0 ma-0">
+								<MudButton Class="pl-4 pr-4 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Delete" IconColor="Color.Tertiary" Color="Color.Inherit" OnClick="DeleteDialog">Delete</MudButton>
 							</MudMenuItem>
 						}
 					</ChildContent>
@@ -102,7 +102,7 @@
 
 	private async Task SubmitForm()
 	{
-		form.Validate();
+		await form.Validate();
 		if (success)
 		{
 			// Anything changed?

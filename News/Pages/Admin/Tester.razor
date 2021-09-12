@@ -7,7 +7,6 @@
 @inject GrpcChannel grpcChannel
 @inject ISyncLocalStorageService localStorage
 
-
 <MudText Typo="Typo.h4">Tester</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
 
@@ -47,7 +46,6 @@
 	<tbody>
 		<tr><td>Session</td><td>@cookieModel.Session</td></tr>
 		<tr><td>State</td><td>@cookieModel.State</td></tr>
-		<tr><td>Theme</td><td>@cookieModel.Theme</td></tr>
 		<tr><td>ScreenRes</td><td>@cookieModel.ScreenRes</td></tr>
 	</tbody>
 </MudSimpleTable>
@@ -63,24 +61,24 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr><td>Se</td><td>@stateModel.Se</td></tr>
-		<tr><td>Pe</td><td>@stateModel.Pe</td></tr>
-		<tr><td>If</td><td>@stateModel.If</td></tr>
-		<tr><td>Is</td><td>@stateModel.Is</td></tr>
-		<tr><td>Xf</td><td>@stateModel.Xf</td></tr>
-		<tr><td>Em</td><td>@stateModel.Em</td></tr>
-		<tr><td>Ci</td><td>@stateModel.Ci</td></tr>
-		<tr><td>Po</td><td>@stateModel.Po</td></tr>
-		<tr><td>St</td><td>@stateModel.St</td></tr>
-		<tr><td>Sc</td><td>@stateModel.Sc</td></tr>
-		<tr><td>Co</td><td>@stateModel.Co</td></tr>
-		<tr><td>Cc</td><td>@stateModel.Cc</td></tr>
-		<tr><td>Eu</td><td>@stateModel.Eu</td></tr>
-		<tr><td>La</td><td>@stateModel.La</td></tr>
-		<tr><td>Lo</td><td>@stateModel.Lo</td></tr>
-		<tr><td>An</td><td>@stateModel.An</td></tr>
-		<tr><td>Ao</td><td>@stateModel.Ao</td></tr>
-		<tr><td>Ai</td><td>@stateModel.Ai</td></tr>
+		<tr><td>Se</td><td>@cookieStateModel.Se</td></tr>
+		<tr><td>Pe</td><td>@cookieStateModel.Pe</td></tr>
+		<tr><td>If</td><td>@cookieStateModel.If</td></tr>
+		<tr><td>Is</td><td>@cookieStateModel.Is</td></tr>
+		<tr><td>Xf</td><td>@cookieStateModel.Xf</td></tr>
+		<tr><td>Em</td><td>@cookieStateModel.Em</td></tr>
+		<tr><td>Ci</td><td>@cookieStateModel.Ci</td></tr>
+		<tr><td>Po</td><td>@cookieStateModel.Po</td></tr>
+		<tr><td>St</td><td>@cookieStateModel.St</td></tr>
+		<tr><td>Sc</td><td>@cookieStateModel.Sc</td></tr>
+		<tr><td>Co</td><td>@cookieStateModel.Co</td></tr>
+		<tr><td>Cc</td><td>@cookieStateModel.Cc</td></tr>
+		<tr><td>Eu</td><td>@cookieStateModel.Eu</td></tr>
+		<tr><td>La</td><td>@cookieStateModel.La</td></tr>
+		<tr><td>Lo</td><td>@cookieStateModel.Lo</td></tr>
+		<tr><td>An</td><td>@cookieStateModel.An</td></tr>
+		<tr><td>Ao</td><td>@cookieStateModel.Ao</td></tr>
+		<tr><td>Ai</td><td>@cookieStateModel.Ai</td></tr>
 	</tbody>
 </MudSimpleTable>
 
@@ -88,7 +86,7 @@
 	IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
 	DateTimeOffset claimExpDt = default;
 	CookieModel cookieModel = new();
-	StateModel stateModel = new();
+	CookieStateModel cookieStateModel = new();
 	string emailFromB64 = string.Empty;
 
 	protected override async Task OnInitializedAsync()
@@ -104,12 +102,12 @@
 			claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
 			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
 
-			CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
+			UserState userState = new() { UserStateIO = cookieModel.State };
 			var client = new Auther.AutherClient(grpcChannel);
 			Metadata headers = await AuthService.AddMetaDataHeader();
-			var response = await client.GetUserStateAsync(cookieState, headers);
-			string result = response.CookieStateInputOutput;
-			stateModel = JsonSerializer.Deserialize<StateModel>(result);
+			var response = await client.GetUserStateAsync(userState, headers);
+			string result = response.UserStateIO;
+			cookieStateModel = JsonSerializer.Deserialize<CookieStateModel>(result);
 		}
 	}
 }

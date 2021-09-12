@@ -1,7 +1,7 @@
 ﻿@page "/weather"
 @inject GrpcChannel grpcChannel
 
-<MudText Typo="Typo.h4">Weather Forecast</MudText>
+<MudText Typo="Typo.h4">2 Year Weather Forecast</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">This component demonstrates fetching (<i>random!</i>) gRPC data from a remote server.</MudText>
 
 <MudGrid>
@@ -12,7 +12,7 @@
         }
         else
         {
-            <MudTable Items="forecasts" Dense="true" Hover="true" Elevation="0">
+            <MudTable Items="forecasts" Dense="true" Hover="true" Elevation="0" RowsPerPage="25" Virtualize="true">
                 <HeaderContent>
                     <MudTh>Date</MudTh>
                     <MudTh>Temp. (C)</MudTh>
@@ -26,7 +26,7 @@
                     <MudTd DataLabel="Summary">@context.Summary</MudTd>
                 </RowTemplate>
                 <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[]{5, 10, 15}" />
+                    <MudTablePager PageSizeOptions="new int[]{10, 25, 50}" />
                 </PagerContent>
             </MudTable>
         }

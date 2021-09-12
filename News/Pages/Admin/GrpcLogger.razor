@@ -14,7 +14,7 @@
 else
 {
 	@*<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">*@
-	<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4">
+	<MudTable T="Log" Items="@logs" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" RowsPerPage="25">
 		<HeaderContent>
 			<MudTh>DateTime</MudTh>
 			<MudTh>Session</MudTh>
@@ -52,7 +52,7 @@ else
 			<MudTd DataLabel="Eu">@context.Eu</MudTd>
 		</RowTemplate>
 		<PagerContent>
-			<MudTablePager PageSizeOptions="new int[]{50, 100, 250}" />
+			<MudTablePager PageSizeOptions="new int[]{10, 25, 50}" />
 		</PagerContent>
 	</MudTable>
 }

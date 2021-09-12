@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace News.Helpers
+namespace News.Services
 {
 	public class ApiAuthenticationStateProvider : AuthenticationStateProvider
 	{

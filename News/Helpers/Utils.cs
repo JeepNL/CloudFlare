@@ -5,7 +5,6 @@ using System.Text;
 
 namespace News.Helpers
 {
-
 	public static class Utils
 	{
 		public static DateTime UtcTicks2Local(long ticks)
@@ -14,9 +13,19 @@ namespace News.Helpers
 			return dt;
 		}
 
+		// auth, 0 = "" -  name, 1 = "" - first, 2 = "" - last, 3 = ""
+		public static Array FillUserStateArray(string auth = "", string name = "", string first = "", string last = "")
+		{
+			Array tmpArr = Array.CreateInstance(typeof(String), 4);
+			tmpArr.SetValue(auth, 0);
+			tmpArr.SetValue(name, 1);
+			tmpArr.SetValue(first, 2);
+			tmpArr.SetValue(last, 3);
+			return tmpArr;
+		}
+
 		public static FluentValueValidator<string> FluentEmailValidate(bool val)
 		{
-
 			FluentValueValidator<string> validateEmail = default;
 			if (val) // email panel open
 				validateEmail = new(s => s

@@ -1,6 +1,6 @@
 ﻿namespace News.Models
 {
-	public class StateModel
+	public class CookieStateModel
 	{
 		public string Se { get; set; } = string.Empty;
 		public string Pe { get; set; } = string.Empty;

@@ -1,10 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Grpc.Core;
 using Microsoft.AspNetCore.Components.Authorization;
-using News.Helpers;
-using News.Models;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 
 namespace News.Services
 {

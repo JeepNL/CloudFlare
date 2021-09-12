@@ -1,10 +1,17 @@
 ﻿@page "/auth/logout"
 @inject IAuthService AuthService
 @inject NavigationManager NavMan
+@inject UserStateService userStateService
 
 @code {
     protected override async Task OnInitializedAsync()
     {
+        // auth, 0 = "" -  name, 1 = "" - first, 2 = "" - last, 3 = ""
+        userStateService.UserStateArray = Utils.FillUserStateArray(
+            "false",
+            userStateService.UserStateArray.GetValue(1).ToString(),
+            userStateService.UserStateArray.GetValue(2).ToString(),
+            userStateService.UserStateArray.GetValue(3).ToString());
         await AuthService.Logout();
         NavMan.NavigateTo("/");
     }

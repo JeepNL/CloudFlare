@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using News.Models;
 
 namespace News.Services
 {

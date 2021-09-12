@@ -80,7 +80,7 @@
 
 	private async Task SubmitForm()
 	{
-		form.Validate();
+		await form.Validate();
 		if (formValidated)
 		{
 			registering = false;

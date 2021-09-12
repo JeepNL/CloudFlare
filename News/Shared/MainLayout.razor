@@ -1,12 +1,13 @@
 ﻿@using System.Text.Json;
-@*@using System.Security.Claims*@
 @inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
-@inject ILocalStorageService localStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@*@inject ILocalStorageService localStorageServiceAsync*@
+@inject ISyncLocalStorageService localStorageService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject UserStateService userStateService
 
 <MudScrollToTop>
-	<MudFab Color="Color.Primary" Icon="@Icons.Filled.ArrowCircleUp" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Filled.ArrowCircleUp" />
 </MudScrollToTop>
 
 <MudThemeProvider Theme="currentTheme" />
@@ -14,111 +15,139 @@
 <MudDialogProvider />
 
 <MudLayout>
-	<MudAppBar Dense="true" Elevation="12">
-		<MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-		<MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
-		<MudSpacer />
-		<MudMenu Direction="Direction.Right" OffsetY="true">
-			<ActivatorContent>
-				<MudIcon Icon="@Icons.Material.Filled.MoreVert" />
-			</ActivatorContent>
-			<ChildContent>
-				<MudMenuItem>
-					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme">Light/Dark</MudButton>
-				</MudMenuItem>
-				<MudMenuItem>
-					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/JeepNL/CloudFlare/" Target="_blank">GitHub Repo</MudButton>
-				</MudMenuItem>
-				<MudMenuItem>
-					<MudButton Class="ma-0 pl-1 py-0 pr-0" Style="text-transform:none" Variant="Variant.Text" StartIcon="@Icons.Custom.Brands.Twitter" Color="Color.Inherit" Link="https://twitter.com/J_aa_p" Target="_blank">Contact me</MudButton>
-				</MudMenuItem>
-			</ChildContent>
-		</MudMenu>
-	</MudAppBar>
-	<MudDrawer @bind-Open="drawerOpen" Elevation="12" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
-		<NavMenu />
-	</MudDrawer>
-	<MudMainContent>
-		<MudContainer Style="max-width: 100%">
-			@Body
-			<Logos Dark="@dark" />
-		</MudContainer>
-	</MudMainContent>
+    <MudAppBar Dense="true" Elevation="12">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        <MudText Color="Color.Inherit" Typo="Typo.h6">BlazorBits Reloaded</MudText>
+        <MudSpacer />
+        <MudMenu Class="pa-0 ma-0" Direction="Direction.Right" OffsetY="true" Dense="true">
+            <ActivatorContent>
+                <MudIcon Icon="@Icons.Material.Filled.MoreVert" />
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Class="pa-0 ma-0">
+                    <MudButton Class="pl-4 pr-7 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text"
+                               StartIcon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ChangeTheme">Light/Dark</MudButton>
+                </MudMenuItem>
+                <MudMenuItem Class="pa-0 ma-0">
+                    <MudButton Class="pl-4 pr-4 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text"
+                               StartIcon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+                               Link="https://github.com/JeepNL/CloudFlare/" Target="_blank">GitHub Repo</MudButton>
+                </MudMenuItem>
+                <MudMenuItem Class="pa-0 ma-0">
+                    <MudButton Class="pl-4 pr-6 py-1 ma-0" Style="text-transform:none" Variant="Variant.Text"
+                               StartIcon="@Icons.Custom.Brands.Twitter" Color="Color.Inherit"
+                               Link="https://twitter.com/J_aa_p" Target="_blank">Contact me</MudButton>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="drawerOpen" Elevation="12" ClipMode="DrawerClipMode.Docked" Variant="@DrawerVariant.Responsive" Color="Color.Default">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer Style="max-width: 100%">
+            <CascadingValue Value="cookieModel">
+                @Body
+            </CascadingValue>
+            <Logos Dark="@(bbThemeCkVal == "dark")" />
+        </MudContainer>
+    </MudMainContent>
 </MudLayout>
 
 @code {
-	MudTheme currentTheme = new MudTheme();
-	CookieModel cookieModel = new();
-	string cookie = string.Empty;
-	bool drawerOpen = true;
-	bool dark = false;
+    MudTheme currentTheme = new MudTheme();
+    CookieModel cookieModel = new();
+    bool drawerOpen = true;
+    string cookieModelVersion = "v1";
+    string bbThemeCkVal = string.Empty;
 
-	protected override async Task OnInitializedAsync()
-	{
-		currentTheme.Typography = Design.MultiTypography("Ubuntu");
-		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
+    protected override async Task OnInitializedAsync()
+    {
+        currentTheme.Palette = DefaultTheme.DefaultPalette();
+        bbThemeCkVal = localStorageService.GetItemAsString("bb_theme");
+        if (!string.IsNullOrEmpty(bbThemeCkVal))
+            currentTheme.Palette = (bbThemeCkVal == "dark") ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
+        else
+        {
+            bbThemeCkVal = "light";
+            localStorageService.SetItemAsString("bb_theme", "light");
+        }
+        currentTheme.Typography = Design.MultiTypography("Ubuntu");
+        currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 
-		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		bool auth = (authState.User.Identity.IsAuthenticated) ? true : false;
+        bool bbStateCookieExists = false;
+        cookieModel.Session = Guid.NewGuid().ToString();
+        string bbStateCookie = localStorageService.GetItemAsString("bb_state");
+        if (!string.IsNullOrEmpty(bbStateCookie))
+        {
+            cookieModel = JsonSerializer.Deserialize<CookieModel>(bbStateCookie);
+            if (cookieModel != null && !
+                string.IsNullOrEmpty(cookieModel.Version) &&
+                cookieModel.Version == cookieModelVersion &&
+                !string.IsNullOrEmpty(cookieModel.State))
+            {
+                bbStateCookieExists = true;
+                //var autherClient = new Auther.AutherClient(grpcChannel);
+                //UserState userStateString = new() { UserStateIO = cookieModel.State };
+                //NameResponse nameResponse = await autherClient.GetNameAsync(userStateString);
+                //cookieModel.Name = nameResponse.Name ?? string.Empty;
+            }
+        }
 
-		string name = string.Empty;
-		cookie = await localStorage.GetItemAsStringAsync("bb_state");
-		if (string.IsNullOrEmpty(cookie))
-		{
-			currentTheme.Palette = DefaultTheme.DefaultPalette();
-			cookieModel.Theme = "light";
-		}
-		else
-		{
-			cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state"));
+        AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        bool auth = (authState.User.Identity.IsAuthenticated) ? true : false;
+        var loggerClient = new Lggr.LggrClient(grpcChannel);
+        Log logModel = new()
+        {
+            Se = cookieModel.Session,
+            Request = "Init",
+            Em = string.IsNullOrEmpty(cookieModel.Name) ? string.Empty : Utils.FromB64(cookieModel.Name),
+            Authenticated = auth,
+            CookieExists = bbStateCookieExists,
+            Success = true,
+            ActionEnum = ApiGrpc.Protos.Action.System
+        };
+        PostResponse postResponse = await loggerClient.PostAsync(logModel);
+        cookieModel.Id = postResponse.If ?? string.Empty;
+        cookieModel.State = postResponse.State ?? string.Empty;
+        cookieModel.Version = cookieModelVersion;
+        cookieModel.Auth = auth;
 
-			if (cookieModel.Theme == "light")
-				currentTheme.Palette = DefaultTheme.DefaultPalette();
-			else
-			{
-				currentTheme.Palette = DarkTheme.DarkPalette();
-				dark = true;
-			}
+        userStateService.OnChange += UserStateChanged;
+        userStateService.UserStateArray = Utils.FillUserStateArray(
+            cookieModel.Auth.ToString(),
+            Utils.FromB64(cookieModel.Name),
+            cookieModel.First,
+            cookieModel.Last);
+    }
 
-			CookieState cookieState = new() { CookieStateInputOutput = cookieModel.State };
-			var autherClient = new Auther.AutherClient(grpcChannel);
-			var response = await autherClient.GetNameIdAsync(cookieState);
-			name = response.Name;
-		}
+    private void ChangeTheme()
+    {
+        bbThemeCkVal = (bbThemeCkVal == "light") ? "dark" : "light";
+        currentTheme.Palette = (bbThemeCkVal == "light") ? DefaultTheme.DefaultPalette() : DarkTheme.DarkPalette();
+        localStorageService.SetItemAsString("bb_theme", bbThemeCkVal);
+    }
 
-		Guid newGuid = Guid.NewGuid();
-		Log logModel = new()
-		{
-			Se = newGuid.ToString(),
-			Request = "Init",
-			Em = name,
-			Authenticated = auth,
-			CookieExists = string.IsNullOrEmpty(cookie) ? false : true,
-			Success = true,
-			ActionEnum = ApiGrpc.Protos.Action.System
-		};
+    private void DrawerToggle()
+    {
+        drawerOpen = !drawerOpen;
+    }
 
-		var loggerClient = new Lggr.LggrClient(grpcChannel);
-		PostResponse postResponse = await loggerClient.PostAsync(logModel);
+    private void UserStateChanged()
+    {
+        string Auth = userStateService.UserStateArray.GetValue(0).ToString();
+        string Name = userStateService.UserStateArray.GetValue(1).ToString();
+        string First = userStateService.UserStateArray.GetValue(2).ToString();
+        string Last = userStateService.UserStateArray.GetValue(3).ToString();
 
-		cookieModel.Session = logModel.Se;
-		cookieModel.State = postResponse.Status;
-		await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
-	}
+        if (!string.IsNullOrEmpty(Auth))
+            cookieModel.Auth = Convert.ToBoolean(Auth);
+        if (!string.IsNullOrEmpty(Name))
+            cookieModel.Name = Utils.ToB64(Name);
+        cookieModel.First = First;
+        cookieModel.Last = Last;
 
-	private async Task ChangeTheme()
-	{
-		cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorage.GetItemAsStringAsync("bb_state"));
-		currentTheme.Palette = (dark) ? DefaultTheme.DefaultPalette() : DarkTheme.DarkPalette();
-		cookieModel.Theme = (dark) ? "light" : "dark";
-		currentTheme.Typography = Design.MultiTypography("Ubuntu");
-		currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
-		await localStorage.SetItemAsStringAsync("bb_state", JsonSerializer.Serialize(cookieModel));
-		dark = !dark;
-	}
-
-	void DrawerToggle()
-	{
-		drawerOpen = !drawerOpen;
-	}
+        localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+        StateHasChanged();
+    }
 }

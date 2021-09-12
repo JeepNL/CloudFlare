@@ -57,7 +57,8 @@ message Logs {
 	repeated Log log_repeated = 1;
 }
 message PostResponse {
-	string Status = 1; // encrypted StateString
+	string state = 1;
+	string if = 2;
 }
 
 message LogId {

@@ -3,140 +3,150 @@
 @using System.Text.Json;
 @using System.ComponentModel.DataAnnotations
 @inject GrpcChannel grpcChannel
-@inject IAuthService AuthService
-@inject NavigationManager NavMan
-@inject ISyncLocalStorageService localStorage
+@inject IAuthService authService
+@inject NavigationManager navMan
+@inject ILocalStorageService localStorageAsync
+@inject UserStateService userStateService
 
 <MudText Typo="Typo.h4">Login</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Login to your account or <MudLink Href="/auth/register">register</MudLink> a new account</MudText>
 
 @if (loggingIn)
 {
-	<MudAlert Class="mb-6 mt-4" Severity="Severity.Info" Variant="Variant.Filled">Please wait ...</MudAlert>
+    <MudAlert Class="mb-6 mt-4" Severity="Severity.Info" Variant="Variant.Filled">Please wait ...</MudAlert>
 }
 else
 {
-	@*<div style="max-width: 340px;">
-		</div>*@
-	<MudGrid>
-		<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
-			<MudCard>
-				<MudCardContent>
-					@if (!string.IsNullOrEmpty(loginError))
-					{
-						<MudAlert Class="mb-6" Severity="Severity.Error" Variant="Variant.Filled">@loginError</MudAlert>
-					}
-					else if (!string.IsNullOrEmpty(followUpMessage))
-					{
-						<MudAlert Class="mb-6" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Info" Variant="Variant.Filled">@followUpMessage</MudAlert>
-					}
+    @*<div style="max-width: 340px;">
+        </div>*@
+    <MudGrid>
+        <MudItem xs="12" sm="8" md="5" lg="4" xl="3">
+            <MudCard>
+                <MudCardContent>
+                    @if (!string.IsNullOrEmpty(loginError))
+                    {
+                        <MudAlert Class="mb-6" Severity="Severity.Error" Variant="Variant.Filled">@loginError</MudAlert>
+                    }
+                    else if (!string.IsNullOrEmpty(followUpMessage))
+                    {
+                        <MudAlert Class="mb-6" Severity="Severity.Warning" Icon="@Icons.Material.Filled.Info" Variant="Variant.Filled">@followUpMessage</MudAlert>
+                    }
 
-					<MudForm @ref="form" @bind-IsValid="@formValidated">
-						<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Email" Label="Email"
-								  Required="true"
-								  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
-								  Immediate="true"
-								  autocomplete="email" />
-						<MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Password" Label="Password"
-								  InputType="InputType.Password"
-								  Required="true" RequiredError="Required"
-								  autocomplete="current-password" />
-					</MudForm>
-				</MudCardContent>
-				<MudCardActions>
-					<MudButton title="Reset your password" OnClick="(() => NavMan.NavigateTo(forgotUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Forgot your password?</MudButton>
-					<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
-				</MudCardActions>
-			</MudCard>
-		</MudItem>
-	</MudGrid>
+                    <MudForm @ref="form" @bind-IsValid="@formValidated">
+                        <MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Email" Label="Email"
+                                  Required="true"
+                                  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Valid email address is required"})"
+                                  Immediate="true"
+                                  autocomplete="email" />
+                        <MudTextField Class="mb-3" T="string" @bind-Value="loginUser.Password" Label="Password"
+                                  InputType="InputType.Password"
+                                  Required="true" RequiredError="Required"
+                                  autocomplete="current-password" />
+                    </MudForm>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton title="Reset your password" OnClick="(() => navMan.NavigateTo(forgotUrl))" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Forgot your password?</MudButton>
+                    <MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 }
 
 @code {
-	[Parameter] public string FollowUp { get; set; }
-	MudForm form;
-	AutherUser loginUser;
+    [CascadingParameter]
+    protected CookieModel CookieModel { get; set; }
+    [Parameter] public string FollowUp { get; set; }
+    MudForm form;
+    AutherUser loginUser;
 
-	bool formValidated = false;
-	bool loggingIn = false;
-	string loginError = string.Empty;
-	string followUpMessage = string.Empty;
-	string forgotUrl = "/auth/forgot";
+    bool formValidated = false;
+    bool loggingIn = false;
+    string loginError = string.Empty;
+    string followUpMessage = string.Empty;
+    string forgotUrl = "/auth/forgot";
 
-	protected override void OnInitialized()
-	{
-		loginUser = new()
-		{
-			Email = string.Empty,
-			Password = string.Empty,
-			EditGuid = string.Empty,
-			RememberMe = false,
-			ActionEnum = AutherUser.Types.Action.Login
-		};
-	}
+    protected override void OnInitialized()
+    {
+        loginUser = new()
+        {
+            Email = Utils.FromB64(CookieModel.Name),
+            Password = string.Empty,
+            EditGuid = string.Empty,
+            RememberMe = false,
+            ActionEnum = AutherUser.Types.Action.Login
+        };
+    }
 
-	protected override void OnParametersSet()
-	{
-		switch (FollowUp)
-		{
-			case "register":
-				followUpMessage = "Ýou'll receive an email with a link to validate your email address. The link is valid for 15 minutes. Only after validation you'll be able to login.";
-				break;
-			case "reset":
-				followUpMessage = "You've successfully reset your password.";
-				break;
-			case "welcome":
-				followUpMessage = "Thank you for validating your email address!";
-				break;
-			case "success":
-				followUpMessage = "Your account credentials have succesfully been updated.";
-				break;
-			default:
-				followUpMessage = string.Empty;
-				break;
-		}
-	}
+    protected override void OnParametersSet()
+    {
+        switch (FollowUp)
+        {
+            case "register":
+                followUpMessage = "Ýou'll receive an email with a link to validate your email address. The link is valid for 15 minutes. Only after validation you'll be able to login.";
+                break;
+            case "reset":
+                followUpMessage = "You've successfully reset your password.";
+                break;
+            case "welcome":
+                followUpMessage = "Thank you for validating your email address!";
+                break;
+            case "success":
+                followUpMessage = "Your account credentials have succesfully been updated.";
+                break;
+            default:
+                followUpMessage = string.Empty;
+                break;
+        }
+    }
 
-	private async Task SubmitForm()
-	{
-		form.Validate();
-		if (formValidated)
-		{
-			loggingIn = true;
-			loginError = string.Empty;
-			var client = new Auther.AutherClient(grpcChannel);
-			UserResult serverReply = await client.AuthRpcAsync(loginUser);
+    private async Task SubmitForm()
+    {
+        await form.Validate();
+        if (formValidated)
+        {
+            loggingIn = true;
+            loginError = string.Empty;
+            var client = new Auther.AutherClient(grpcChannel);
+            UserResult serverReply = await client.AuthRpcAsync(loginUser);
 
-			if (!serverReply.Success)
-			{
-				loginError = serverReply.Error;
-				loggingIn = false;
-			}
-			else
-			{
-				await AuthService.SetToken(serverReply.Token);
+            if (!serverReply.Success)
+            {
+                loginError = serverReply.Error;
+                loggingIn = false;
+            }
+            else
+            {
+                await authService.SetToken(serverReply.Token);
 
-				CookieModel cookieModel = new();
-				cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+                CookieModel cookieModel = new();
+                cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorageAsync.GetItemAsStringAsync("bb_state"));
 
-				Log logModel = new()
-				{
-					Se = cookieModel.Session,
-					Request = "Login",
-					Em = loginUser.Email,
-					Authenticated = true,
-					CookieExists = true,
-					Success = true,
-					ActionEnum = ApiGrpc.Protos.Action.User
-				};
+                Log logModel = new()
+                {
+                    Se = cookieModel.Session,
+                    Request = "Login",
+                    Em = loginUser.Email,
+                    Authenticated = true,
+                    CookieExists = true,
+                    Success = true,
+                    ActionEnum = ApiGrpc.Protos.Action.User
+                };
 
-				var logClient = new Lggr.LggrClient(grpcChannel);
-				PostResponse logClientResponse = await logClient.PostAsync(logModel);
-				cookieModel.State = logClientResponse.Status;
-				localStorage.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+                var logClient = new Lggr.LggrClient(grpcChannel);
+                PostResponse logClientResponse = await logClient.PostAsync(logModel);
+                cookieModel.State = logClientResponse.State;
 
-				NavMan.NavigateTo("/");
-			}
-		}
-	}
+                // auth, 0 = "" -  name, 1 = "" - first, 2 = "" - last, 3 = ""
+                userStateService.UserStateArray = Utils.FillUserStateArray(
+                    "true",
+                    logModel.Em,
+                    serverReply.FirstName,
+                    serverReply.LastName
+                    );
+
+                navMan.NavigateTo("/");
+            }
+        }
+    }
 }

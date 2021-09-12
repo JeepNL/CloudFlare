@@ -7,8 +7,8 @@ service Auther {
   rpc AuthRpc (AutherUser) returns (UserResult);
   rpc AccountRpc (AutherAccount) returns (AccountResponse);
   rpc AccountValidateRpc (AutherAccountValidate) returns (AccountValidateResponse);
-  rpc GetUserState (CookieState) returns (CookieState);
-  rpc GetNameId (CookieState) returns (NameIdResponse);
+  rpc GetUserState (UserState) returns (UserState);
+  //rpc GetName (UserState) returns (NameResponse);
 }
 
 message AutherUser {
@@ -30,6 +30,8 @@ message UserResult {
 	bool success = 1;
 	google.protobuf.StringValue error = 2;
 	google.protobuf.StringValue token = 3;
+	google.protobuf.StringValue first_name = 4;
+	google.protobuf.StringValue last_name = 5;
 }
 
 enum Theme {
@@ -81,11 +83,10 @@ message AccountValidateResponse {
 	google.protobuf.StringValue error = 2;
 }
 
-message CookieState {
-	string cookie_state_input_output = 1;
+message UserState {
+	string user_state_i_o = 1;
 }
 
-message NameIdResponse {
-	string name = 1;
-	string id = 2;
-}
+//message NameResponse {
+//	string name = 1;
+//}

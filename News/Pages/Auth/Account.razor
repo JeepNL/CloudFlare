@@ -10,277 +10,285 @@
 @inject NavigationManager NavMan
 @inject ClipboardService clipboardService
 @inject ISnackbar Snackbar
+@inject UserStateService userStateService
 
 <MudText Typo="Typo.h4">Account</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Manage your BlazorBits account</MudText>
 
 <AuthorizeView Roles="User">
-	<Authorized>
-		<MudGrid>
-			<MudItem xs="12" sm="8" md="5" lg="4" xl="3">
-				@if (!string.IsNullOrEmpty(updateMessage))
-				{
-					<MudAlert Class="mb-6 mt-4" Severity="Severity.Warning" Variant="Variant.Filled">@updateMessage</MudAlert>
-				}
-				else if (formEditing)
-				{
-					<MudCard>
-						<MudCardContent>
-							<MudForm @ref="form" @bind-IsValid="@formValidated">
+    <Authorized>
+        <MudGrid>
+            <MudItem xs="12" sm="8" md="5" lg="4" xl="3">
+                @if (!string.IsNullOrEmpty(updateMessage))
+                {
+                    <MudAlert Class="mb-6 mt-4" Severity="Severity.Warning" Variant="Variant.Filled">@updateMessage</MudAlert>
+                }
+                else if (formEditing)
+                {
+                    <MudCard>
+                        <MudCardContent>
+                            <MudForm @ref="form" @bind-IsValid="@formValidated">
 
-								<MudTextField Class="mb-3" T="string" @bind-Value="userAccount.FirstName" Label="First name" />
-								<MudTextField Class="mb-3" T="string" @bind-Value="userAccount.LastName" Label="Last name" />
+                                <MudTextField Class="mb-3" T="string" @bind-Value="userAccount.FirstName" Label="First name" />
+                                <MudTextField Class="mb-3" T="string" @bind-Value="userAccount.LastName" Label="Last name" />
 
-								<MudExpansionPanels MultiExpansion="true" DisableBorders="true" Elevation="0">
-									<MudExpansionPanel Class="ma-0 pa-0" HideIcon="true" @bind-IsExpanded="emailPanelIsOpen">
-										<TitleContent>
-											<div class="d-flex" style="align-items: center">
-												<MudIcon Icon="@Icons.Material.Outlined.Email" Size="Size.Small" />
-												<MudText Class="ml-2" Typo="Typo.body2" Color="Color.Primary">@(!emailPanelIsOpen ? "Change email" : "Undo email changes")</MudText>
-											</div>
-										</TitleContent>
-										<ChildContent>
-											<MudTextField T="string" @bind-Value="userAccount.NewEmail" Label="Email"
-													  Validation="@Utils.FluentEmailValidate(emailPanelIsOpen ? true : false).Validation"
-													  autocomplete="email" />
-										</ChildContent>
-									</MudExpansionPanel>
+                                <MudExpansionPanels MultiExpansion="true" DisableBorders="true" Elevation="0">
+                                    <MudExpansionPanel Class="ma-0 pa-0" HideIcon="true" @bind-IsExpanded="emailPanelIsOpen">
+                                        <TitleContent>
+                                            <div class="d-flex" style="align-items: center">
+                                                <MudIcon Icon="@Icons.Material.Outlined.Email" Size="Size.Small" />
+                                                <MudText Class="ml-2" Typo="Typo.body2" Color="Color.Primary">@(!emailPanelIsOpen ? "Change email" : "Undo email changes")</MudText>
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudTextField T="string" @bind-Value="userAccount.NewEmail" Label="Email"
+                                                      Validation="@Utils.FluentEmailValidate(emailPanelIsOpen ? true : false).Validation"
+                                                      autocomplete="email" />
+                                        </ChildContent>
+                                    </MudExpansionPanel>
 
-									<MudExpansionPanel Class="ma-0 pa-0" HideIcon="true" @bind-IsExpanded="passwordPanelIsOpen">
-										<TitleContent>
-											<div class="d-flex" style="align-items: center">
-												<MudIcon Icon="@Icons.Material.Outlined.Password" Size="Size.Small" />
-												<MudText Class="ml-2" Typo="Typo.body2" Color="Color.Primary">@(!passwordPanelIsOpen ? "Change Password" : "Undo password changes")</MudText>
-											</div>
-										</TitleContent>
-										<ChildContent>
-											<MudTextField @ref="pwField" T="string" @bind-Value="userAccount.NewPassword" Label="New password"
-													  InputType="passwordInput"
-													  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
-													  Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="ShowPassword"
-													  autocomplete="new-password" />
-											<MudTextField T="string" @bind-Value="validatePassword" Label="Repeat password"
-													  InputType="passwordInput"
-													  Validation="@(new Func<string, string>(PasswordMatch))"
-													  autocomplete="new-password" />
-										</ChildContent>
-									</MudExpansionPanel>
-								</MudExpansionPanels>
-							</MudForm>
-							@if (passwordPanelIsOpen && !emailPanelIsOpen)
-							{
-								<MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>password</b> you'll receive an email to confirm it. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
-							}
-							else if (emailPanelIsOpen && !passwordPanelIsOpen)
-							{
-								<MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>email address</b> you'll receive an email to confirm it. The email adress you're currently using will receive a notification. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
-							}
-							else if (passwordPanelIsOpen && emailPanelIsOpen)
-							{
-								<MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>email address and your password</b> you'll receive an email to confirm it. The email adress you're currently using will receive a notification. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
-							}
-						</MudCardContent>
-						<MudCardActions>
-							<MudButton title="Generate a strong password." OnClick="GeneratePassword" Disabled="@(!isGeneratePasswordVisible || !passwordPanelIsOpen)" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Generate password</MudButton>
-							<MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Disabled="@(!formEditing)" Variant="Variant.Filled" Color="Color.Primary">Update</MudButton>
-						</MudCardActions>
-					</MudCard>
-				}
-				else
-				{
-					<MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled">One moment please ...</MudAlert>
-				}
-			</MudItem>
-		</MudGrid>
-	</Authorized>
+                                    <MudExpansionPanel Class="ma-0 pa-0" HideIcon="true" @bind-IsExpanded="passwordPanelIsOpen">
+                                        <TitleContent>
+                                            <div class="d-flex" style="align-items: center">
+                                                <MudIcon Icon="@Icons.Material.Outlined.Password" Size="Size.Small" />
+                                                <MudText Class="ml-2" Typo="Typo.body2" Color="Color.Primary">@(!passwordPanelIsOpen ? "Change Password" : "Undo password changes")</MudText>
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudTextField @ref="pwField" T="string" @bind-Value="userAccount.NewPassword" Label="New password"
+                                                      InputType="passwordInput"
+                                                      Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                                                      Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="ShowPassword"
+                                                      autocomplete="new-password" />
+                                            <MudTextField T="string" @bind-Value="validatePassword" Label="Repeat password"
+                                                      InputType="passwordInput"
+                                                      Validation="@(new Func<string, string>(PasswordMatch))"
+                                                      autocomplete="new-password" />
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudForm>
+                            @if (passwordPanelIsOpen && !emailPanelIsOpen)
+                            {
+                                <MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>password</b> you'll receive an email to confirm it. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
+                            }
+                            else if (emailPanelIsOpen && !passwordPanelIsOpen)
+                            {
+                                <MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>email address</b> you'll receive an email to confirm it. The email adress you're currently using will receive a notification. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
+                            }
+                            else if (passwordPanelIsOpen && emailPanelIsOpen)
+                            {
+                                <MudAlert Class="mb-0 mt-2" Severity="Severity.Info" Variant="Variant.Filled">If you change your <b>email address and your password</b> you'll receive an email to confirm it. The email adress you're currently using will receive a notification. Only after confirmation you'll be able to login with your new credentials.</MudAlert>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton title="Generate a strong password." OnClick="GeneratePassword" Disabled="@(!isGeneratePasswordVisible || !passwordPanelIsOpen)" Variant="Variant.Text" Color="Color.Primary" Style="text-transform:none">Generate password</MudButton>
+                            <MudButton Class="mt-2 ml-auto" OnClick="SubmitForm" Disabled="@(!formEditing)" Variant="Variant.Filled" Color="Color.Primary">Update</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                }
+                else
+                {
+                    <MudAlert Class="mb-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled">One moment please ...</MudAlert>
+                }
+            </MudItem>
+        </MudGrid>
+    </Authorized>
 </AuthorizeView>
 
 @code {
-	MudForm form;
-	AutherAccount userAccount = new();
-	MudTextField<string> pwField;
-	InputType passwordInput = InputType.Password;
-	ClaimsPrincipal user = new();
+    MudForm form;
+    AutherAccount userAccount = new();
+    MudTextField<string> pwField;
+    InputType passwordInput = InputType.Password;
+    ClaimsPrincipal user = new();
 
-	bool formValidated = false;
-	bool formEditing = true;
-	bool isPasswordVisible = false;
-	bool isGeneratePasswordVisible = true;
-	string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
-	string validatePassword = string.Empty;
-	string updateMessage = string.Empty;
-	string currentFirstname = string.Empty;
-	string currentLastname = string.Empty;
-	bool passwordPanelIsOpen = false;
-	bool emailPanelIsOpen = false;
+    bool formValidated = false;
+    bool formEditing = true;
+    bool isPasswordVisible = false;
+    bool isGeneratePasswordVisible = true;
+    string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+    string validatePassword = string.Empty;
+    string updateMessage = string.Empty;
+    string currentFirstname = string.Empty;
+    string currentLastname = string.Empty;
+    bool passwordPanelIsOpen = false;
+    bool emailPanelIsOpen = false;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		user = authState.User;
-		if (user.Identity.IsAuthenticated)
-		{
-			userAccount = new() // #TODO - for now .. claims need refactoring
-			{
-				Id = user.FindFirst("Id").Value ?? string.Empty,
-				FirstName = user.FindFirst("FirstName").Value ?? string.Empty,
-				LastName = user.FindFirst("LastName").Value ?? string.Empty,
-				CurrentEmail = Utils.FromB64(user.Identity.Name),
-				NewEmail = Utils.FromB64(user.Identity.Name),
-				NewPassword = string.Empty,
-				EditGuid = string.Empty,
-			};
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            userAccount = new() // #TODO - for now .. claims need refactoring
+            {
+                Id = user.FindFirst("Id").Value ?? string.Empty,
+                //FirstName = user.FindFirst("FirstName").Value ?? string.Empty,
+                //LastName = user.FindFirst("LastName").Value ?? string.Empty,
+                CurrentEmail = Utils.FromB64(user.Identity.Name),
+                NewEmail = Utils.FromB64(user.Identity.Name),
+                NewPassword = string.Empty,
+                EditGuid = string.Empty,
+            };
 
-			userAccount.ActionEnum = AutherAccount.Types.Action.Get;
-			var client = new Auther.AutherClient(grpcChannel);
-			Metadata headers = await AuthService.AddMetaDataHeader();
-			AccountResponse serverReply = await client.AccountRpcAsync(userAccount, headers);
+            userAccount.ActionEnum = AutherAccount.Types.Action.Get;
+            var client = new Auther.AutherClient(grpcChannel);
+            Metadata headers = await AuthService.AddMetaDataHeader();
+            AccountResponse serverReply = await client.AccountRpcAsync(userAccount, headers);
 
-			if (serverReply.AccountResultEnum == AccountResponse.Types.Result.GetOk)
-			{
-				userAccount.Id = serverReply.Id;
-				userAccount.CurrentEmail = serverReply.Email;
-				userAccount.NewEmail = serverReply.Email;
-				userAccount.FirstName = serverReply.FirstName;
-				userAccount.LastName = serverReply.LastName;
-				userAccount.EditGuid = serverReply.EditGuid;
-				userAccount.AccountThemeEnum = serverReply.AccountThemeEnum;
-				currentFirstname = userAccount.FirstName;
-				currentLastname = userAccount.LastName;
-			}
-			else
-			{
-				updateMessage = serverReply.Error; // User does not exist? Yeah right.
-				await AuthService.Logout();
-			}
-		}
-	}
+            if (serverReply.AccountResultEnum == AccountResponse.Types.Result.GetOk)
+            {
+                userAccount.Id = serverReply.Id;
+                userAccount.CurrentEmail = serverReply.Email;
+                userAccount.NewEmail = serverReply.Email;
+                userAccount.FirstName = serverReply.FirstName;
+                userAccount.LastName = serverReply.LastName;
+                userAccount.EditGuid = serverReply.EditGuid;
+                userAccount.AccountThemeEnum = serverReply.AccountThemeEnum;
+                currentFirstname = userAccount.FirstName;
+                currentLastname = userAccount.LastName;
+            }
+            else
+            {
+                updateMessage = serverReply.Error; // User does not exist? Yeah right.
+                await AuthService.Logout();
+            }
+        }
+    }
 
-	private async Task SubmitForm()
-	{
-		form.Validate();
-		if (formValidated)
-		{
-			formEditing = false;
-			updateMessage = string.Empty;
+    private async Task SubmitForm()
+    {
+        await form.Validate();
+        if (formValidated)
+        {
+            formEditing = false;
+            updateMessage = string.Empty;
 
-			if ((userAccount.CurrentEmail != userAccount.NewEmail) && emailPanelIsOpen ||
-				passwordPanelIsOpen ||
-				currentFirstname != userAccount.FirstName ||
-				currentLastname != userAccount.LastName)
-			{
-				if (!emailPanelIsOpen)
-					userAccount.NewEmail = userAccount.CurrentEmail;
-				if (!passwordPanelIsOpen)
-					userAccount.NewPassword = string.Empty;
-				userAccount.ActionEnum = AutherAccount.Types.Action.Update;
+            if ((userAccount.CurrentEmail != userAccount.NewEmail) && emailPanelIsOpen ||
+                passwordPanelIsOpen ||
+                currentFirstname != userAccount.FirstName ||
+                currentLastname != userAccount.LastName)
+            {
+                if (!emailPanelIsOpen)
+                    userAccount.NewEmail = userAccount.CurrentEmail;
+                if (!passwordPanelIsOpen)
+                    userAccount.NewPassword = string.Empty;
+                userAccount.ActionEnum = AutherAccount.Types.Action.Update;
 
-				var client = new Auther.AutherClient(grpcChannel);
-				Metadata headers = await AuthService.AddMetaDataHeader();
-				AccountResponse serverReply = await client.AccountRpcAsync(userAccount, headers);
+                var client = new Auther.AutherClient(grpcChannel);
+                Metadata headers = await AuthService.AddMetaDataHeader();
+                AccountResponse serverReply = await client.AccountRpcAsync(userAccount, headers);
 
-				if (serverReply.AccountResultEnum == AccountResponse.Types.Result.FirstnameLastname)
-				{
-					Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
-					formEditing = true;
-				}
-				else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.EmailSent)
-				{
-					Snackbar.Add("Email sent.", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
-					string desc = string.Empty;
-					if ((userAccount.CurrentEmail != userAccount.NewEmail) && passwordPanelIsOpen)
-						desc = "email and password";
-					else if (emailPanelIsOpen)
-						desc = "email";
-					else if (passwordPanelIsOpen)
-						desc = "password";
+                if (serverReply.AccountResultEnum == AccountResponse.Types.Result.FirstnameLastname)
+                {
+                    Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
+                    userStateService.UserStateArray = Utils.FillUserStateArray(
+                        "",
+                        "",
+                        serverReply.FirstName,
+                        serverReply.LastName
+                        );
 
-					updateMessage = $"Ýou'll receive an email with a link to confirm the {desc} changes you've made. The link is valid for 15 minutes.";
-				}
-				else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.AlreadySent)
-					updateMessage = serverReply.Error;
-				else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.Error)
-				{
-					await Task.Delay(2500);
-					Snackbar.Add(serverReply.Error, MudBlazor.Severity.Error);
-					userAccount.NewEmail = userAccount.CurrentEmail;
-					userAccount.NewPassword = string.Empty;
-					validatePassword = string.Empty;
-					formEditing = true;
-				}
-			}
-			else // No changes, except in closed panels maybe, reset them.
-			{
-				await Task.Delay(2500);
-				userAccount.NewEmail = userAccount.CurrentEmail;
-				userAccount.NewPassword = string.Empty;
-				validatePassword = string.Empty;
-				Snackbar.Add("No changes made ...", MudBlazor.Severity.Error);
-				formEditing = true;
-			}
-		}
-	}
+                    formEditing = true;
+                }
+                else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.EmailSent)
+                {
+                    Snackbar.Add("Email sent.", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
+                    string desc = string.Empty;
+                    if ((userAccount.CurrentEmail != userAccount.NewEmail) && passwordPanelIsOpen)
+                        desc = "email and password";
+                    else if (emailPanelIsOpen)
+                        desc = "email";
+                    else if (passwordPanelIsOpen)
+                        desc = "password";
 
-	private async Task GeneratePassword()
-	{
-		isGeneratePasswordVisible = false;
-		isPasswordVisible = true;
-		passwordInputIcon = Icons.Material.Filled.Visibility;
-		passwordInput = InputType.Text;
-		userAccount.NewPassword = RandomPassword.Generate();
-		validatePassword = userAccount.NewPassword;
-		await clipboardService.WriteTextAsync(userAccount.NewPassword);
-		Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
-		await Task.Delay(2500);
-		isGeneratePasswordVisible = true;
-	}
+                    updateMessage = $"Ýou'll receive an email with a link to confirm the {desc} changes you've made. The link is valid for 15 minutes.";
+                }
+                else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.AlreadySent)
+                    updateMessage = serverReply.Error;
+                else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.Error)
+                {
+                    await Task.Delay(2500);
+                    Snackbar.Add(serverReply.Error, MudBlazor.Severity.Error);
+                    userAccount.NewEmail = userAccount.CurrentEmail;
+                    userAccount.NewPassword = string.Empty;
+                    validatePassword = string.Empty;
+                    formEditing = true;
+                }
+            }
+            else // No changes, except in closed panels maybe, reset them.
+            {
+                await Task.Delay(2500);
+                userAccount.NewEmail = userAccount.CurrentEmail;
+                userAccount.NewPassword = string.Empty;
+                validatePassword = string.Empty;
+                Snackbar.Add("No changes made ...", MudBlazor.Severity.Error);
+                formEditing = true;
+            }
+        }
+    }
 
-	private void ShowPassword()
-	{
-		if (isPasswordVisible)
-		{
-			isPasswordVisible = false;
-			passwordInputIcon = Icons.Material.Filled.VisibilityOff;
-			passwordInput = InputType.Password;
-		}
-		else
-		{
-			isPasswordVisible = true;
-			passwordInputIcon = Icons.Material.Filled.Visibility;
-			passwordInput = InputType.Text;
-		}
-	}
+    private async Task GeneratePassword()
+    {
+        isGeneratePasswordVisible = false;
+        isPasswordVisible = true;
+        passwordInputIcon = Icons.Material.Filled.Visibility;
+        passwordInput = InputType.Text;
+        userAccount.NewPassword = RandomPassword.Generate();
+        validatePassword = userAccount.NewPassword;
+        await clipboardService.WriteTextAsync(userAccount.NewPassword);
+        Snackbar.Add("The generated password has been<br />copied to your clipboard", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
+        await Task.Delay(2500);
+        isGeneratePasswordVisible = true;
+    }
 
-	private IEnumerable<string> PasswordStrength(string pw)
-	{
-		if (!passwordPanelIsOpen)
-		{
-			yield break;
-		}
-		if (string.IsNullOrWhiteSpace(pw))
-		{
-			yield return "Password is required";
-			yield break;
-		}
-		if (pw.Length < 8)
-			yield return "Use at least 8 characters";
-		if (!Regex.IsMatch(pw, @"[A-Z]"))
-			yield return "Use at least 1 capital letter";
-		if (!Regex.IsMatch(pw, @"[a-z]"))
-			yield return "Use at least 1 lowercase letter";
-		if (!Regex.IsMatch(pw, @"[0-9]"))
-			yield return "Use at least 1 digit";
-		if (!Regex.IsMatch(pw, @"[~`!@#$€%^&*\-_=+|\\/?><,.:;\(\)\{\}\[\]]"))
-			yield return @"Use at least 1 special char like: !@#$€%^&*-_=+?";
-	}
+    private void ShowPassword()
+    {
+        if (isPasswordVisible)
+        {
+            isPasswordVisible = false;
+            passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            passwordInput = InputType.Password;
+        }
+        else
+        {
+            isPasswordVisible = true;
+            passwordInputIcon = Icons.Material.Filled.Visibility;
+            passwordInput = InputType.Text;
+        }
+    }
 
-	private string PasswordMatch(string arg)
-	{
-		if (passwordPanelIsOpen)
-		{
-			if (pwField.Value != arg)
-				return "Passwords don't match";
-		}
-		return null;
-	}
+    private IEnumerable<string> PasswordStrength(string pw)
+    {
+        if (!passwordPanelIsOpen)
+        {
+            yield break;
+        }
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Password is required";
+            yield break;
+        }
+        if (pw.Length < 8)
+            yield return "Use at least 8 characters";
+        if (!Regex.IsMatch(pw, @"[A-Z]"))
+            yield return "Use at least 1 capital letter";
+        if (!Regex.IsMatch(pw, @"[a-z]"))
+            yield return "Use at least 1 lowercase letter";
+        if (!Regex.IsMatch(pw, @"[0-9]"))
+            yield return "Use at least 1 digit";
+        if (!Regex.IsMatch(pw, @"[~`!@#$€%^&*\-_=+|\\/?><,.:;\(\)\{\}\[\]]"))
+            yield return @"Use at least 1 special char like: !@#$€%^&*-_=+?";
+    }
+
+    private string PasswordMatch(string arg)
+    {
+        if (passwordPanelIsOpen)
+        {
+            if (pwField.Value != arg)
+                return "Passwords don't match";
+        }
+        return null;
+    }
 }
