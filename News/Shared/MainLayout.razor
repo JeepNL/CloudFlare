@@ -1,7 +1,6 @@
 ﻿@using System.Text.Json;
 @inherits LayoutComponentBase
 @inject GrpcChannel grpcChannel
-@*@inject ILocalStorageService localStorageServiceAsync*@
 @inject ISyncLocalStorageService localStorageService
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject UserStateService userStateService
@@ -58,7 +57,7 @@
     MudTheme currentTheme = new MudTheme();
     CookieModel cookieModel = new();
     bool drawerOpen = true;
-    string cookieModelVersion = "v1";
+    string cookieModelVersion = "v2";
     string bbThemeCkVal = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -81,17 +80,8 @@
         if (!string.IsNullOrEmpty(bbStateCookie))
         {
             cookieModel = JsonSerializer.Deserialize<CookieModel>(bbStateCookie);
-            if (cookieModel != null && !
-                string.IsNullOrEmpty(cookieModel.Version) &&
-                cookieModel.Version == cookieModelVersion &&
-                !string.IsNullOrEmpty(cookieModel.State))
-            {
+            if (cookieModel != null && !string.IsNullOrEmpty(cookieModel.Version) && cookieModel.Version == cookieModelVersion)
                 bbStateCookieExists = true;
-                //var autherClient = new Auther.AutherClient(grpcChannel);
-                //UserState userStateString = new() { UserStateIO = cookieModel.State };
-                //NameResponse nameResponse = await autherClient.GetNameAsync(userStateString);
-                //cookieModel.Name = nameResponse.Name ?? string.Empty;
-            }
         }
 
         AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
@@ -104,21 +94,25 @@
             Em = string.IsNullOrEmpty(cookieModel.Name) ? string.Empty : Utils.FromB64(cookieModel.Name),
             Authenticated = auth,
             CookieExists = bbStateCookieExists,
-            Success = true,
+            Success = true, // #TODO - refactor.
             ActionEnum = ApiGrpc.Protos.Action.System
         };
         PostResponse postResponse = await loggerClient.PostAsync(logModel);
-        cookieModel.Id = postResponse.If ?? string.Empty;
-        cookieModel.State = postResponse.State ?? string.Empty;
         cookieModel.Version = cookieModelVersion;
         cookieModel.Auth = auth;
 
+        if (!bbStateCookieExists)
+            localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+
         userStateService.OnChange += UserStateChanged;
+        // auth 0, name 1, first 2, id  3, screen 4
         userStateService.UserStateArray = Utils.FillUserStateArray(
             cookieModel.Auth.ToString(),
             Utils.FromB64(cookieModel.Name),
             cookieModel.First,
-            cookieModel.Last);
+            postResponse.If,
+            ""
+        );
     }
 
     private void ChangeTheme()
@@ -135,19 +129,28 @@
 
     private void UserStateChanged()
     {
-        string Auth = userStateService.UserStateArray.GetValue(0).ToString();
-        string Name = userStateService.UserStateArray.GetValue(1).ToString();
-        string First = userStateService.UserStateArray.GetValue(2).ToString();
-        string Last = userStateService.UserStateArray.GetValue(3).ToString();
+        bool cookieValuesChanged = false;
 
-        if (!string.IsNullOrEmpty(Auth))
-            cookieModel.Auth = Convert.ToBoolean(Auth);
-        if (!string.IsNullOrEmpty(Name))
-            cookieModel.Name = Utils.ToB64(Name);
-        cookieModel.First = First;
-        cookieModel.Last = Last;
+        // auth 0, name 1, first 2, id  3, screen 4
+        string authenticated = userStateService.UserStateArray.GetValue(0).ToString();
+        string nameB64 = Utils.ToB64(userStateService.UserStateArray.GetValue(1).ToString());
+        string firstName = userStateService.UserStateArray.GetValue(2).ToString();
 
-        localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+        if (Convert.ToBoolean(authenticated) != cookieModel.Auth ||
+            nameB64 != cookieModel.Name ||
+            firstName != cookieModel.First)
+            cookieValuesChanged = true;
+
+        cookieModel.Auth = Convert.ToBoolean(authenticated);
+        cookieModel.Name = nameB64;
+        cookieModel.First = firstName;
+
+        if (cookieValuesChanged)
+        {
+            Console.WriteLine($"***** cookieValuesChanged {cookieValuesChanged}");
+            localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+        }
+
         StateHasChanged();
     }
 }

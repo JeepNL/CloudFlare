@@ -135,15 +135,15 @@ else
 
                 var logClient = new Lggr.LggrClient(grpcChannel);
                 PostResponse logClientResponse = await logClient.PostAsync(logModel);
-                cookieModel.State = logClientResponse.State;
 
-                // auth, 0 = "" -  name, 1 = "" - first, 2 = "" - last, 3 = ""
+                // auth 0, name 1, first 2, id  3, screen 4
                 userStateService.UserStateArray = Utils.FillUserStateArray(
                     "true",
-                    logModel.Em,
+                    loginUser.Email,
                     serverReply.FirstName,
-                    serverReply.LastName
-                    );
+                    logClientResponse.If,
+                    ""
+                );
 
                 navMan.NavigateTo("/");
             }

@@ -3,111 +3,106 @@
 @using System.Security.Claims
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IAuthService AuthService
-@inject GrpcChannel grpcChannel
-@inject ISyncLocalStorageService localStorage
+@inject ILocalStorageService localStorageAsync
+@inject UserStateService userStateService
 
 <MudText Typo="Typo.h4">Tester</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
 
-<MudText Class="mb-4" Typo="Typo.body1">Claim expiration: @claimExpDt</MudText>
+<MudText Class="mb-4" Typo="Typo.body1">Claim expiration: @claimExpDt for: @emailFromB64</MudText>
 
 <MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
-	<thead>
-		<tr style="color:white; background-color:orangered">
-			<th colspan="2">Claims</th>
-		</tr>
-		<tr style="color:black; background-color:lightgray">
-			<th>Key</th>
-			<th>Value</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var claim in _claims)
-		{
-			<tr>
-				<td>@claim.Type</td>
-				<td>@claim.Value</td>
-			</tr>
-		}
-	</tbody>
+    <thead>
+        <tr style="color:white; background-color:orangered">
+            <th colspan="2">Claims</th>
+        </tr>
+        <tr style="color:black; background-color:lightgray">
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in _claims)
+        {
+            <tr>
+                <td>@claim.Type</td>
+                <td>@claim.Value</td>
+            </tr>
+        }
+    </tbody>
 </MudSimpleTable>
 
 <MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
-	<thead>
-		<tr style="color:white; background-color:orangered">
-			<th colspan="2">CookieModel</th>
-		</tr>
-		<tr style="color:black; background-color:lightgray">
-			<th>Key</th>
-			<th>Value</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr><td>Session</td><td>@cookieModel.Session</td></tr>
-		<tr><td>State</td><td>@cookieModel.State</td></tr>
-		<tr><td>ScreenRes</td><td>@cookieModel.ScreenRes</td></tr>
-	</tbody>
+    <thead>
+        <tr style="color:white; background-color:orangered">
+            <th colspan="2">Cookie Model</th>
+        </tr>
+        <tr style="color:black; background-color:lightgray">
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>Version</td><td>@cookieModel.Version</td></tr>
+        <tr><td>Session</td><td>@cookieModel.Session</td></tr>
+        <tr><td>Auth</td><td>@cookieModel.Auth</td></tr>
+        <tr><td>Name</td><td>@Utils.FromB64(cookieModel.Name)</td></tr>
+        <tr><td>First</td><td>@cookieModel.First</td></tr>
+    </tbody>
 </MudSimpleTable>
 
-<MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
-	<thead>
-		<tr style="color:white; background-color:orangered">
-			<th colspan="2">StateModel</th>
-		</tr>
-		<tr style="color:black; background-color:lightgray">
-			<th>Key</th>
-			<th>Value</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr><td>Se</td><td>@cookieStateModel.Se</td></tr>
-		<tr><td>Pe</td><td>@cookieStateModel.Pe</td></tr>
-		<tr><td>If</td><td>@cookieStateModel.If</td></tr>
-		<tr><td>Is</td><td>@cookieStateModel.Is</td></tr>
-		<tr><td>Xf</td><td>@cookieStateModel.Xf</td></tr>
-		<tr><td>Em</td><td>@cookieStateModel.Em</td></tr>
-		<tr><td>Ci</td><td>@cookieStateModel.Ci</td></tr>
-		<tr><td>Po</td><td>@cookieStateModel.Po</td></tr>
-		<tr><td>St</td><td>@cookieStateModel.St</td></tr>
-		<tr><td>Sc</td><td>@cookieStateModel.Sc</td></tr>
-		<tr><td>Co</td><td>@cookieStateModel.Co</td></tr>
-		<tr><td>Cc</td><td>@cookieStateModel.Cc</td></tr>
-		<tr><td>Eu</td><td>@cookieStateModel.Eu</td></tr>
-		<tr><td>La</td><td>@cookieStateModel.La</td></tr>
-		<tr><td>Lo</td><td>@cookieStateModel.Lo</td></tr>
-		<tr><td>An</td><td>@cookieStateModel.An</td></tr>
-		<tr><td>Ao</td><td>@cookieStateModel.Ao</td></tr>
-		<tr><td>Ai</td><td>@cookieStateModel.Ai</td></tr>
-	</tbody>
-</MudSimpleTable>
+@if (ready)
+{
+    <MudSimpleTable Class="mb-4" Dense="true" Hover="false" Bordered="false" Striped="true" Style="overflow-x: auto;">
+        <thead>
+            <tr style="color:white; background-color:orangered">
+                <th colspan="2">In Memory User State</th>
+            </tr>
+            <tr style="color:black; background-color:lightgray">
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Auth</td><td>@userStateService.UserStateArray.GetValue(0).ToString()</td></tr>
+            <tr><td>Name</td><td>@userStateService.UserStateArray.GetValue(1).ToString()</td></tr>
+            <tr><td>First</td><td>@userStateService.UserStateArray.GetValue(2).ToString()</td></tr>
+            <tr><td>Id</td><td>@userStateService.UserStateArray.GetValue(3).ToString()</td></tr>
+            <tr><td>Screen</td><td>@userStateService.UserStateArray.GetValue(4).ToString()</td></tr>
+        </tbody>
+    </MudSimpleTable>
+}
 
 @code {
-	IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
-	DateTimeOffset claimExpDt = default;
-	CookieModel cookieModel = new();
-	CookieStateModel cookieStateModel = new();
-	string emailFromB64 = string.Empty;
+    IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+    DateTimeOffset claimExpDt = default;
+    CookieModel cookieModel = new();
+    string emailFromB64 = string.Empty;
+    bool ready = false;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
-		if (user.Identity.IsAuthenticated)
-		{
-			_claims = user.Claims;
-			emailFromB64 = Utils.FromB64(user.Identity.Name);
-			//long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
-			long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
-			claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
-			cookieModel = JsonSerializer.Deserialize<CookieModel>(localStorage.GetItemAsString("bb_state"));
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            _claims = user.Claims;
+            emailFromB64 = Utils.FromB64(user.Identity.Name);
+            long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
+            // OR: long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
+            claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
+            cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorageAsync.GetItemAsStringAsync("bb_state"));
 
-			UserState userState = new() { UserStateIO = cookieModel.State };
-			var client = new Auther.AutherClient(grpcChannel);
-			Metadata headers = await AuthService.AddMetaDataHeader();
-			var response = await client.GetUserStateAsync(userState, headers);
-			string result = response.UserStateIO;
-			cookieStateModel = JsonSerializer.Deserialize<CookieStateModel>(result);
-		}
-	}
+            // await Task.Delay(250) needed to initialize UserStateArray (in memory, after MainLayout)
+            // when reload (CTRL-F5) page - #TODO: research
+            // Maybe wait to load @Body in MainLayout ...
+            // Hmmm ...But it's a fix for all pages.
+            await Task.Delay(250);
+            foreach (string uss in userStateService.UserStateArray)
+            {
+                Console.WriteLine($"Index - IndexEventHandler - userStateService.UserStateArray: {uss}");
+            }
+            ready = true;
+        }
+    }
 }

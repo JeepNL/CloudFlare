@@ -118,24 +118,4 @@
             input = input.Substring(0, input.IndexOf("@"));
         return input;
     }
-
-    //protected override void OnInitialized()
-    //{
-    //    userName = userStateService.UserStateArray.GetValue(1)?.ToString();
-    //    if (!string.IsNullOrEmpty(userName))
-    //        userName = Hello(userName);
-    //    else
-    //        userStateService.OnChange += IndexEventHandler; // for 1st page load, or reload.
-    //}
-
-    //private void IndexEventHandler()
-    //{
-    //    userName = Hello(userStateService.UserStateArray.GetValue(1).ToString());
-    //    StateHasChanged();
-    //    //foreach (string uss in userStateService.UserStateArray)
-    //    //{
-    //    //    counter++;
-    //    //    Console.WriteLine($"Index - IndexEventHandler - userStateService.UserStateArray: {uss} - counter: {counter}");
-    //    //}
-    //}
 }

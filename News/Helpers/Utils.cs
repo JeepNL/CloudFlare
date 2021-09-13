@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using System.Text;
-//using System.Globalization;
-//using System.Text.RegularExpressions;
 
 namespace News.Helpers
 {
@@ -13,14 +11,15 @@ namespace News.Helpers
 			return dt;
 		}
 
-		// auth, 0 = "" -  name, 1 = "" - first, 2 = "" - last, 3 = ""
-		public static Array FillUserStateArray(string auth = "", string name = "", string first = "", string last = "")
+		// auth 0, name 1, first 2, id  3, screen 4
+		public static Array FillUserStateArray(string auth = "false", string name = "", string first = "", string id = "", string screen = "")
 		{
-			Array tmpArr = Array.CreateInstance(typeof(String), 4);
+			Array tmpArr = Array.CreateInstance(typeof(String), 5);
 			tmpArr.SetValue(auth, 0);
 			tmpArr.SetValue(name, 1);
 			tmpArr.SetValue(first, 2);
-			tmpArr.SetValue(last, 3);
+			tmpArr.SetValue(id, 3);
+			tmpArr.SetValue(screen, 4);
 			return tmpArr;
 		}
 
@@ -73,17 +72,17 @@ namespace News.Helpers
 
 		public static string FromB64(string b64str)
 		{
-			string decrypted;
+			string b64;
 			try
 			{
 				byte[] outputBytes = Convert.FromBase64String(b64str);
-				decrypted = Encoding.ASCII.GetString(outputBytes);
+				b64 = Encoding.ASCII.GetString(outputBytes);
 			}
 			catch (FormatException fe)
 			{
-				decrypted = fe.Message;
+				b64 = fe.Message;
 			}
-			return decrypted;
+			return b64;
 		}
 
 		public static string ToB64(string input)
@@ -91,51 +90,5 @@ namespace News.Helpers
 			byte[] inputBytes = Encoding.ASCII.GetBytes(input);
 			return Convert.ToBase64String(inputBytes);
 		}
-
-		//public static bool IsValidEmail(string email)
-		//{
-		//	// see: https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
-
-		//	if (string.IsNullOrWhiteSpace(email))
-		//		return false;
-
-		//	try
-		//	{
-		//		// Normalize the domain
-		//		email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-		//							  RegexOptions.None, TimeSpan.FromMilliseconds(200));
-
-		//		// Examines the domain part of the email and normalizes it.
-		//		string DomainMapper(Match match)
-		//		{
-		//			// Use IdnMapping class to convert Unicode domain names.
-		//			var idn = new IdnMapping();
-
-		//			// Pull out and process domain name (throws ArgumentException on invalid)
-		//			string domainName = idn.GetAscii(match.Groups[2].Value);
-
-		//			return match.Groups[1].Value + domainName;
-		//		}
-		//	}
-		//	catch (RegexMatchTimeoutException e)
-		//	{
-		//		return false;
-		//	}
-		//	catch (ArgumentException e)
-		//	{
-		//		return false;
-		//	}
-
-		//	try
-		//	{
-		//		return Regex.IsMatch(email,
-		//			@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-		//			RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-		//	}
-		//	catch (RegexMatchTimeoutException)
-		//	{
-		//		return false;
-		//	}
-		//}
 	}
 }

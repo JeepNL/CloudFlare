@@ -57,8 +57,7 @@ message Logs {
 	repeated Log log_repeated = 1;
 }
 message PostResponse {
-	string state = 1;
-	string if = 2;
+	string if = 1;
 }
 
 message LogId {

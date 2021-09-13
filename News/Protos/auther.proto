@@ -7,8 +7,6 @@ service Auther {
   rpc AuthRpc (AutherUser) returns (UserResult);
   rpc AccountRpc (AutherAccount) returns (AccountResponse);
   rpc AccountValidateRpc (AutherAccountValidate) returns (AccountValidateResponse);
-  rpc GetUserState (UserState) returns (UserState);
-  //rpc GetName (UserState) returns (NameResponse);
 }
 
 message AutherUser {
@@ -82,11 +80,3 @@ message AccountValidateResponse {
 	bool success = 1;
 	google.protobuf.StringValue error = 2;
 }
-
-message UserState {
-	string user_state_i_o = 1;
-}
-
-//message NameResponse {
-//	string name = 1;
-//}

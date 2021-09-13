@@ -121,11 +121,9 @@
         user = authState.User;
         if (user.Identity.IsAuthenticated)
         {
-            userAccount = new() // #TODO - for now .. claims need refactoring
+            userAccount = new()
             {
                 Id = user.FindFirst("Id").Value ?? string.Empty,
-                //FirstName = user.FindFirst("FirstName").Value ?? string.Empty,
-                //LastName = user.FindFirst("LastName").Value ?? string.Empty,
                 CurrentEmail = Utils.FromB64(user.Identity.Name),
                 NewEmail = Utils.FromB64(user.Identity.Name),
                 NewPassword = string.Empty,
@@ -183,12 +181,14 @@
                 if (serverReply.AccountResultEnum == AccountResponse.Types.Result.FirstnameLastname)
                 {
                     Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
+                    // auth 0, name 1, first 2, id  3, screen 4
                     userStateService.UserStateArray = Utils.FillUserStateArray(
-                        "",
-                        "",
+                        "true",
+                        userStateService.UserStateArray.GetValue(1).ToString(),
                         serverReply.FirstName,
-                        serverReply.LastName
-                        );
+                        userStateService.UserStateArray.GetValue(3).ToString(),
+                        userStateService.UserStateArray.GetValue(4).ToString()
+                    );
 
                     formEditing = true;
                 }
