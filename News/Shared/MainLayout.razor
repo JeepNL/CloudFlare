@@ -20,7 +20,7 @@
         <MudSpacer />
         <MudMenu Class="pa-0 ma-0" Direction="Direction.Right" OffsetY="true" Dense="true">
             <ActivatorContent>
-                <MudIcon Icon="@Icons.Material.Filled.MoreVert" />
+margin-bottomottombottomottom         <MudIcon Icon="@Icons.Material.Filled.MoreVert" />
             </ActivatorContent>
             <ChildContent>
                 <MudMenuItem Class="pa-0 ma-0">
@@ -47,7 +47,9 @@
         <MudContainer Style="max-width: 100%">
             <CascadingValue Value="userStateModel">
                 <CascadingValue Value="userCookieModel">
-                    @Body
+                    <div style="margin-top: 1.2em">
+                        @Body
+                    </div>
                 </CascadingValue>
             </CascadingValue>
             <Logos Dark="@(userCookieModel.Theme == "dark")" />
@@ -88,15 +90,15 @@
         bool auth = (authState.User.Identity.IsAuthenticated) ? true : false;
         var loggerClient = new Lggr.LggrClient(grpcChannel);
         Log logModel = new()
-        {
-            Se = userCookieModel.Session,
-            Request = "Init",
-            Em = (auth) ? Utils.FromB64(authState.User.Identity.Name) : string.Empty,
-            Authenticated = auth,
-            CookieExists = !string.IsNullOrEmpty(bbStateCookie),
-            Success = true, // #TODO - refactor.
-            ActionEnum = ApiGrpc.Protos.Action.System
-        };
+            {
+                Se = userCookieModel.Session,
+                Request = "Init",
+                Em = (auth) ? Utils.FromB64(authState.User.Identity.Name) : string.Empty,
+                Authenticated = auth,
+                CookieExists = !string.IsNullOrEmpty(bbStateCookie),
+                Success = true, // #TODO - refactor.
+                ActionEnum = ApiGrpc.Protos.Action.System
+            };
         PostResponse postLogResponse = await loggerClient.PostAsync(logModel);
 
         userStateModel.Authenticated = logModel.Authenticated;

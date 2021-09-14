@@ -1,4 +1,5 @@
 ﻿@page "/admin/filer"
+@using System.IO
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavMan
