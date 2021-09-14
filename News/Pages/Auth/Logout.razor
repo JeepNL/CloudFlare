@@ -1,19 +1,25 @@
 ﻿@page "/auth/logout"
+@using System.Text.Json;
 @inject IAuthService AuthService
 @inject NavigationManager NavMan
-@inject UserStateService userStateService
+@inject UserCookieService userCookieService
+@inject ILocalStorageService localStorageAsync
 
 @code {
+    [CascadingParameter]
+    protected UserStateModel UserStateModel { get; set; }
+    [CascadingParameter]
+    protected UserCookieModel UserCookieModel { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        // auth 0, name 1, first 2, id  3, screen 4
-        userStateService.UserStateArray = Utils.FillUserStateArray(
-            "false",
-            userStateService.UserStateArray.GetValue(1).ToString(),
-            userStateService.UserStateArray.GetValue(2).ToString(),
-            userStateService.UserStateArray.GetValue(3).ToString(),
-            userStateService.UserStateArray.GetValue(4).ToString()
-        );
+        UserStateModel.Authenticated = false;
+        UserStateModel.FirstName = "";
+        UserStateModel.Email = "";
+
+        UserCookieModel.Authenticated = false;
+        userCookieService.UserCookieModelJson = JsonSerializer.Serialize(UserCookieModel);
+
         await AuthService.Logout();
         NavMan.NavigateTo("/");
     }

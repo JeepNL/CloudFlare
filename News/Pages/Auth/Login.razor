@@ -6,7 +6,7 @@
 @inject IAuthService authService
 @inject NavigationManager navMan
 @inject ILocalStorageService localStorageAsync
-@inject UserStateService userStateService
+@inject UserCookieService userCookieService
 
 <MudText Typo="Typo.h4">Login</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Login to your account or <MudLink Href="/auth/register">register</MudLink> a new account</MudText>
@@ -55,7 +55,9 @@ else
 
 @code {
     [CascadingParameter]
-    protected CookieModel CookieModel { get; set; }
+    protected UserStateModel UserStateModel { get; set; }
+    [CascadingParameter]
+    protected UserCookieModel UserCookieModel { get; set; }
     [Parameter] public string FollowUp { get; set; }
     MudForm form;
     AutherUser loginUser;
@@ -70,7 +72,7 @@ else
     {
         loginUser = new()
         {
-            Email = Utils.FromB64(CookieModel.Name),
+            Email = string.Empty,
             Password = string.Empty,
             EditGuid = string.Empty,
             RememberMe = false,
@@ -119,12 +121,9 @@ else
             {
                 await authService.SetToken(serverReply.Token);
 
-                CookieModel cookieModel = new();
-                cookieModel = JsonSerializer.Deserialize<CookieModel>(await localStorageAsync.GetItemAsStringAsync("bb_state"));
-
                 Log logModel = new()
                 {
-                    Se = cookieModel.Session,
+                    Se = UserCookieModel.Session,
                     Request = "Login",
                     Em = loginUser.Email,
                     Authenticated = true,
@@ -134,16 +133,16 @@ else
                 };
 
                 var logClient = new Lggr.LggrClient(grpcChannel);
-                PostResponse logClientResponse = await logClient.PostAsync(logModel);
+                PostResponse postLogResponse = await logClient.PostAsync(logModel);
 
-                // auth 0, name 1, first 2, id  3, screen 4
-                userStateService.UserStateArray = Utils.FillUserStateArray(
-                    "true",
-                    loginUser.Email,
-                    serverReply.FirstName,
-                    logClientResponse.If,
-                    ""
-                );
+                UserStateModel.Authenticated = logModel.Authenticated;
+                UserStateModel.Session = UserCookieModel.Session;
+                UserStateModel.Email = logModel.Em;
+                UserStateModel.FirstName = serverReply.FirstName;
+                UserStateModel.IpAddress = postLogResponse.If;
+
+                UserCookieModel.Authenticated = UserStateModel.Authenticated;
+                userCookieService.UserCookieModelJson = JsonSerializer.Serialize(UserCookieModel);
 
                 navMan.NavigateTo("/");
             }

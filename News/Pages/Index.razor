@@ -1,5 +1,4 @@
 ﻿@page "/"
-@*@inject UserStateService userStateService*@
 <MudText Typo="Typo.h4">Blazor Is The Future!</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">And the future is now!</MudText>
 
@@ -95,24 +94,21 @@
 
 @code {
     [CascadingParameter]
-    protected CookieModel CookieModel { get; set; }
+    protected UserStateModel UserStateModel { get; set; }
     string userName = string.Empty;
 
     protected override void OnParametersSet()
     {
-        if (!string.IsNullOrEmpty(CookieModel.First))
+        userName = UserStateModel.FirstName;
+        if (string.IsNullOrEmpty(userName))
         {
-            userName = CookieModel.First;
-        }
-        else if (!string.IsNullOrEmpty(CookieModel.Name))
-        {
-            userName = Hello(Utils.FromB64(CookieModel.Name));
+            userName = AbbrEmail(UserStateModel.Email);
             if (userName.IndexOf("@") >= 1)
                 userName = userName.Substring(0, userName.IndexOf("@"));
         }
     }
 
-    private string Hello(string input)
+    private string AbbrEmail(string input)
     {
         if (input.IndexOf("@") >= 1)
             input = input.Substring(0, input.IndexOf("@"));

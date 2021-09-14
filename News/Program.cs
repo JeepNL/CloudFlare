@@ -70,7 +70,7 @@ namespace News
             // of the service for the duration of their session.
             // https://wellsb.com/csharp/aspnet/blazor-singleton-pass-data-between-pages
 
-            builder.Services.AddSingleton<UserStateService>();
+            builder.Services.AddSingleton<UserCookieService>();
 
             await builder.Build().RunAsync();
         }

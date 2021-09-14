@@ -3,7 +3,7 @@
 @inject GrpcChannel grpcChannel
 @inject ISyncLocalStorageService localStorageService
 @inject AuthenticationStateProvider authenticationStateProvider
-@inject UserStateService userStateService
+@inject UserCookieService userCookieService
 
 <MudScrollToTop>
     <MudFab Color="Color.Primary" Icon="@Icons.Filled.ArrowCircleUp" />
@@ -45,81 +45,78 @@
     </MudDrawer>
     <MudMainContent>
         <MudContainer Style="max-width: 100%">
-            <CascadingValue Value="cookieModel">
-                @Body
+            <CascadingValue Value="userStateModel">
+                <CascadingValue Value="userCookieModel">
+                    @Body
+                </CascadingValue>
             </CascadingValue>
-            <Logos Dark="@(bbThemeCkVal == "dark")" />
+            <Logos Dark="@(userCookieModel.Theme == "dark")" />
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
     MudTheme currentTheme = new MudTheme();
-    CookieModel cookieModel = new();
+    UserCookieModel userCookieModel = new();
+    UserStateModel userStateModel = new();
     bool drawerOpen = true;
-    string cookieModelVersion = "v2";
-    string bbThemeCkVal = string.Empty;
+    string cookieModelVersion = "v3";
 
     protected override async Task OnInitializedAsync()
     {
-        currentTheme.Palette = DefaultTheme.DefaultPalette();
-        bbThemeCkVal = localStorageService.GetItemAsString("bb_theme");
-        if (!string.IsNullOrEmpty(bbThemeCkVal))
-            currentTheme.Palette = (bbThemeCkVal == "dark") ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
-        else
-        {
-            bbThemeCkVal = "light";
-            localStorageService.SetItemAsString("bb_theme", "light");
-        }
         currentTheme.Typography = Design.MultiTypography("Ubuntu");
         currentTheme.LayoutProperties.DrawerWidthLeft = "220px";
 
-        bool bbStateCookieExists = false;
-        cookieModel.Session = Guid.NewGuid().ToString();
+        userCookieModel.Theme = "light";
+        userCookieModel.Session = Guid.NewGuid().ToString();
         string bbStateCookie = localStorageService.GetItemAsString("bb_state");
         if (!string.IsNullOrEmpty(bbStateCookie))
         {
-            cookieModel = JsonSerializer.Deserialize<CookieModel>(bbStateCookie);
-            if (cookieModel != null && !string.IsNullOrEmpty(cookieModel.Version) && cookieModel.Version == cookieModelVersion)
-                bbStateCookieExists = true;
+            userCookieModel = JsonSerializer.Deserialize<UserCookieModel>(bbStateCookie);
+            if (userCookieModel != null &&
+                    !string.IsNullOrEmpty(userCookieModel.Version) &&
+                    userCookieModel.Version == cookieModelVersion &&
+                    !string.IsNullOrEmpty(userCookieModel.Theme))
+                currentTheme.Palette = (userCookieModel.Theme == "dark") ? DarkTheme.DarkPalette() : DefaultTheme.DefaultPalette();
+            else
+                currentTheme.Palette = DefaultTheme.DefaultPalette();
         }
+        else
+            currentTheme.Palette = DefaultTheme.DefaultPalette();
 
         AuthenticationState authState = await authenticationStateProvider.GetAuthenticationStateAsync();
         bool auth = (authState.User.Identity.IsAuthenticated) ? true : false;
         var loggerClient = new Lggr.LggrClient(grpcChannel);
         Log logModel = new()
         {
-            Se = cookieModel.Session,
+            Se = userCookieModel.Session,
             Request = "Init",
-            Em = string.IsNullOrEmpty(cookieModel.Name) ? string.Empty : Utils.FromB64(cookieModel.Name),
+            Em = (auth) ? Utils.FromB64(authState.User.Identity.Name) : string.Empty,
             Authenticated = auth,
-            CookieExists = bbStateCookieExists,
+            CookieExists = !string.IsNullOrEmpty(bbStateCookie),
             Success = true, // #TODO - refactor.
             ActionEnum = ApiGrpc.Protos.Action.System
         };
-        PostResponse postResponse = await loggerClient.PostAsync(logModel);
-        cookieModel.Version = cookieModelVersion;
-        cookieModel.Auth = auth;
+        PostResponse postLogResponse = await loggerClient.PostAsync(logModel);
 
-        if (!bbStateCookieExists)
-            localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
+        userStateModel.Authenticated = logModel.Authenticated;
+        userStateModel.Session = userCookieModel.Session;
+        userStateModel.Email = logModel.Em;
+        //userStateModel.FirstName = logModel.Em;
+        userStateModel.IpAddress = postLogResponse.If;
 
-        userStateService.OnChange += UserStateChanged;
-        // auth 0, name 1, first 2, id  3, screen 4
-        userStateService.UserStateArray = Utils.FillUserStateArray(
-            cookieModel.Auth.ToString(),
-            Utils.FromB64(cookieModel.Name),
-            cookieModel.First,
-            postResponse.If,
-            ""
-        );
+        userCookieService.OnChange += UserCookieChanged;
+
+        userCookieModel.Version = cookieModelVersion;
+        userCookieModel.Authenticated = userStateModel.Authenticated;
+        userCookieService.UserCookieModelJson = JsonSerializer.Serialize(userCookieModel);
     }
 
     private void ChangeTheme()
     {
-        bbThemeCkVal = (bbThemeCkVal == "light") ? "dark" : "light";
-        currentTheme.Palette = (bbThemeCkVal == "light") ? DefaultTheme.DefaultPalette() : DarkTheme.DarkPalette();
-        localStorageService.SetItemAsString("bb_theme", bbThemeCkVal);
+        userCookieModel.Theme = (userCookieModel.Theme == "light") ? "dark" : "light";
+        currentTheme.Palette = (userCookieModel.Theme == "light") ? DefaultTheme.DefaultPalette() : DarkTheme.DarkPalette();
+        userCookieService.UserCookieModelJson = JsonSerializer.Serialize(userCookieModel);
     }
 
     private void DrawerToggle()
@@ -127,30 +124,9 @@
         drawerOpen = !drawerOpen;
     }
 
-    private void UserStateChanged()
+    private void UserCookieChanged()
     {
-        bool cookieValuesChanged = false;
-
-        // auth 0, name 1, first 2, id  3, screen 4
-        string authenticated = userStateService.UserStateArray.GetValue(0).ToString();
-        string nameB64 = Utils.ToB64(userStateService.UserStateArray.GetValue(1).ToString());
-        string firstName = userStateService.UserStateArray.GetValue(2).ToString();
-
-        if (Convert.ToBoolean(authenticated) != cookieModel.Auth ||
-            nameB64 != cookieModel.Name ||
-            firstName != cookieModel.First)
-            cookieValuesChanged = true;
-
-        cookieModel.Auth = Convert.ToBoolean(authenticated);
-        cookieModel.Name = nameB64;
-        cookieModel.First = firstName;
-
-        if (cookieValuesChanged)
-        {
-            Console.WriteLine($"***** cookieValuesChanged {cookieValuesChanged}");
-            localStorageService.SetItemAsString("bb_state", JsonSerializer.Serialize(cookieModel));
-        }
-
+        localStorageService.SetItemAsString("bb_state", userCookieService.UserCookieModelJson);
         StateHasChanged();
     }
 }

@@ -1,5 +1,4 @@
 ﻿@page "/auth/account"
-@*@using System.Text.Json;*@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
@@ -10,7 +9,6 @@
 @inject NavigationManager NavMan
 @inject ClipboardService clipboardService
 @inject ISnackbar Snackbar
-@inject UserStateService userStateService
 
 <MudText Typo="Typo.h4">Account</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Manage your BlazorBits account</MudText>
@@ -97,6 +95,8 @@
 </AuthorizeView>
 
 @code {
+    [CascadingParameter]
+    protected UserStateModel UserStateModel { get; set; }
     MudForm form;
     AutherAccount userAccount = new();
     MudTextField<string> pwField;
@@ -146,6 +146,9 @@
                 userAccount.AccountThemeEnum = serverReply.AccountThemeEnum;
                 currentFirstname = userAccount.FirstName;
                 currentLastname = userAccount.LastName;
+
+                // #TODO - Temp.
+                UserStateModel.FirstName = userAccount.FirstName;
             }
             else
             {
@@ -181,15 +184,7 @@
                 if (serverReply.AccountResultEnum == AccountResponse.Types.Result.FirstnameLastname)
                 {
                     Snackbar.Add("First and/or last name updated", MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
-                    // auth 0, name 1, first 2, id  3, screen 4
-                    userStateService.UserStateArray = Utils.FillUserStateArray(
-                        "true",
-                        userStateService.UserStateArray.GetValue(1).ToString(),
-                        serverReply.FirstName,
-                        userStateService.UserStateArray.GetValue(3).ToString(),
-                        userStateService.UserStateArray.GetValue(4).ToString()
-                    );
-
+                    UserStateModel.FirstName = serverReply.FirstName;
                     formEditing = true;
                 }
                 else if (serverReply.AccountResultEnum == AccountResponse.Types.Result.EmailSent)
