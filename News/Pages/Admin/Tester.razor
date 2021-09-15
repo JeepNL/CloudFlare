@@ -89,10 +89,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        envTimeZoneVar = Environment.GetEnvironmentVariable("TZ");
-        envCustomVar = Environment.GetEnvironmentVariable("BBCUSTOM");
-        envCustomVar = Environment.GetEnvironmentVariable("BBREMOTESERVER");
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity.IsAuthenticated)
@@ -101,11 +97,23 @@
             long claimExpiration = Convert.ToInt64(user.FindFirst(c => c.Type == "exp")?.Value);
             // OR: long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
             claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
-        }
+        };
 
-       Console.WriteLine();
-       Console.WriteLine("GetEnvironmentVariables: ");
-       foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
-           Console.WriteLine("  {0} = {1}", de.Key, de.Value);
+        envTimeZoneVar = Environment.GetEnvironmentVariable("TZ");
+        envCustomVar = Environment.GetEnvironmentVariable("BBCUSTOM");
+        envRemoteServer = Environment.GetEnvironmentVariable("BBREMOTESERVER");
+
+        if (envRemoteServer == null)
+        {
+            Console.WriteLine("envRemoteServer == null");
+            Environment.SetEnvironmentVariable("BBREMOTESERVER", "https://api.openwiki.com");
+            envRemoteServer = Environment.GetEnvironmentVariable("BBREMOTESERVER");
+        }
+        else
+            Console.WriteLine("envRemoteServer != null");
+
+        Console.WriteLine("GetEnvironmentVariables: ");
+        foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
+            Console.WriteLine("  {0} = {1}", de.Key, de.Value);
     }
 }
