@@ -3,15 +3,10 @@ using Grpc.Net.Client;
 using Grpc.Net.Client.Web;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using News.Helpers;
 using News.Services;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace News
 {

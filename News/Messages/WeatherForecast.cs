@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using System;
 
 // needs to be the same namespace as the /Protos/weather.proto file: INTERNAL PARTIAL CLASS
 namespace ApiGrpc.Protos

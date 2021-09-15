@@ -1,12 +1,17 @@
 ﻿@page "/admin/tester"
 @using System.Text.Json;
 @using System.Security.Claims
+@using System.Collections
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService localStorageAsync
 
 <MudText Typo="Typo.h4">Tester</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
+
+<MudText Class="mb-4" Typo="Typo.body1">Custom Environment Variable: @envCustomVar</MudText>
+<MudText Class="mb-4" Typo="Typo.body1">Time Zone Environment Variable: @envTimeZoneVar</MudText>
+<MudText Class="mb-4" Typo="Typo.body1">Remote Server Environment Variable: @envRemoteServer</MudText>
 
 <MudText Class="mb-4" Typo="Typo.body1">Claim expiration: @claimExpDt for: @UserStateModel.Email</MudText>
 
@@ -78,8 +83,16 @@
     IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
     DateTimeOffset claimExpDt = default;
 
+    string envCustomVar = string.Empty;
+    string envTimeZoneVar = string.Empty;
+    string envRemoteServer = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
+        envTimeZoneVar = Environment.GetEnvironmentVariable("TZ");
+        envCustomVar = Environment.GetEnvironmentVariable("BBCUSTOM");
+        envCustomVar = Environment.GetEnvironmentVariable("BBREMOTESERVER");
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity.IsAuthenticated)
@@ -89,5 +102,10 @@
             // OR: long claimExpiration2 = Convert.ToInt64(_claims.FirstOrDefault(e => e.Type == "exp")?.Value);
             claimExpDt = DateTimeOffset.FromUnixTimeSeconds(claimExpiration).ToLocalTime();
         }
+
+       Console.WriteLine();
+       Console.WriteLine("GetEnvironmentVariables: ");
+       foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
+           Console.WriteLine("  {0} = {1}", de.Key, de.Value);
     }
 }

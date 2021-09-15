@@ -12,7 +12,6 @@
 //
 // Copyright (C) 2004 Obviex(TM). All rights reserved.
 //
-using System;
 using System.Security.Cryptography;
 
 /// <summary>
@@ -94,7 +93,7 @@ namespace News.Helpers
 		{
 			// Make sure that input parameters are valid.
 			if (minLength <= 0 || maxLength <= 0 || minLength > maxLength)
-				return null;
+				return string.Empty;
 
 			// Create a local array containing supported password characters
 			// grouped by types. You can remove character groups from this

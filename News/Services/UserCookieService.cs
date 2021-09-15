@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace News.Services
+﻿namespace News.Services
 {
 	public class UserCookieService
 	{

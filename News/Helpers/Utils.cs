@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using System;
 using System.Text;
 
 namespace News.Helpers
@@ -40,7 +39,7 @@ namespace News.Helpers
 			return validateEmail;
 		}
 
-		public static FluentValueValidator<string> FluentValidate(int maxLength = 20, bool required = default, string label = default, int minLength = default)
+		public static FluentValueValidator<string> FluentValidate(int maxLength = 20, bool required = default, string label = "", int minLength = default)
 		{
 			if (required && minLength == default)
 				minLength = 1;
