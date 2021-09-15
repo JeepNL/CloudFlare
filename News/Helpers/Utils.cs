@@ -65,7 +65,9 @@ namespace News.Helpers
 
 		public static string Abbreviate(string input, int maxLength)
 		{
-			if (input.Length >= maxLength)
+			if (string.IsNullOrEmpty(input))
+				return string.Empty;
+			else if (input.Length >= maxLength)
 				input = input.Substring(0, maxLength - 3) + "...";
 			return input;
 		}
