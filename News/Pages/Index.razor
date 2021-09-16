@@ -14,7 +14,7 @@
             <MudText Typo="Typo.h5" Class="pa-2">About BlazorBits: privacy first, mobile second ...</MudText>
             <MudText Typo="Typo.body1" Class="pa-2">
                 This is an <MudLink Href="https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-rc-1/" Target="_blank">ASP.NET Core 6 <b>RC 1</b></MudLink>
-                <i>(September 14th, 2021 - THAT'S TODAY 🚀)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
+                <i>(September 14th, 2021)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
                 Application <i>(SPA)</i> prototype using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the
                 front-end <i>(client side)</i>, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>.
                 The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a
@@ -34,11 +34,12 @@
             </MudText>
         </MudAlert>
 
-        <MudPaper Elevation="2" Class="mt-6 px-4 pb-4 pt-2">
-            <MudText Typo="Typo.body1" Class="my-1">To use the latest .NET 6 <b>RC1</b> SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
-            <MudAlert Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
-                <samp>wget https://download.visualstudio.microsoft.com/download/pr/4880c5a4-9c22-47a7-b298-651f1294a385/795f7828d8684059705e625b33027f89/dotnet-sdk-6.0.100-rc.1.21458.32-linux-x64.tar.gz;mkdir -p ./dotnet;tar zxf dotnet-sdk-6.0.100-rc.1.21458.32-linux-x64.tar.gz -C ./dotnet;./dotnet/dotnet --info;./dotnet/dotnet publish -c Release -o output;</samp>
+        <MudPaper Elevation="2" Class="mt-6 px-4 py-2">
+            <MudText Typo="Typo.body1">To use the latest .NET 6 <b>RC1</b> SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
+            <MudAlert Class="my-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
+                <samp>wget https://download.visualstudio.microsoft.com/download/pr/4880c5a4-9c22-47a7-b298-651f1294a385/795f7828d8684059705e625b33027f89/dotnet-sdk-6.0.100-rc.1.21458.32-linux-x64.tar.gz;tar zxf dotnet-sdk-6.0.100-rc.1.21458.32-linux-x64.tar.gz;./dotnet workload install wasm-tools;./dotnet --info;./dotnet publish -c Release -o output;</samp>
             </MudAlert>
+            <MudText Typo="Typo.body1">For <samp><b>wasm-tools</b></samp> to work you'll need to set the environment variable <samp><b>PYTHON_VERSION</b></samp> to <samp><b>3.7</b></samp> in Cloudflare Pages settings.</MudText>
         </MudPaper>
     </MudItem>
 
