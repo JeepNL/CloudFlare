@@ -1,6 +1,8 @@
 ﻿@page "/admin/themer"
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
 @inject AuthenticationStateProvider AuthenticationStateProvider
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Themer</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">Under construction, not 'mobile first' yet ...</MudText>
@@ -146,6 +148,9 @@
 </MudGrid>
 
 @code {
+    private string pageTitle = "Themer | BlazorBits";
+    private string pageDesc = "Test Page for BlazorBits Themes.";
+
 	protected override async Task OnInitializedAsync()
 	{
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

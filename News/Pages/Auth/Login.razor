@@ -7,6 +7,8 @@
 @inject NavigationManager navMan
 @inject ILocalStorageService localStorageAsync
 @inject UserCookieService userCookieService
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Login</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Login to your account or <MudLink Href="/auth/register">register</MudLink> a new account</MudText>
@@ -59,14 +61,17 @@ else
     [CascadingParameter]
     protected UserCookieModel UserCookieModel { get; set; }
     [Parameter] public string FollowUp { get; set; }
+
     MudForm form;
     AutherUser loginUser;
 
-    bool formValidated = false;
-    bool loggingIn = false;
-    string loginError = string.Empty;
-    string followUpMessage = string.Empty;
-    string forgotUrl = "/auth/forgot";
+    private string pageTitle = "Login | BlazorBits";
+    private string pageDesc = "BlazorBits Login";
+    private string loginError = string.Empty;
+    private string followUpMessage = string.Empty;
+    private string forgotUrl = "/auth/forgot";
+    private bool formValidated = false;
+    private bool loggingIn = false;
 
     protected override void OnInitialized()
     {

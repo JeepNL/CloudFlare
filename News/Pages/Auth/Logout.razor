@@ -4,12 +4,17 @@
 @inject NavigationManager NavMan
 @inject UserCookieService userCookieService
 @inject ILocalStorageService localStorageAsync
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 @code {
     [CascadingParameter]
     protected UserStateModel UserStateModel { get; set; }
     [CascadingParameter]
     protected UserCookieModel UserCookieModel { get; set; }
+
+    private string pageTitle = "Logout | BlazorBits";
+    private string pageDesc = "BlazorBits Logout";
 
     protected override async Task OnInitializedAsync()
     {

@@ -5,6 +5,8 @@
 @inject NavigationManager NavMan
 @inject ClipboardService clipboardService
 @inject ISnackbar Snackbar
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Register</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Create a new account or <MudLink Href="/auth/login">login</MudLink> to your account</MudText>
@@ -58,13 +60,15 @@
 	MudTextField<string> pwField;
 	InputType passwordInput = InputType.Password;
 
-	bool formValidated = false;
-	bool registering = true;
-	bool isPasswordVisible = false;
-	bool isGeneratePasswordVisible = true;
-	string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
-	string validatePassword = string.Empty;
-	string registerError = string.Empty;
+    private string pageTitle = "Register | BlazorBits";
+    private string pageDesc = "Register a new account at BlazorBits.";
+	private string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+	private string validatePassword = string.Empty;
+	private string registerError = string.Empty;
+	private bool formValidated = false;
+	private bool registering = true;
+	private bool isPasswordVisible = false;
+	private bool isGeneratePasswordVisible = true;
 
 	protected override void OnInitialized()
 	{

@@ -1,4 +1,7 @@
 ﻿@page "/"
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
+
 <MudText Typo="Typo.h4">Blazor Is The Future!</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">And the future is now!</MudText>
 
@@ -96,7 +99,10 @@
 @code {
     [CascadingParameter]
     protected UserStateModel UserStateModel { get; set; }
-    string userName = string.Empty;
+
+    private string pageTitle = "Home | BlazorBits";
+    private string pageDesc = "General information about this BlazorBits WASM Prototype hosted for free on Cloudflare Pages. Blazor is the future, and the future is now!";
+    private string userName = string.Empty;
 
     protected override void OnParametersSet()
     {

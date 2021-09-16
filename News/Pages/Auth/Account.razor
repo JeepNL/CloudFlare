@@ -9,6 +9,8 @@
 @inject NavigationManager NavMan
 @inject ClipboardService clipboardService
 @inject ISnackbar Snackbar
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Account</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Manage your BlazorBits account</MudText>
@@ -97,23 +99,26 @@
 @code {
     [CascadingParameter]
     protected UserStateModel UserStateModel { get; set; }
+
     MudForm form;
     AutherAccount userAccount = new();
     MudTextField<string> pwField;
     InputType passwordInput = InputType.Password;
     ClaimsPrincipal user = new();
 
-    bool formValidated = false;
-    bool formEditing = true;
-    bool isPasswordVisible = false;
-    bool isGeneratePasswordVisible = true;
-    string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
-    string validatePassword = string.Empty;
-    string updateMessage = string.Empty;
-    string currentFirstname = string.Empty;
-    string currentLastname = string.Empty;
-    bool passwordPanelIsOpen = false;
-    bool emailPanelIsOpen = false;
+    private string pageTitle = "Account | BlazorBits";
+    private string pageDesc = "Manage your BlazorBits account.";
+    private string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+    private string validatePassword = string.Empty;
+    private string updateMessage = string.Empty;
+    private string currentFirstname = string.Empty;
+    private string currentLastname = string.Empty;
+    private bool formValidated = false;
+    private bool formEditing = true;
+    private bool isPasswordVisible = false;
+    private bool isGeneratePasswordVisible = true;
+    private bool passwordPanelIsOpen = false;
+    private bool emailPanelIsOpen = false;
 
     protected override async Task OnInitializedAsync()
     {

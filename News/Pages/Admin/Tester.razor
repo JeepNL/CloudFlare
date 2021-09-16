@@ -5,6 +5,8 @@
 @attribute [Authorize(Policy = Policies.IsAdministrator)]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService localStorageAsync
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Tester</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Testing code samples</MudText>
@@ -84,9 +86,11 @@
     IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
     DateTimeOffset claimExpDt = default;
 
-    string envCustomVar = string.Empty;
-    string envTimeZoneVar = string.Empty;
-    string envRemoteServer = string.Empty;
+    private string pageTitle = "Tester | BlazorBits";
+    private string pageDesc = "Various BlazorBits Tests.";
+    private string envCustomVar = string.Empty;
+    private string envTimeZoneVar = string.Empty;
+    private string envRemoteServer = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {

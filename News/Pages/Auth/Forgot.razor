@@ -2,6 +2,8 @@
 @using System.ComponentModel.DataAnnotations
 @inject GrpcChannel grpcChannel
 @inject NavigationManager NavMan
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Forgot Password</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Fill in your email address to receive an email with reset instructions</MudText>
@@ -38,9 +40,11 @@
 	MudForm form;
 	AutherUser forgotUser;
 
-	bool formValidated = false;
-	bool mailSend = false;
-	string backUrl = "/auth/login";
+    private string pageTitle = "Forgot Password | BlazorBits";
+    private string pageDesc = "If you have fogotten your password you can reset it by submitting your email address.";
+	private string backUrl = "/auth/login";
+	private bool formValidated = false;
+	private bool mailSend = false;
 
 	protected override void OnInitialized()
 	{

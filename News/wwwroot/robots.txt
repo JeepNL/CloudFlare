@@ -1,1 +1,5 @@
-﻿User-agent: * Disallow: /
+﻿User-agent: *
+Disallow: /Admin/
+Disallow: /Auth/
+Disallow: /Shared/
+Disallow: /Protos/

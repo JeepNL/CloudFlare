@@ -3,6 +3,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject GrpcChannel grpcChannel
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Logger</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Who, where &amp; what ...</MudText>
@@ -59,6 +61,9 @@ else
 
 @code {
 	private IEnumerable<Log> logs;
+
+	private string pageTitle = "Logger | BlazorBits";
+    private string pageDesc = "BlazorBits Log Info.";
 
 	protected override async Task OnInitializedAsync()
 	{

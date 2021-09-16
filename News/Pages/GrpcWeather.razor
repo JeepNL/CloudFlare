@@ -1,5 +1,7 @@
 ﻿@page "/weather"
 @inject GrpcChannel grpcChannel
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">2 Year Weather Forecast</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">This component demonstrates fetching (<i>random!</i>) gRPC data from a remote server.</MudText>
@@ -35,6 +37,9 @@
 
 @code {
     private IEnumerable<WeatherForecast> forecasts = null;
+
+    private string pageTitle = "Weather | BlazorBits";
+    private string pageDesc = "This BlazorBits component demonstrates fetching random gRPC data using a .NET gRPC service hosted on a remote Ubuntu VPS.";
 
     protected override async Task OnInitializedAsync()
     {

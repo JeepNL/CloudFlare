@@ -2,6 +2,8 @@
 @page "/auth/validate/error/{ValidateError}/"
 @inject GrpcChannel grpcChannel
 @inject NavigationManager NavMan
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">New User</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Email address validation</MudText>
@@ -17,8 +19,11 @@
 	[Parameter] public string ValidateGuid { get; set; } = string.Empty;
 	[Parameter] public string ValidateError { get; set; } = string.Empty;
 
-	string validationMessage = "Please wait ...";
 	Severity severity = Severity.Info;
+
+    private string pageTitle = "Email Validation | BlazorBits";
+    private string pageDesc = "Validation of the submitted email address";
+	private string validationMessage = "Please wait ...";
 
 	protected override async Task OnParametersSetAsync()
 	{

@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Web;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
@@ -15,12 +16,12 @@ namespace News
 		public static async Task Main(string[] args)
 		{
 			var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+			// Modify HTML <head> in components: https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/
+			builder.RootComponents.Add<HeadOutlet>("head::after");
 			builder.RootComponents.Add<App>("#app");
 
 			builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-			// Modify HTML <head> in components: https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/
-			//builder.RootComponents.Add<HeadOutlet>("head::after");
 
 			builder.Services.AddOptions();
 			builder.Services.AddAuthorizationCore(config =>

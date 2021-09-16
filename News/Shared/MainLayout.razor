@@ -58,11 +58,11 @@
 </MudLayout>
 
 @code {
-    MudTheme currentTheme = new MudTheme();
-    UserCookieModel userCookieModel = new();
-    UserStateModel userStateModel = new();
-    bool drawerOpen = true;
-    string cookieModelVersion = "v3";
+    private MudTheme currentTheme = new MudTheme();
+    private UserCookieModel userCookieModel = new();
+    private UserStateModel userStateModel = new();
+    private bool drawerOpen = true;
+    private string cookieModelVersion = "v3";
 
     protected override async Task OnInitializedAsync()
     {

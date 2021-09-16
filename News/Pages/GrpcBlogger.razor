@@ -2,110 +2,115 @@
 @inject GrpcChannel grpcChannel
 @inject IDialogService dialogService
 @inject ISnackbar Snackbar
+<PageTitle>@pageTitle</PageTitle>
+<HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
 
 <MudText Typo="Typo.h4">Blogger</MudText>
 <MudText Class="mb-4" Typo="Typo.subtitle1">Add/Edit/Delete blog posts using a remote gRPC service</MudText>
 
 <MudGrid>
-	<MudItem xs="12" lg="10" xl="8">
-		@if (posts is null)
-		{
-			<MudText Typo="Typo.body1">Loading</MudText>
-		}
-		else
-		{
-			<div class="d-flex" style="align-items: center; margin-bottom: 1em">
-				<MudButton OnClick="(() => OpenDialog(null))" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Article" Color="Color.Primary" Style="shades-text text-white">Add</MudButton>
-				<MudText Typo="Typo.subtitle2" Class="ml-4">Click on a row to edit/delete post</MudText>
-			</div>
+    <MudItem xs="12" lg="10" xl="8">
+        @if (posts is null)
+        {
+            <MudText Typo="Typo.body1">Loading</MudText>
+        }
+        else
+        {
+            <div class="d-flex" style="align-items: center; margin-bottom: 1em">
+                <MudButton OnClick="(() => OpenDialog(null))" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Article" Color="Color.Primary" Style="shades-text text-white">Add</MudButton>
+                <MudText Typo="Typo.subtitle2" Class="ml-4">Click on a row to edit/delete post</MudText>
+            </div>
 
-			<MudTable T="Post" Items="@posts" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
-				<HeaderContent>
-					<MudTh>Date</MudTh>
-					<MudTh>Title</MudTh>
-				</HeaderContent>
-				<RowTemplate>
-					<MudTd Style="cursor: pointer;" DataLabel="Date">@Utils.UtcTicks2Local(context.DatePublished)</MudTd>
-					@* One row below for display resolution #MobileFirst *@
-					<MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-						<MudTd Style="cursor: pointer;" DataLabel="Title">@Utils.Abbreviate(context.Header, 35)</MudTd>
-					</MudHidden>
-					<MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-						<MudTd Style="cursor: pointer;" DataLabel="Title">@context.Header</MudTd>
-					</MudHidden>
-				</RowTemplate>
-				<PagerContent>
-					<MudTablePager PageSizeOptions="new int[]{5, 10, 15}" />
-				</PagerContent>
-			</MudTable>
-		}
-	</MudItem>
+            <MudTable T="Post" Items="@posts" Dense="true" Striped="true" Hover="true" Elevation="0" Class="mb-4" @bind-SelectedItem="selectedPost" OnRowClick="RowClick" RowStyleFunc="@((item, idx) => RowStyle(item, idx))">
+                <HeaderContent>
+                    <MudTh>Date</MudTh>
+                    <MudTh>Title</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Style="cursor: pointer;" DataLabel="Date">@Utils.UtcTicks2Local(context.DatePublished)</MudTd>
+                    @* One row below for display resolution #MobileFirst *@
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        <MudTd Style="cursor: pointer;" DataLabel="Title">@Utils.Abbreviate(context.Header, 35)</MudTd>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                        <MudTd Style="cursor: pointer;" DataLabel="Title">@context.Header</MudTd>
+                    </MudHidden>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{5, 10, 15}" />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudItem>
 </MudGrid>
 
 @code {
-	private IEnumerable<Post> posts;
-	private Post selectedPost = null;
+    private IEnumerable<Post> posts;
+    private Post selectedPost = null;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadData();
-	}
+    private string pageTitle = "Blogger | BlazorBits";
+    private string pageDesc = "Add, edit and delete BlazorBits blog posts using a .NET gRPC service hosted on a remote VPS.";
 
-	private async Task LoadData()
-	{
-		var client = new Blogger.BloggerClient(grpcChannel);
-		posts = (await client.GetPostsAsync(new Empty())).PostRepeated.ToList();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
 
-	//private void RowClick(TableRowClickEventArgs<Post> post)
-	private async Task RowClick()
-	{
-		// NOTE: "rowClickPost" (post.Item) is the same as "selectedPost"
-		//var rowClickPost = post.Item;
-		//Console.WriteLine($"selectedPost.Header: {rowClickPost.Header}");
-		await OpenDialog(selectedPost);
-	}
+    private async Task LoadData()
+    {
+        var client = new Blogger.BloggerClient(grpcChannel);
+        posts = (await client.GetPostsAsync(new Empty())).PostRepeated.ToList();
+    }
 
-	private string RowStyle(Post post, int index)
-	{
-		if (post.Id == selectedPost?.Id)
-			return $"background: rgba(249,77,0, 0.30);"; // Table Hover Darker
-		else
-			return "";
-	}
+    //private void RowClick(TableRowClickEventArgs<Post> post)
+    private async Task RowClick()
+    {
+        // NOTE: "rowClickPost" (post.Item) is the same as "selectedPost"
+        //var rowClickPost = post.Item;
+        //Console.WriteLine($"selectedPost.Header: {rowClickPost.Header}");
+        await OpenDialog(selectedPost);
+    }
 
-	private async Task OpenDialog(Post post)
-	{
-		var parameters = new DialogParameters();
-		if (post is not null) // update post
-		{
-			parameters.Add("Id", post.Id);
-			parameters.Add("Header", post.Header);
-			parameters.Add("SubHeader", post.SubHeader);
-			parameters.Add("Content", post.Content);
-			parameters.Add("ImageUrl", post.ImageUrl);
-			parameters.Add("MoreInfoUrl", post.MoreInfoUrl);
-		}
+    private string RowStyle(Post post, int index)
+    {
+        if (post.Id == selectedPost?.Id)
+            return $"background: rgba(249,77,0, 0.30);"; // Table Hover Darker
+        else
+            return "";
+    }
 
-		var options = new DialogOptions()
-		{
-			MaxWidth = MaxWidth.Medium,
-			FullWidth = true,
-			CloseButton = false,
-			DisableBackdropClick = false,
-			NoHeader = true,
-			Position = DialogPosition.TopCenter
-		};
+    private async Task OpenDialog(Post post)
+    {
+        var parameters = new DialogParameters();
+        if (post is not null) // update post
+        {
+            parameters.Add("Id", post.Id);
+            parameters.Add("Header", post.Header);
+            parameters.Add("SubHeader", post.SubHeader);
+            parameters.Add("Content", post.Content);
+            parameters.Add("ImageUrl", post.ImageUrl);
+            parameters.Add("MoreInfoUrl", post.MoreInfoUrl);
+        }
 
-		// No Header
-		var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
-		var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
-		var result = await dialog.Result;
+        var options = new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true,
+                CloseButton = false,
+                DisableBackdropClick = false,
+                NoHeader = true,
+                Position = DialogPosition.TopCenter
+            };
 
-		if (!result.Cancelled)
-		{
-			Snackbar.Add(result.Data.ToString(), MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
-			await LoadData();
-		}
-	}
+        // No Header
+        var dialogTitle = (post is null) ? "Add Blog Post" : "Edit Blog Post";
+        var dialog = dialogService.Show<BlogAddEdit>(dialogTitle, parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            Snackbar.Add(result.Data.ToString(), MudBlazor.Severity.Warning, config => { config.Icon = Icons.Outlined.Info; });
+            await LoadData();
+        }
+    }
 }
