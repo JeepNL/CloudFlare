@@ -51,17 +51,17 @@ builder.Services.AddSingleton(services =>
 	var configuration = services.GetRequiredService<IConfiguration>();
 	var backendUrl = $"https://{configuration["Settings:BackEndUrl"]}";
 
-			// Create a channel with a GrpcWebHandler that is addressed to the backend server.
-			// GrpcWebText is used because server streaming requires it. If server streaming is not used in your app
-			// then GrpcWeb is recommended because it produces smaller messages.
-			var httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
+	// Create a channel with a GrpcWebHandler that is addressed to the backend server.
+	// GrpcWebText is used because server streaming requires it. If server streaming is not used in your app
+	// then GrpcWeb is recommended because it produces smaller messages.
+	var httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
 	return GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
 	{
 		HttpHandler = httpHandler
-				//MaxReceiveMessageSize = 1 * 1024 * 1024, // 1MB
-				//MaxSendMessageSize = 1 * 1024 * 1024, // 1MB
-				//MaxRetryAttempts = 3 // ?? #TODO
-			});
+		//MaxReceiveMessageSize = 1 * 1024 * 1024, // 1MB
+		//MaxSendMessageSize = 1 * 1024 * 1024, // 1MB
+		//MaxRetryAttempts = 3 // ?? #TODO
+	});
 });
 
 builder.Services.AddSingleton<ClipboardService>();

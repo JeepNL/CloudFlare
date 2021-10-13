@@ -24,7 +24,7 @@
                 co-located <MudLink Href="https://www.transip.eu/vps/bladevps/" Target="_blank">TransIp/X4</MudLink> Ubuntu 20.04 Virtual Private Server <i>(VPS)</i> for its
                 dynamic data from a remote SQLite database and for authorization & authentication <i>(register & login)</i>. You can find the client side source on
                 <MudLink Href="https://github.com/JeepNL/CloudFlare" Target="_blank">GitHub</MudLink>. Oh, I almost forgot, light and dark themes are also supported and
-                when you register the email you'll receive to verify your email address passes SPF/DKIM/DMARC validations. Free SSL certificate for the back-end server
+                when you register, the email you'll receive to verify your email address passes SPF/DKIM/DMARC validations. Free SSL certificate for the back-end server
                 provided by <MudLink Href="https://letsencrypt.org/" Target="_blank">Let's Encrypt</MudLink>. Last but not least: BlazorBits doesn't use any tracking cookies!
             </MudText>
         </MudPaper>
@@ -38,7 +38,7 @@
         </MudAlert>
 
         <MudPaper Elevation="2" Class="mt-6 px-4 py-2">
-            <MudText Typo="Typo.body1">To use the latest .NET 6 <b>RC1</b> SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
+            <MudText Typo="Typo.body1">To use the latest .NET 6 <b>RC2</b> SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
             <MudAlert Class="my-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
                 <samp>wget https://download.visualstudio.microsoft.com/download/pr/20283373-1d83-4879-8278-0afb7fd4035e/56f204f174743b29a656499ad0fc93c3/dotnet-sdk-6.0.100-rc.2.21505.57-linux-x64.tar.gz;tar zxf dotnet-sdk-6.0.100-rc.2.21505.57-linux-x64.tar.gz;./dotnet workload install wasm-tools;./dotnet --info;./dotnet publish -c Release -o output --self-contained;</samp>
             </MudAlert>
