@@ -1,0 +1,36 @@
+﻿syntax = "proto3";
+option csharp_namespace = "ApiGrpc.Protos";
+// see: https://docs.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types
+//import "google/protobuf/empty.proto";
+//import "google/protobuf/duration.proto";
+//import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package l2t;
+
+service L2T {
+	rpc UserInfo (OauthTokens) returns (UserInfoResponse);
+	rpc PostTweet (Tweet) returns (PostTweetRespone);
+}
+
+message Tweet {
+	string text = 1;
+	google.protobuf.StringValue in_reply_to_id = 2;
+}
+
+message PostTweetRespone {
+	bool success = 1;
+	google.protobuf.StringValue id = 2;
+};
+
+message OauthTokens {
+	string oauth_token = 1;
+	string oauth_verifier = 2;
+}
+
+message UserInfoResponse {
+	string id = 1;
+	string screen_name = 2;
+	string access_token = 3;
+	string access_token_secret = 4;
+}

@@ -70,8 +70,10 @@ builder.Services.AddSingleton<ClipboardService>();
 // you will want to register as a Scoped service so each different user receives his/her own instance
 // of the service for the duration of their session.
 // https://wellsb.com/csharp/aspnet/blazor-singleton-pass-data-between-pages
+// AND => https://code-maze.com/dependency-injection-lifetimes-aspnet-core/
 
 builder.Services.AddSingleton<UserCookieService>();
+builder.Services.AddSingleton<ICookieService, CookieService>();
 
 await builder.Build().RunAsync();
 //	}

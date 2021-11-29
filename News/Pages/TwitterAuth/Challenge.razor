@@ -1,0 +1,19 @@
+﻿@page "/twitterauth/challenge"
+@inject NavigationManager NavMan
+@inject Microsoft.Extensions.Configuration.IConfiguration config
+
+<PageTitle>Login</PageTitle>
+
+<h1>Login with Twitter</h1>
+
+<p>Please wait ...</p>
+
+<span></span>
+
+@code {
+    protected override void OnInitialized()
+    {
+        string backend = config["Settings:BackEndUrl"];
+        NavMan.NavigateTo($"https://{backend}/Twitter/ChallengeAsync", true); // Server/Controllers/TwitterController.cs
+    }
+}

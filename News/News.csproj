@@ -20,16 +20,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.19.1" />
-    <PackageReference Include="Grpc.Tools" Version="2.42.0-pre1">
+    <PackageReference Include="Grpc.Tools" Version="2.42.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
-    <PackageReference Include="Grpc.Net.Client.Web" Version="2.40.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.41.0-pre1" />
+    <PackageReference Include="Grpc.Net.Client.Web" Version="2.41.0-pre1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
     <PackageReference Include="FluentValidation" Version="10.3.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="MudBlazor" Version="5.2.0" />
+    <PackageReference Include="MudBlazor" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,5 +39,6 @@
     <Protobuf Include="Protos\filer.proto" GrpcServices="Client" Access="Internal" />
     <Protobuf Include="Protos\auther.proto" GrpcServices="Client" Access="Internal" />
     <Protobuf Include="Protos\logger.proto" GrpcServices="Client" Access="Internal" />
+    <Protobuf Include="Protos\l2t.proto" GrpcServices="Client" Access="Internal" />
   </ItemGroup>
 </Project>

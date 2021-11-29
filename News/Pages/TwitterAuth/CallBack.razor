@@ -1,0 +1,41 @@
+﻿@page "/twitterauth/callback"
+@inject NavigationManager NavMan
+@inject GrpcChannel GrpcChannel
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<PageTitle>Twitter Callback</PageTitle>
+
+<p>Twitter Callback - tmp</p>
+
+@code {
+    // Blazor WASM Query Parameters (after GetTokens() - ChallengeAsync)
+    // See: https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#supply-blazor-component-parameters-from-the-query-string
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string oauth_token { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string oauth_verifier { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(oauth_token) && !string.IsNullOrEmpty(oauth_verifier))
+        {
+            NavMan.NavigateTo("/counter", false); // Clear Query Paramaters
+
+            OauthTokens tokens = new()
+                {
+                    OauthToken = oauth_token,
+                    OauthVerifier = oauth_verifier
+                };
+            var grpcClient = new L2T.L2TClient(GrpcChannel);
+            UserInfoResponse userInfo = await grpcClient.UserInfoAsync(tokens); // Server/Services/L2TService.cs
+            await localStorage.SetItemAsync("UserInfo", userInfo);
+        }
+        //else
+        //{
+        //    NavMan.NavigateTo("/", false);
+        //}
+    }
+}

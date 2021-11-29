@@ -77,8 +77,10 @@ namespace News.Helpers
 			string b64;
 			try
 			{
-				byte[] outputBytes = Convert.FromBase64String(b64str);
-				b64 = Encoding.ASCII.GetString(outputBytes);
+				b64 = Encoding.UTF8.GetString(Convert.FromBase64String(b64str));
+
+				//byte[] outputBytes = Convert.FromBase64String(b64str);
+				//b64 = Encoding.ASCII.GetString(outputBytes);
 			}
 			catch (FormatException fe)
 			{
@@ -89,8 +91,10 @@ namespace News.Helpers
 
 		public static string ToB64(string input)
 		{
-			byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-			return Convert.ToBase64String(inputBytes);
+			return Convert.ToBase64String(Encoding.UTF8.GetBytes(input));
+
+			//byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+			//return Convert.ToBase64String(inputBytes);
 		}
 	}
 }
