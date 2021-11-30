@@ -4,7 +4,8 @@
 @using System.Text.Json;
 @inject ICookieService CookieService
 @inject NavigationManager NavMan
-@inject Microsoft.Extensions.Configuration.IConfiguration config
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject HttpClient Http
 
 <PageTitle>@pageTitle</PageTitle>
 <HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
@@ -86,12 +87,14 @@ else
     private async Task DeleteCookie()
     {
         l2tUser = null;
-        await CookieService.SetValue("_l2t", null, -1); // -1 = delete
+        string cookieDomain = Configuration["Settings:CookieDomain"];
+        Console.WriteLine($"***** (page) cookieDomain: {cookieDomain}");
+        await CookieService.SetValue("_l2t", null, cookieDomain, -1); // -1 = delete
     }
 
     private void TwitterChallenge()
     {
-        string backend = config["Settings:BackEndUrl"];
+        string backend = Configuration["Settings:BackEndUrl"];
         NavMan.NavigateTo($"https://{backend}/Twitter/ChallengeAsync", true); // Server/Controllers/TwitterController.cs
     }
 }

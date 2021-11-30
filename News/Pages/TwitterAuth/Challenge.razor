@@ -13,7 +13,7 @@
 @code {
     protected override void OnInitialized()
     {
-        string backend = config["Settings:BackEndUrl"];
-        NavMan.NavigateTo($"https://{backend}/Twitter/ChallengeAsync", true); // Server/Controllers/TwitterController.cs
+        //string backend = config["Settings:BackEndUrl"];
+        NavMan.NavigateTo($"https://{config["Settings:BackEndUrl"]}/Twitter/ChallengeAsync", true); // Server/Controllers/TwitterController.cs
     }
 }
