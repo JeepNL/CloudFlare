@@ -1,11 +1,11 @@
 ﻿@page "/twitter"
-@page "/twitter/delete"
 @using System.Net
 @using System.Text.Json;
 @inject ICookieService CookieService
+@inject ILocalStorageService LocalStorageAsync
 @inject NavigationManager NavMan
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
-@inject HttpClient Http
+@inject HttpClient _httpClient
 
 <PageTitle>@pageTitle</PageTitle>
 <HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
@@ -22,24 +22,12 @@
     Currently you'll only see some basic information about your Twitter account, but that will change in the near future, more functionality will follow soon.
 </MudText>
 
-<MudText Class="mb-4" Typo="Typo.body1">
-    You can revoke BlazorBits' access to your Twitter account at any time by visiting this Twitter settings page: <MudLink Href="https://twitter.com/settings/connected_apps" Target="_blank">https://twitter.com/settings/connected_apps</MudLink>
-</MudText>
-
-<MudText Typo="Typo.body1">
-    Please note that once you've given access, BlazorBits stores a cookie in your browser with basic information about your Twitter account, so even if you revoke access to your Twitter account, the cookie is still stored in your browser.
-</MudText>
-
 @if (l2tUser is null)
 {
     <MudButton Class="mt-4" OnClick="TwitterChallenge" Variant="Variant.Filled" Color="Color.Primary" Style="text-transform:none">Twitter authentication</MudButton>
 }
 else
 {
-    <MudText Class="mt-2 mb-4" Typo="Typo.body1">
-        <MudButton OnClick="DeleteCookie" Variant="Variant.Filled" Color="Color.Primary" Style="text-transform:none">Delete cookie</MudButton>
-    </MudText>
-
     <MudSimpleTable Dense=true Striped=true Bordered=false Style="overflow-x: auto;">
         <thead>
             <tr>
@@ -75,26 +63,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        string cookieValueB64 = await CookieService.GetValue("_l2t");
-
-        if (!string.IsNullOrEmpty(cookieValueB64))
+        l2tUser = await LocalStorageAsync.GetItemAsync<L2TUser>("_l2t");
+        if (l2tUser is null)
         {
-            string cookieValueJson = Utils.FromB64(WebUtility.UrlDecode(cookieValueB64));
-            l2tUser = JsonSerializer.Deserialize<L2TUser>(cookieValueJson);
+            string cookieValueB64 = await CookieService.GetValue("_l2t");
+            if (!string.IsNullOrEmpty(cookieValueB64))
+            {
+                string cookieValueJson = Utils.FromB64(WebUtility.UrlDecode(cookieValueB64));
+                l2tUser = JsonSerializer.Deserialize<L2TUser>(cookieValueJson);
+                await LocalStorageAsync.SetItemAsync<L2TUser>("_l2t", l2tUser);
+            }
         }
-    }
-
-    private async Task DeleteCookie()
-    {
-        l2tUser = null;
-        string cookieDomain = Configuration["Settings:CookieDomain"];
-        Console.WriteLine($"***** (page) cookieDomain: {cookieDomain}");
-        await CookieService.SetValue("_l2t", null, cookieDomain, -1); // -1 = delete
     }
 
     private void TwitterChallenge()
     {
         string backend = Configuration["Settings:BackEndUrl"];
-        NavMan.NavigateTo($"https://{backend}/Twitter/ChallengeAsync", true); // Server/Controllers/TwitterController.cs
+        NavMan.NavigateTo($"https://{backend}/Twitter/Authenticate", true); // Server/Controllers/TwitterController.cs
     }
 }

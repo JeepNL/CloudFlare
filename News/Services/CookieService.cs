@@ -13,15 +13,11 @@ public class CookieService : ICookieService
 		ExpireDays = 300;
 	}
 
-	public async Task SetValue(string key, string value, string domain, int? days = null)
+	public async Task SetValue(string key, string value, int? days = null)
 	{
 		//var curExp = (days != null) ? (days > 0 ? DateToUTC(days.Value) : "") : expires;
-		//string sameSite = "none";
-		//string domain = "localhost";
 		var curExp = (days != null) ? (DateToUTC(days.Value)) : expires;
-		//await SetCookie($"{key}={value}; expires={curExp}; domain={domain}; path=/; samesite={sameSite}");
-		Console.WriteLine($"***** (service) domain: {domain}");
-		await SetCookie($"{key}={value}; expires={curExp}; domain={domain}; path=/;");
+		await SetCookie($"{key}={value}; expires={curExp}; path=/;");
 	}
 
 	public async Task<string> GetValue(string key, string def = "")
