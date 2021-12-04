@@ -1,16 +1,34 @@
 ﻿syntax = "proto3";
 option csharp_namespace = "ApiGrpc.Protos";
 // see: https://docs.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types
-//import "google/protobuf/empty.proto";
 //import "google/protobuf/duration.proto";
 //import "google/protobuf/timestamp.proto";
+//import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 package l2t;
 
 service L2T {
 	rpc UserInfo (OauthTokens) returns (UserInfoResponse);
-	rpc PostTweet (Tweet) returns (PostTweetRespone);
+	rpc PostTweet (Tweet) returns (TweetRespone);
+	rpc GetProfileImage (ProfileImage) returns (ProfileImageResponse);
+}
+
+message ProfileImage {
+	enum Size {
+		NORMAL = 0;
+		BIGGER	= 1;
+		MINI = 2;
+		ORIGINAL = 3;
+	}
+	string url = 1;
+	bool default = 2;
+	Size size_enum = 3;
+}
+
+message ProfileImageResponse {
+	string base64 = 1;
+	string file_ext = 2;
 }
 
 message Tweet {
@@ -18,7 +36,7 @@ message Tweet {
 	google.protobuf.StringValue in_reply_to_id = 2;
 }
 
-message PostTweetRespone {
+message TweetRespone {
 	bool success = 1;
 	google.protobuf.StringValue id = 2;
 };
@@ -34,3 +52,27 @@ message UserInfoResponse {
 	string access_token = 3;
 	string access_token_secret = 4;
 }
+
+//message TwitterUser
+//{
+//	int64 Id = 1;
+//	string IdStr = 2;
+//	string Name = 3;
+//	string ScreenName = 4;
+//	string ProfileImageUrlHttp = 5;
+//	string ProfileImageB64 = 6;
+//	string Location = 7;
+//	string Description = 8;
+//	string Url = 9;
+//	bool Protected = 10;
+//	string CreatedAt = 11;
+//	int64 FollowersCount = 12;
+//	int64 FriendsCount = 13;
+//	int64 ListedCount = 14;
+//	int64 StatusesCount = 15;
+//	int64 FavouritesCount = 16;
+//	bool Verified = 17;
+//	bool Suspended = 18;
+//	string AccessToken = 19;
+//	string AccessTokenSecret = 20;
+//}

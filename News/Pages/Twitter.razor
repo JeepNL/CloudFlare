@@ -5,7 +5,8 @@
 @inject ILocalStorageService LocalStorageAsync
 @inject NavigationManager NavMan
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
-@inject HttpClient _httpClient
+@inject HttpClient HttpClient
+@inject GrpcChannel GrpcChannel
 
 <PageTitle>@pageTitle</PageTitle>
 <HeadContent><meta name="description" content="@pageDesc" /></HeadContent>
@@ -28,41 +29,54 @@
 }
 else
 {
-    <MudSimpleTable Dense=true Striped=true Bordered=false Style="overflow-x: auto;">
-        <thead>
-            <tr>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>IdStr</td><td>@l2tUser.IdStr</td></tr>
-            <tr><td>Name</td><td>@l2tUser.Name</td></tr>
-            <tr><td>ScreenName</td><td>@l2tUser.ScreenName</td></tr>
-            <tr><td>ProfileImageUrlHttps</td><td>@l2tUser.ProfileImageUrlHttps</td></tr>
-            <tr><td>Location</td><td>@l2tUser.Location</td></tr>
-            <tr><td>Description</td><td>@l2tUser.Description</td></tr>
-            <tr><td>Url</td><td>@l2tUser.Url</td></tr>
-            <tr><td>Protected</td><td>@l2tUser.Protected</td></tr>
-            <tr><td>CreatedAt</td><td>@l2tUser.CreatedAt</td></tr>
-            <tr><td>FollowersCount</td><td>@l2tUser.FollowersCount</td></tr>
-            <tr><td>FriendsCount</td><td>@l2tUser.FriendsCount</td></tr>
-            <tr><td>ListedCount</td><td>@l2tUser.ListedCount</td></tr>
-            <tr><td>StatusesCount</td><td>@l2tUser.StatusesCount</td></tr>
-            <tr><td>FavouritesCount</td><td>@l2tUser.FavouritesCount</td></tr>
-            <tr><td>Verified</td><td>@l2tUser.Verified</td></tr>
-            <tr><td>Suspended</td><td>@l2tUser.Suspended</td></tr>
-        </tbody>
-    </MudSimpleTable>
+    <MudGrid>
+        <MudItem xs="12" sm="10" md="8" lg="6" xl="4">
+            <MudSimpleTable Dense=true Striped=true Bordered=false Style="overflow-x: auto;">
+                <tbody>
+                    <tr><td>Tweets: @l2tUser.StatusesCount</td><td>Favorites: @l2tUser.FavouritesCount</td><td>Listed: @l2tUser.ListedCount</td></tr>
+                    <tr>
+                        <td colspan="3">
+                            <img src="@l2tUser.ProfileImageB64" style="float: left; margin-right: 10px; margin-bottom: 4px;">
+                            @l2tUser.Name
+                            @if (@l2tUser.Protected)
+                            {
+                                <MudIcon Icon="@Icons.Filled.Lock" Title="Locked" Size="Size.Small" />
+                            }
+                            @if (@l2tUser.Verified)
+                            {
+                                <MudIcon Icon="@Icons.Filled.Verified" Title="Verified" Size="Size.Small" />
+                            }
+                            (@@@l2tUser.ScreenName, @l2tUser.IdStr)
+                            <br />@l2tUser.Description
+                            <br />@l2tUser.Location
+                            <br />@l2tUser.Website
+                            <br />@l2tUser.CreatedAt
+                        </td>
+                    </tr>
+                    <tr><td>Followers: @l2tUser.FollowersCount</td><td colspan="2">Following: @l2tUser.FriendsCount</td></tr>
+
+                </tbody>
+            </MudSimpleTable>
+        </MudItem>
+    </MudGrid>
+
+    <MudElement Class="mt-4">
+        <img src="@imageRoot/blazor.webp" alt="Blazor Logo" />
+    </MudElement>
 }
 
 @code {
     private string pageTitle = "Twitter | BlazorBits";
     private string pageDesc = "Twitter Utilities";
-    L2TUser l2tUser;
+    L2TUser l2tUser = new();
+    string backend = string.Empty;
+    string imageRoot = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        backend = Configuration["Settings:BackEndUrl"];
+        imageRoot = $"https://{backend}/images";
+
         l2tUser = await LocalStorageAsync.GetItemAsync<L2TUser>("_l2t");
         if (l2tUser is null)
         {
@@ -71,6 +85,7 @@ else
             {
                 string cookieValueJson = Utils.FromB64(WebUtility.UrlDecode(cookieValueB64));
                 l2tUser = JsonSerializer.Deserialize<L2TUser>(cookieValueJson);
+                l2tUser.ProfileImageB64 = await GetUserImageAsync();
                 await LocalStorageAsync.SetItemAsync<L2TUser>("_l2t", l2tUser);
             }
         }
@@ -78,7 +93,19 @@ else
 
     private void TwitterChallenge()
     {
-        string backend = Configuration["Settings:BackEndUrl"];
         NavMan.NavigateTo($"https://{backend}/Twitter/Authenticate", true); // Server/Controllers/TwitterController.cs
+    }
+
+    private async Task<string> GetUserImageAsync()
+    {
+        ProfileImage profileImage = new()
+            {
+                Url = l2tUser.ProfileImageUrlHttps,
+                Default = l2tUser.DefaultProfileImage,
+                SizeEnum = ProfileImage.Types.Size.Bigger
+            };
+        var grpcClient = new L2T.L2TClient(GrpcChannel);
+        ProfileImageResponse imageResponse = await grpcClient.GetProfileImageAsync(profileImage);
+        return $"data:{imageResponse.FileExt};base64,{imageResponse.Base64}";
     }
 }
