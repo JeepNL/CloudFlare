@@ -5,6 +5,7 @@
 @inject ILocalStorageService LocalStorageAsync
 @inject NavigationManager NavMan
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@*@inject AuthenticationStateProvider AuthenticationStateProvider*@
 @inject HttpClient HttpClient
 @inject GrpcChannel GrpcChannel
 
@@ -13,6 +14,8 @@
 
 <MudText Typo="Typo.h4">Twitter Utilities</MudText>
 <MudText Class="mb-6" Typo="Typo.subtitle1">Preview</MudText>
+
+@*<MudText Class="mb-4" Typo="Typo.h5">Authenticated: @authStatus</MudText>*@
 
 <MudText Class="mb-4" Typo="Typo.body1">
     BlazorBits Twitter integration with <MudLink Href="https://twitter.com/JoeMayo" Target="_blank">Joe Mayo</MudLink>'s <MudLink Href="https://github.com/JoeMayo/LinqToTwitter" Target="_blank">LinqToTwitter</MudLink> library.
@@ -57,25 +60,39 @@ else
 
                 </tbody>
             </MudSimpleTable>
+
+            <MudForm Class="mt-2" @ref="form">
+                <MudTextField T="string" @bind-Value="@tweetText" Immediate="true" Label="Tweet (max 280 chars)" Variant="Variant.Text" Lines="5" MaxLength="280" />
+            </MudForm>
+            @*<MudButton Class="mt-2" OnClick="SendTweet" Variant="Variant.Filled" Disabled="@(!success)" Color="Color.Primary" Style="text-transform:none">Send Tweet</MudButton>*@
+            <MudButton Class="mt-2" OnClick="SendTweet" Variant="Variant.Filled" Disabled="@(string.IsNullOrEmpty(tweetText))" Color="Color.Primary" Style="text-transform:none">Send Tweet</MudButton>
+            @*<MudButton Class="mt-2" OnClick="SendTweet" Variant="Variant.Filled" Color="Color.Primary" Style="text-transform:none">Send Tweet</MudButton>*@
         </MudItem>
     </MudGrid>
-
-    <MudElement Class="mt-4">
-        <img src="@imageRoot/blazor.webp" alt="Blazor Logo" />
-    </MudElement>
 }
 
 @code {
     private string pageTitle = "Twitter | BlazorBits";
     private string pageDesc = "Twitter Utilities";
     L2TUser l2tUser = new();
+    MudForm form;
     string backend = string.Empty;
     string imageRoot = string.Empty;
+    string tweetText = string.Empty;
+
+    //string authStatus = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         backend = Configuration["Settings:BackEndUrl"];
         imageRoot = $"https://{backend}/images";
+
+        //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        //var user = authState.User;
+        //if (user.Identity.IsAuthenticated)
+        //    authStatus = "True";
+        //else
+        //    authStatus = "False";
 
         l2tUser = await LocalStorageAsync.GetItemAsync<L2TUser>("_l2t");
         if (l2tUser is null)
@@ -107,5 +124,19 @@ else
         var grpcClient = new L2T.L2TClient(GrpcChannel);
         ProfileImageResponse imageResponse = await grpcClient.GetProfileImageAsync(profileImage);
         return $"data:{imageResponse.FileExt};base64,{imageResponse.Base64}";
+    }
+
+    private async Task SendTweet()
+    {
+        L2TTweet l2TTweet = new()
+            {
+                Text = tweetText,
+                InReplyToId = string.Empty,
+                AccessToken = l2tUser.AccessToken,
+                AccessTokenSecret = l2tUser.AccessTokenSecret
+            };
+        var grpcClient = new L2T.L2TClient(GrpcChannel);
+        L2TTweetResponse l2tResponse = await grpcClient.PostL2TTweetAsync(l2TTweet);
+        tweetText = string.Empty;
     }
 }

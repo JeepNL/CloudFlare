@@ -10,7 +10,7 @@ package l2t;
 
 service L2T {
 	rpc UserInfo (OauthTokens) returns (UserInfoResponse);
-	rpc PostTweet (Tweet) returns (TweetRespone);
+	rpc PostL2TTweet (L2TTweet) returns (L2TTweetResponse);
 	rpc GetProfileImage (ProfileImage) returns (ProfileImageResponse);
 }
 
@@ -31,12 +31,14 @@ message ProfileImageResponse {
 	string file_ext = 2;
 }
 
-message Tweet {
+message L2TTweet {
 	string text = 1;
 	google.protobuf.StringValue in_reply_to_id = 2;
+	string AccessToken = 3;
+	string AccessTokenSecret = 4;
 }
 
-message TweetRespone {
+message L2TTweetResponse {
 	bool success = 1;
 	google.protobuf.StringValue id = 2;
 };

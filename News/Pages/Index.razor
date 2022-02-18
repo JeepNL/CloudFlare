@@ -16,8 +16,8 @@
             <img src="/images/dotNETDropMic.webp" width="140" align="right" style="margin-left: 0.5em" />
             <MudText Typo="Typo.h5" Class="pa-2">About BlazorBits: privacy first, mobile second ...</MudText>
             <MudText Typo="Typo.body1" Class="pa-2">
-                This is an <MudLink Href="https://devblogs.microsoft.com/dotnet/announcing-asp-net-core-in-net-6/" Target="_blank">ASP.NET Core 6</MudLink>
-                <i>(November 8th, 2021)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
+                This is an <MudLink Href="https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-7-preview-1/" Target="_blank">ASP.NET Core 7 Preview 1</MudLink>
+                <i>(February 17, 2022)</i> Mobile Friendly <MudLink Href="https://blazor.net/" Target="_blank">Blazor</MudLink> WebAssembly <i>(WASM)</i> Single Page
                 Application <i>(SPA)</i> prototype using <MudLink Href="https://mudblazor.com/" Target="_blank">MudBlazor</MudLink> Components and the static part, the
                 front-end <i>(client side)</i>, is hosted <i>(for free!)</i> on <MudLink Href="https://pages.cloudflare.com/" Target="_blank">Cloudflare Pages</MudLink>.
                 The website is using remote <MudLink Href="https://docs.microsoft.com/en-us/aspnet/core/grpc/" Target="_blank">.NET gRPC Services</MudLink> running on a
@@ -38,9 +38,9 @@
         </MudAlert>
 
         <MudPaper Elevation="2" Class="mt-6 px-4 py-2">
-            <MudText Typo="Typo.body1">To use the latest .NET 6.0.100 SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
+            <MudText Typo="Typo.body1">To use the latest .NET 7.0.0 Preview 1 SDK on Cloudflare Pages you'll need to modify the build command:</MudText>
             <MudAlert Class="my-2" Elevation="0" Severity="Severity.Info" Variant="Variant.Filled" NoIcon="false">
-                <samp>wget wget https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz;tar zxf dotnet-sdk-6.0.100-linux-x64.tar.gz;./dotnet workload install wasm-tools;./dotnet --info;./dotnet publish -c Release -o output --self-contained;</samp>
+                <samp>wget https://download.visualstudio.microsoft.com/download/pr/1af9d3c3-a20e-400c-abe5-3d80dec7b63b/803f8dc5cf21fb28245aba71a7fdbc05/dotnet-sdk-7.0.100-preview.1.22110.4-linux-x64.tar.gz;tar zxf dotnet-sdk-7.0.100-preview.1.22110.4-linux-x64.tar.gz;./dotnet workload install wasm-tools;./dotnet --info;./dotnet publish -c Release -o output --self-contained;</samp>
             </MudAlert>
             <MudText Typo="Typo.body1">For <samp><b>wasm-tools</b></samp> to work you'll need to set the environment variable <samp><b>PYTHON_VERSION</b></samp> to <samp><b>3.7</b></samp> in Cloudflare Pages settings.</MudText>
         </MudPaper>
@@ -135,7 +135,6 @@
                 </MudCardActions>
             </MudCard>
         </MudItem>
-
 
     </MudItem>
 </MudGrid>

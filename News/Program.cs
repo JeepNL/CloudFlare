@@ -10,11 +10,6 @@ using News;
 using News.Helpers;
 using News.Services;
 
-//namespace News;
-//public class Program
-//{
-//	public static async Task Main(string[] args)
-//	{
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Modify HTML <head> in components: https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-7/
@@ -54,7 +49,9 @@ builder.Services.AddSingleton(services =>
 	// Create a channel with a GrpcWebHandler that is addressed to the backend server.
 	// GrpcWebText is used because server streaming requires it. If server streaming is not used in your app
 	// then GrpcWeb is recommended because it produces smaller messages.
+
 	var httpHandler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
+
 	return GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
 	{
 		HttpHandler = httpHandler
@@ -76,5 +73,3 @@ builder.Services.AddSingleton<UserCookieService>();
 builder.Services.AddSingleton<ICookieService, CookieService>();
 
 await builder.Build().RunAsync();
-//	}
-//}
